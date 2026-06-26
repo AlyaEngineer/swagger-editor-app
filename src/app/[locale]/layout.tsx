@@ -1,7 +1,9 @@
-import './globals.scss';
+import '../globals.scss';
 
 import type { Metadata } from 'next';
 
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
+import CssBaseline from '@mui/material/CssBaseline';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
@@ -34,7 +36,12 @@ export default async function RootLayout({ children, params }: Props) {
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <AppRouterCacheProvider>
+          <NextIntlClientProvider>
+            <CssBaseline />
+            {children}
+          </NextIntlClientProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
