@@ -1,4 +1,4 @@
-import { LanguageSwitcher } from '@components';
+import { LanguageSwitcher } from '@/components';
 
 export function Header() {
   return (
