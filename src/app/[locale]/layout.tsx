@@ -2,8 +2,6 @@ import '../globals.css';
 
 import type { Metadata } from 'next';
 
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
-import CssBaseline from '@mui/material/CssBaseline';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
