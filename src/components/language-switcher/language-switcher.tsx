@@ -1,14 +1,10 @@
 'use client';
 
-import FormControl from '@mui/material/FormControl';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { type SelectChangeEvent } from '@mui/material/Select';
+import { FormControl, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { useLocale } from 'next-intl';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-
-import styles from './language-switcher.module.css';
 
 export function LanguageSwitcher() {
   const locale = useLocale();
@@ -24,21 +20,10 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <FormControl className={styles.root} size="small">
-      <Select
-        className={styles.select}
-        MenuProps={{
-          slotProps: {
-            paper: {
-              className: styles.menuPaper,
-            },
-          },
-        }}
-        onChange={handleChange}
-        value={locale}
-      >
+    <FormControl size="small">
+      <Select label="Language" onChange={handleChange} value={locale}>
         {routing.locales.map((item) => (
-          <MenuItem className={styles.menuItem} key={item} value={item}>
+          <MenuItem key={item} value={item}>
             {item.toUpperCase()}
           </MenuItem>
         ))}

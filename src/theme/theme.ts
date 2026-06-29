@@ -1,5 +1,7 @@
 import { createTheme } from '@mui/material/styles';
 
+const controlHeight = 36;
+
 export const theme = createTheme({
   components: {
     MuiAppBar: {
@@ -24,6 +26,49 @@ export const theme = createTheme({
 
         root: {
           textTransform: 'none',
+        },
+      },
+    },
+
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          minHeight: 36,
+        },
+      },
+    },
+
+    MuiSelect: {
+      styleOverrides: {
+        icon: ({ theme }) => ({
+          color: theme.palette.primary.main,
+        }),
+
+        root: ({ theme }) => ({
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.palette.primary.main,
+            borderWidth: 2,
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.palette.primary.main,
+          },
+
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.palette.primary.dark,
+          },
+
+          borderRadius: theme.shape.borderRadius,
+
+          height: controlHeight,
+        }),
+
+        select: {
+          alignItems: 'center',
+          display: 'flex',
+          height: controlHeight,
+          minHeight: 'unset',
+          paddingBottom: 0,
+          paddingTop: 0,
         },
       },
     },
