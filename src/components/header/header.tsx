@@ -1,38 +1,55 @@
 'use client';
 
-import { LanguageSwitcher } from '@components';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
+import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 
-import { Link } from '@/i18n/navigation';
-import { useScroll } from '@/utils/use-scroll';
-
-import { AuthNavigation } from '../auth-navigation/auth-navigation';
-import styles from './header.module.css';
+import { AppLink, AuthNavigation, LanguageSwitcher } from '@/components';
 
 export function Header() {
-  const isCompact = useScroll();
-
-  const headerClassName = isCompact ? `${styles.header} ${styles.headerCompact}` : styles.header;
+  const isCompact = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 32,
+  });
 
   return (
-    <AppBar className={headerClassName} position="sticky">
-      <Toolbar className={styles.toolbar}>
-        <Link className={styles.logo} href="/">
-          Swagger Editor
-        </Link>
+    <AppBar elevation={0} position="sticky">
+      <Toolbar
+        sx={{
+          minHeight: {
+            sm: isCompact ? 52 : 64,
+          },
+          py: isCompact ? 0.5 : 1.25,
+          transition: (theme) =>
+            theme.transitions.create(['min-height', 'padding'], {
+              duration: theme.transitions.duration.short,
+            }),
+        }}
+      >
+        <Box
+          sx={{
+            alignItems: 'center',
+            display: 'flex',
+            gap: 1.5,
+          }}
+        >
+          <AppLink href="/">Swagger Editor</AppLink>
 
-        <nav aria-label="Main navigation" className={styles.navigation}>
-          <Link className={styles.navLink} href="/about">
-            About
-          </Link>
+          <LanguageSwitcher />
+        </Box>
 
-          <div className={styles.actions}>
-            <LanguageSwitcher />
+        <Box
+          aria-label="Main navigation"
+          component="nav"
+          sx={{
+            alignItems: 'center',
+            display: 'flex',
+            gap: 1,
+            ml: 'auto',
+          }}
+        >
+          <AppLink href="/about">About</AppLink>
 
-            <AuthNavigation />
-          </div>
-        </nav>
+          <AuthNavigation />
+        </Box>
       </Toolbar>
     </AppBar>
   );

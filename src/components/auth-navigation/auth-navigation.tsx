@@ -4,7 +4,7 @@ import { AppLink } from '../app-link/app-link';
 
 export const AuthNavigation = () => {
   const { isAuthenticated, isAuthLoading, signOut } = {
-    isAuthenticated: true,
+    isAuthenticated: false,
     isAuthLoading: false,
     signOut: () => {},
   }; //useAuth();
@@ -27,9 +27,13 @@ export const AuthNavigation = () => {
         </>
       ) : (
         <>
-          <AppLink href="/sign-in">Sign In</AppLink>
+          <AppLink href="/sign-in" variant="outlined">
+            Sign In
+          </AppLink>
 
-          <AppLink href="/sign-up">Sign Up</AppLink>
+          <AppLink href="/sign-up" variant="contained">
+            Sign Up
+          </AppLink>
         </>
       )}
     </>
