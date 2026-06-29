@@ -4,6 +4,12 @@ import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 
 import { AppLink, AuthNavigation, LanguageSwitcher } from '@/components';
 
+const flex = {
+  alignItems: 'center',
+  display: 'flex',
+  gap: 1.5,
+};
+
 export function Header() {
   const isCompact = useScrollTrigger({
     disableHysteresis: true,
@@ -24,13 +30,7 @@ export function Header() {
             }),
         }}
       >
-        <Box
-          sx={{
-            alignItems: 'center',
-            display: 'flex',
-            gap: 1.5,
-          }}
-        >
+        <Box sx={flex}>
           <AppLink href="/">Swagger Editor</AppLink>
 
           <LanguageSwitcher />
@@ -40,9 +40,7 @@ export function Header() {
           aria-label="Main navigation"
           component="nav"
           sx={{
-            alignItems: 'center',
-            display: 'flex',
-            gap: 1,
+            ...flex,
             ml: 'auto',
           }}
         >
