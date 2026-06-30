@@ -18,7 +18,7 @@ const eslintConfig = defineConfig([
     files: ['src/**/*.{test,spec}.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
     ...vitest.configs.recommended,
   },
-  
+
   {
     files: ['src/**/*.{test,spec}.{ts,tsx}', 'src/**/__tests__/**/*.{ts,tsx}'],
     ...testingLibrary.configs['flat/react'],
