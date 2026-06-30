@@ -1,10 +1,10 @@
 'use client';
 
-import { AppLink } from '../app-link/app-link';
+import { AppLinkButton } from '../app-link/app-link';
 
 export const AuthNavigation = () => {
   const { isAuthenticated, isAuthLoading, signOut } = {
-    isAuthenticated: false,
+    isAuthenticated: true,
     isAuthLoading: false,
     signOut: () => {},
   }; //useAuth();
@@ -17,23 +17,21 @@ export const AuthNavigation = () => {
     <>
       {isAuthenticated ? (
         <>
-          <AppLink href="/history" variant="outlined">
-            History
-          </AppLink>
+          <AppLinkButton href="/history">History</AppLinkButton>
 
-          <AppLink onClick={signOut} variant="contained">
+          <AppLinkButton onClick={signOut} variant="contained">
             Sign Out
-          </AppLink>
+          </AppLinkButton>
         </>
       ) : (
         <>
-          <AppLink href="/sign-in" variant="outlined">
+          <AppLinkButton href="/sign-in" variant="outlined">
             Sign In
-          </AppLink>
+          </AppLinkButton>
 
-          <AppLink href="/sign-up" variant="contained">
+          <AppLinkButton href="/sign-up" variant="contained">
             Sign Up
-          </AppLink>
+          </AppLinkButton>
         </>
       )}
     </>

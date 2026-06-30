@@ -31,7 +31,7 @@ type AppLinkAsLinkProps = Omit<
 
 type AppLinkProps = AppLinkAsButtonProps | AppLinkAsLinkProps;
 
-export const AppLink = (props: AppLinkProps) => {
+export const AppLinkButton = (props: AppLinkProps) => {
   if (props.href !== undefined) {
     const { children, color = 'primary', href, variant, ...linkProps } = props;
 
