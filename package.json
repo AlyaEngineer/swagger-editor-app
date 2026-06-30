@@ -10,7 +10,10 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "fix": "npm run lint:fix && npm run format",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -48,6 +51,23 @@
     "lint-staged": "^17.0.8",
     "npm-check-updates": "^22.2.7",
     "prettier": "^3.8.4",
-    "typescript": "^6"
+    "typescript": "^6",
+    "@reduxjs/toolkit": "^2.12.0",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-redux": "^9.3.0",
+    "@commitlint/cli": "^21.1.0",
+    "@commitlint/config-conventional": "^21.1.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/coverage-v8": "^4.1.9",
+    "@vitest/eslint-plugin": "^1.6.20",
+    "eslint-plugin-testing-library": "^7.16.2",
+    "jsdom": "^29.1.1",
+    "vitest": "^4.1.9"
   }
 }
