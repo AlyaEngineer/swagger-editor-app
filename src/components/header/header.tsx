@@ -4,6 +4,13 @@ import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 
 import { AppLink, AuthNavigation, LanguageSwitcher } from '@/components';
 
+const STICKY_SCROLL_OFFSET = 32;
+
+const HEADER_SIZES = {
+  compact: { minHeight: 52, py: 0.5 },
+  expanded: { minHeight: 64, py: 1.25 },
+};
+
 const flex = {
   alignItems: 'center',
   display: 'flex',
@@ -13,17 +20,17 @@ const flex = {
 export function Header() {
   const isCompact = useScrollTrigger({
     disableHysteresis: true,
-    threshold: 32,
+    threshold: STICKY_SCROLL_OFFSET,
   });
+
+  const { minHeight, py } = isCompact ? HEADER_SIZES.compact : HEADER_SIZES.expanded;
 
   return (
     <AppBar elevation={0} position="sticky">
       <Toolbar
         sx={{
-          minHeight: {
-            sm: isCompact ? 52 : 64,
-          },
-          py: isCompact ? 0.5 : 1.25,
+          minHeight,
+          py,
           transition: (theme) =>
             theme.transitions.create(['min-height', 'padding'], {
               duration: theme.transitions.duration.short,
