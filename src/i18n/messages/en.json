@@ -1,0 +1,19 @@
+{
+  "Metadata": {
+    "title": "name",
+    "description": "Description"
+  },
+  "Header": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "history": "History",
+    "about": "About",
+    "language": "Language"
+  },
+  "HomePage": {
+    "title": "Swagger/OpenAPI UI",
+    "description": "Edit, view and test OpenAPI specifications in one app."
+  },
+  "check": "check english"
+}
