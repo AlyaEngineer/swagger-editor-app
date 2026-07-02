@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "name",
-    "description": "Description"
+    "title": "Swagger Editor",
+    "description": "Paste JSON or YAML OpenAPI/Swagger schema. Valid schemas will automatically populate the viewer."
   },
   "Header": {
     "signIn": "Sign In",

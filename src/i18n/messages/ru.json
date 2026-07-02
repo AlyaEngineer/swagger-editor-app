@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "Название сайта",
-    "description": "Описание сайта"
+    "title": "Swagger Editor",
+    "description": "Вставьте OpenAPI/Swagger-схему в формате JSON или YAML. Валидные схемы автоматически заполнят просмотрщик."
   },
   "Header": {
     "signIn": "Войти",

@@ -18,6 +18,8 @@ import { useMemo, useState } from 'react';
 import { useSwaggerHook } from '@/utils/hooks/swagger-hook';
 import { getSwaggerEndpoints } from '@/utils/swagger-editor/get-swagger-endpoints';
 
+import { MainText } from '../main-text/main-text';
+
 const pageSx: SxProps<Theme> = {
   minHeight: 'calc(100dvh - 80px)',
   p: 3,
@@ -49,17 +51,16 @@ const viewerPanelSx: SxProps<Theme> = {
 };
 
 export const SwaggerEditor = () => {
-  const [isSaving, setIsSaving] = useState(false);
-
   const {
     editorValue,
     error,
     format,
     handleFormatToggle,
+    handleSaveSchema,
+    isSaving,
     isValid,
     schema,
     setEditorValue,
-    setError,
   } = useSwaggerHook();
 
   const endpoints = useMemo(() => getSwaggerEndpoints(schema), [schema]);
@@ -69,55 +70,16 @@ export const SwaggerEditor = () => {
     isAuthenticated: true,
   };
 
-  async function handleSaveSchema() {
-    if (!isAuthenticated || !isValid) {
-      return;
-    }
-
-    setIsSaving(true);
-
-    try {
-      const response = await fetch('/api/schema', {
-        body: JSON.stringify({
-          content: editorValue,
-          format,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save schema');
-      }
-    } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : 'Failed to save schema');
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
   return (
     <Box sx={pageSx}>
       <Stack spacing={2}>
-        <Box>
-          <Typography component="h1" variant="h4">
-            Swagger Editor
-          </Typography>
-
-          <Typography color="text.secondary">
-            Paste JSON or YAML OpenAPI/Swagger schema. Valid schemas will automatically populate the
-            viewer.
-          </Typography>
-        </Box>
+        <MainText />
 
         <Stack
           sx={{
             alignItems: 'center',
             direction: 'row',
             justifyContent: 'space-between',
-            spacing: 2,
           }}
         >
           <FormControlLabel

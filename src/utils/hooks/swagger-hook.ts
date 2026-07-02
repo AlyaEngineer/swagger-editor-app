@@ -35,6 +35,7 @@ export const useSwaggerHook = () => {
   const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState<null | string>(null);
   const [format, setFormat] = useState<SchemaFormat>('yaml');
+  const [isSaving, setIsSaving] = useState(false);
 
   // TO DO заменить на рабочую авторизацию
   const { isAuthenticated } = {
@@ -96,14 +97,44 @@ export const useSwaggerHook = () => {
     }
   }
 
+  async function handleSaveSchema() {
+    if (!isAuthenticated || !isValid) {
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const response = await fetch('/api/schema', {
+        body: JSON.stringify({
+          content: editorValue,
+          format,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save schema');
+      }
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Failed to save schema');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   return {
     editorValue,
     error,
     format,
     handleFormatToggle,
+    handleSaveSchema,
+    isSaving,
     isValid,
     schema,
     setEditorValue,
-    setError,
   };
 };
