@@ -3,22 +3,14 @@
 import type { SxProps, Theme } from '@mui/material/styles';
 
 import { SwaggerMonacoEditor } from '@components';
-import {
-  Alert,
-  Box,
-  Button,
-  FormControlLabel,
-  Paper,
-  Stack,
-  Switch,
-  Typography,
-} from '@mui/material';
-import { useMemo, useState } from 'react';
+import { Alert, Box, Paper, Stack } from '@mui/material';
+import { useMemo } from 'react';
 
 import { useSwaggerHook } from '@/utils/hooks/swagger-hook';
 import { getSwaggerEndpoints } from '@/utils/swagger-editor/get-swagger-endpoints';
 
 import { MainText } from '../main-text/main-text';
+import { SwaggerControl } from '../swagger-control/swagger-control';
 
 const pageSx: SxProps<Theme> = {
   minHeight: 'calc(100dvh - 80px)',
@@ -56,49 +48,32 @@ export const SwaggerEditor = () => {
     error,
     format,
     handleFormatToggle,
-    handleSaveSchema,
-    isSaving,
     isValid,
     schema,
     setEditorValue,
+    setError,
   } = useSwaggerHook();
 
   const endpoints = useMemo(() => getSwaggerEndpoints(schema), [schema]);
-
-  // TODO: заменить на рабочую авторизацию
-  const { isAuthenticated } = {
-    isAuthenticated: true,
-  };
 
   return (
     <Box sx={pageSx}>
       <Stack spacing={2}>
         <MainText />
 
-        <Stack
-          sx={{
-            alignItems: 'center',
-            direction: 'row',
-            justifyContent: 'space-between',
-          }}
-        >
-          <FormControlLabel
-            control={<Switch checked={format === 'yaml'} onChange={handleFormatToggle} />}
-            label={format === 'yaml' ? 'YAML' : 'JSON'}
-          />
-
-          {isAuthenticated && (
-            <Button disabled={!isValid || isSaving} onClick={handleSaveSchema} variant="contained">
-              {isSaving ? 'Saving...' : 'Save schema'}
-            </Button>
-          )}
-        </Stack>
-
         {error && <Alert severity="error">{error}</Alert>}
 
         {isValid && !error && (
           <Alert severity="success">Schema is valid. {endpoints.length} endpoint(s) found.</Alert>
         )}
+
+        <SwaggerControl
+          editorValue={editorValue}
+          format={format}
+          handleFormatToggle={handleFormatToggle}
+          isValid={isValid}
+          setError={setError}
+        />
 
         <Box sx={workspaceSx}>
           <Paper sx={editorPanelSx}>
