@@ -1,89 +1,11 @@
 import { Header } from '@components';
-import { getTranslations } from 'next-intl/server';
+import { SwaggerEditor } from '@components';
 
 export default async function Home() {
-  const t = await getTranslations();
-
   return (
     <>
       <Header />
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
+      <SwaggerEditor />
     </>
   );
 }

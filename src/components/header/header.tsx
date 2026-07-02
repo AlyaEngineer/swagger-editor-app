@@ -3,18 +3,13 @@
 import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 
 import { AppLink, AuthNavigation, LanguageSwitcher } from '@/components';
+import { flex } from '@/constants';
 
 const STICKY_SCROLL_OFFSET = 32;
 
 const HEADER_SIZES = {
   compact: { minHeight: 52, py: 0.5 },
   expanded: { minHeight: 64, py: 1.25 },
-};
-
-const flex = {
-  alignItems: 'center',
-  display: 'flex',
-  gap: 1.5,
 };
 
 export function Header() {
@@ -37,7 +32,7 @@ export function Header() {
             }),
         }}
       >
-        <Box sx={flex}>
+        <Box sx={flex()}>
           <AppLink href="/">Swagger Editor</AppLink>
 
           <LanguageSwitcher />
@@ -47,7 +42,7 @@ export function Header() {
           aria-label="Main navigation"
           component="nav"
           sx={{
-            ...flex,
+            ...flex(),
             ml: 'auto',
           }}
         >
