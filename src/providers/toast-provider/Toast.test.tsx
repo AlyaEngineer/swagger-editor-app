@@ -41,4 +41,14 @@ describe('Toast', () => {
 
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('does not call onClose on clickaway', async () => {
+    const onClose = vi.fn();
+
+    render(<Toast message="Test message" onClose={onClose} open severity="success" />);
+
+    const user = userEvent.setup();
+    await user.click(document.body);
+    expect(onClose).not.toHaveBeenCalled();
+  });
 });
