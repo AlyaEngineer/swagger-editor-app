@@ -5,8 +5,6 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
-  chat:
-    auto_reply: true
 
   path_instructions:
     - path: "src/**/*.{ts,tsx}"
@@ -37,6 +35,9 @@ reviews:
       instructions: |
         Unauthenticated access to private routes must return HTTP 401, not 403 or a generic redirect without status code, per RFC 9110.
 
-instructions: |
-  Verify the RS School acceptance criteria checklist format only for PRs targeting the main branch (final submission PR from develop to main). Internal PRs between feature/story branches and develop do not require this checklist format.
-  
+    - path: "**/*"
+      instructions: |
+        For pull requests targeting the main branch (final submission PR from develop to main), verify the RS School acceptance criteria checklist format. Internal PRs between feature/story branches and develop do not require this checklist format.
+
+chat:
+  auto_reply: true
