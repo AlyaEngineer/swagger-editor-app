@@ -2,6 +2,7 @@
 
 import { Box, Button, CssBaseline, Typography } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useEffect } from 'react';
 
 const fallbackTheme = createTheme({
   colorSchemes: {
@@ -20,7 +21,9 @@ export default function GlobalError({
   error: Error & { digest?: string };
   unstable_retry: () => void;
 }) {
-  console.error(error);
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
 
   return (
     <html lang="en">
