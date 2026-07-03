@@ -15,5 +15,10 @@
     "title": "Swagger/OpenAPI UI",
     "description": "Edit, view and test OpenAPI specifications in one app."
   },
+  "errorPage": {
+    "title": "Something went wrong",
+    "description": "Try refreshing the page or come back later",
+    "retry": "Try again"
+  },
   "check": "check english"
 }
