@@ -5,6 +5,11 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+    base_branches:
+      - "develop"
+      - "main"
+      - "feature/.*"
+      - "story/.*"
 
   path_instructions:
     - path: "src/**/*.{ts,tsx}"
