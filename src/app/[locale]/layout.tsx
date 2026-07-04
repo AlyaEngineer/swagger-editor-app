@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
+import { appFont, swaggerEditorFont } from '@/fonts';
 import { MuiProvider } from '@/providers/mui-provider';
 
 type MetadataProps = {
@@ -34,7 +35,7 @@ export default async function RootLayout({ children, params }: Props) {
   const { locale } = await params;
 
   return (
-    <html lang={locale}>
+    <html className={`${appFont.variable} ${swaggerEditorFont.variable}`} lang={locale}>
       <body>
         <NextIntlClientProvider>
           <MuiProvider>{children}</MuiProvider>
