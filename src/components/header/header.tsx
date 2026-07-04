@@ -1,8 +1,8 @@
 'use client';
-
 import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
+import { useTranslations } from 'next-intl';
 
-import { AppLink, AuthNavigation, LanguageSwitcher } from '@/components';
+import { AppLinkButton, AuthNavigation, LanguageSwitcher } from '@/components';
 
 const STICKY_SCROLL_OFFSET = 32;
 
@@ -18,6 +18,7 @@ const flex = {
 };
 
 export function Header() {
+  const t = useTranslations('Header');
   const isCompact = useScrollTrigger({
     disableHysteresis: true,
     threshold: STICKY_SCROLL_OFFSET,
@@ -26,7 +27,14 @@ export function Header() {
   const { minHeight, py } = isCompact ? HEADER_SIZES.compact : HEADER_SIZES.expanded;
 
   return (
-    <AppBar elevation={0} position="sticky">
+    <AppBar
+      elevation={0}
+      position="sticky"
+      sx={{
+        backgroundColor: 'background.paper',
+        borderColor: 'divider',
+      }}
+    >
       <Toolbar
         sx={{
           minHeight,
@@ -38,8 +46,7 @@ export function Header() {
         }}
       >
         <Box sx={flex}>
-          <AppLink href="/">Swagger Editor</AppLink>
-
+          <AppLinkButton href="/">{t('brand')}</AppLinkButton>
           <LanguageSwitcher />
         </Box>
 
@@ -51,7 +58,7 @@ export function Header() {
             ml: 'auto',
           }}
         >
-          <AppLink href="/about">About</AppLink>
+          <AppLinkButton href="/about">{t('about')}</AppLinkButton>
 
           <AuthNavigation />
         </Box>

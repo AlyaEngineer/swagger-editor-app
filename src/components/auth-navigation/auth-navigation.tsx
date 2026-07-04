@@ -1,8 +1,12 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { AppLinkButton } from '../app-link/app-link';
 
 export const AuthNavigation = () => {
+  const t = useTranslations('Header');
+
   const { isAuthenticated, isAuthLoading, signOut } = {
     isAuthenticated: true,
     isAuthLoading: false,
@@ -17,20 +21,20 @@ export const AuthNavigation = () => {
     <>
       {isAuthenticated ? (
         <>
-          <AppLinkButton href="/history">History</AppLinkButton>
+          <AppLinkButton href="/history">{t('history')}</AppLinkButton>
 
           <AppLinkButton onClick={signOut} variant="contained">
-            Sign Out
+            {t('signOut')}
           </AppLinkButton>
         </>
       ) : (
         <>
           <AppLinkButton href="/sign-in" variant="outlined">
-            Sign In
+            {t('signIn')}
           </AppLinkButton>
 
           <AppLinkButton href="/sign-up" variant="contained">
-            Sign Up
+            {t('signUp')}
           </AppLinkButton>
         </>
       )}
