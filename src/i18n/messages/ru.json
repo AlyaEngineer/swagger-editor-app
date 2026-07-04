@@ -16,5 +16,9 @@
     "title": "Swagger/OpenAPI UI",
     "description": "Редактируйте, просматривайте и тестируйте OpenAPI-спецификации в одном приложении."
   },
+  "footer": {
+    "aboutLink": "О проекте",
+    "githubLink": "GitHub"
+  },
   "check": "проверка русского"
 }

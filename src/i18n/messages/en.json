@@ -16,5 +16,9 @@
     "title": "Swagger/OpenAPI UI",
     "description": "Edit, view and test OpenAPI specifications in one app."
   },
+  "footer": {
+    "aboutLink": "About",
+    "githubLink": "GitHub"
+  },
   "check": "check english"
 }
