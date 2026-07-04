@@ -21,7 +21,12 @@ export function LanguageSwitcher() {
 
   return (
     <FormControl size="small">
-      <Select label="Language" onChange={handleChange} value={locale}>
+      <Select
+        label="Language"
+        MenuProps={{ disableScrollLock: true }}
+        onChange={handleChange}
+        value={locale}
+      >
         {routing.locales.map((item) => (
           <MenuItem key={item} value={item}>
             {item.toUpperCase()}
