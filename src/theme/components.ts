@@ -24,7 +24,16 @@ export const components: Components<Theme> = {
         },
       }),
       root: {
+        height: controlHeight,
         textTransform: 'none',
+      },
+    },
+  },
+
+  MuiMenu: {
+    styleOverrides: {
+      paper: {
+        borderRadius: 8,
       },
     },
   },
@@ -54,12 +63,12 @@ export const components: Components<Theme> = {
           borderColor: theme.palette.primary.dark,
         },
         borderRadius: theme.shape.borderRadius,
+        color: theme.palette.primary.main,
         height: controlHeight,
       }),
       select: {
         alignItems: 'center',
         display: 'flex',
-        height: controlHeight,
         minHeight: 'unset',
         paddingBottom: 0,
         paddingTop: 0,
