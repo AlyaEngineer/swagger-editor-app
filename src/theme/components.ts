@@ -20,7 +20,7 @@ export const components: Components<Theme> = {
     styleOverrides: {
       contained: ({ theme }) => ({
         '&:hover': {
-          boxShadow: `2x 8px 22px ${alpha(theme.palette.primary.main, 0.32)}`,
+          boxShadow: `2px 8px 22px ${alpha(theme.palette.primary.main, 0.32)}`,
         },
       }),
       root: {
