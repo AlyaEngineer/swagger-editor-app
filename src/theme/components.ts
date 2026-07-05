@@ -70,9 +70,6 @@ export const components: Components<Theme> = {
   MuiToolbar: {
     styleOverrides: {
       root: {
-        '@media (min-width: 600px)': {
-          minHeight: 0,
-        },
         alignItems: 'center',
         boxSizing: 'border-box',
         display: 'flex',
@@ -80,7 +77,6 @@ export const components: Components<Theme> = {
         marginLeft: 'auto',
         marginRight: 'auto',
         maxWidth: '1200px',
-        minHeight: 0,
         width: '100%',
       },
     },

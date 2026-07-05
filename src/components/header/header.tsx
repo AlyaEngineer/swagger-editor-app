@@ -36,11 +36,14 @@ export function Header() {
       }}
     >
       <Toolbar
-        sx={{
+        style={{
           minHeight,
+          transition: 'min-height 200ms',
+        }}
+        sx={{
           py,
           transition: (theme) =>
-            theme.transitions.create(['min-height', 'padding'], {
+            theme.transitions.create(['padding'], {
               duration: theme.transitions.duration.short,
             }),
         }}
