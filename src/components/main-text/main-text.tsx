@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
 export const MainText = () => {
-  const t = useTranslations('Metadata');
+  const t = useTranslations('HomePage');
 
   return (
     <>
