@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, FormControlLabel, Stack, Switch } from '@mui/material';
+import { Button, FormControlLabel, Stack, Switch, Tooltip } from '@mui/material';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -11,6 +11,25 @@ type Props = {
   isValid: boolean;
   setError: (message: string) => void;
 };
+
+const tooltipPopperProps = {
+  popper: {
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, -5],
+        },
+      },
+    ],
+  },
+  tooltip: {
+    sx: {
+      textAlign: 'center',
+    },
+  },
+};
+
 export const SwaggerControl = ({
   editorValue,
   format,
@@ -27,6 +46,8 @@ export const SwaggerControl = ({
     isAuthenticated: true,
   };
 
+  const isToggleDisabled = !isValid || isSaving;
+
   async function handleSaveSchema() {
     if (!isAuthenticated || !isValid) {
       return;
@@ -36,13 +57,8 @@ export const SwaggerControl = ({
 
     try {
       const response = await fetch('/api/schema', {
-        body: JSON.stringify({
-          content: editorValue,
-          format,
-        }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        body: JSON.stringify({ content: editorValue, format }),
+        headers: { 'Content-Type': 'application/json' },
         method: 'POST',
       });
 
@@ -56,22 +72,31 @@ export const SwaggerControl = ({
     }
   }
 
+  const toggleControl = (
+    <FormControlLabel
+      control={<Switch checked={format === 'yaml'} onChange={handleFormatToggle} />}
+      disabled={isToggleDisabled}
+      label={format === 'yaml' ? 'YAML' : 'JSON'}
+    />
+  );
+
   return (
-    <Stack
-      direction="row"
-      sx={{
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}
-    >
-      <FormControlLabel
-        control={<Switch checked={format === 'yaml'} onChange={handleFormatToggle} />}
-        disabled={!isValid || isSaving}
-        label={format === 'yaml' ? 'YAML' : 'JSON'}
-      />
+    <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+      {isToggleDisabled ? (
+        <Tooltip
+          describeChild
+          placement="top"
+          slotProps={tooltipPopperProps}
+          title={t('disabledHint')}
+        >
+          <span>{toggleControl}</span>
+        </Tooltip>
+      ) : (
+        toggleControl
+      )}
 
       {isAuthenticated && (
-        <Button disabled={!isValid || isSaving} onClick={handleSaveSchema} variant="contained">
+        <Button disabled={isToggleDisabled} onClick={handleSaveSchema} variant="contained">
           {isSaving ? t('saving') : t('saveButton')}
         </Button>
       )}
