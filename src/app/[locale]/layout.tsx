@@ -2,6 +2,7 @@ import '../globals.css';
 
 import type { Metadata } from 'next';
 
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
@@ -37,6 +38,7 @@ export default async function RootLayout({ children, params }: Props) {
   return (
     <html className={`${appFont.variable} ${swaggerEditorFont.variable}`} lang={locale}>
       <body>
+        <InitColorSchemeScript defaultMode="system" />
         <NextIntlClientProvider>
           <MuiProvider>{children}</MuiProvider>
         </NextIntlClientProvider>
