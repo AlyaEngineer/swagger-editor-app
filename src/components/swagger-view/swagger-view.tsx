@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
-import type { SwaggerEndpoint } from '../lib/swagger-endpoints';
+import type { SwaggerEndpoint } from '@/utils/swagger-editor/get-swagger-endpoints';
 
 type SwaggerViewerProps = {
   endpoints: SwaggerEndpoint[];
