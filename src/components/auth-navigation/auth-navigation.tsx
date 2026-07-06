@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ROUTES } from '@/constants/routes';
+
 import { AppLinkButton } from '../app-link/app-link';
 
 export const AuthNavigation = () => {
@@ -21,7 +23,7 @@ export const AuthNavigation = () => {
     <>
       {isAuthenticated ? (
         <>
-          <AppLinkButton href="/history">{t('history')}</AppLinkButton>
+          <AppLinkButton href={ROUTES.history}>{t('history')}</AppLinkButton>
 
           <AppLinkButton onClick={signOut} variant="contained">
             {t('signOut')}
@@ -29,11 +31,11 @@ export const AuthNavigation = () => {
         </>
       ) : (
         <>
-          <AppLinkButton href="/sign-in" variant="outlined">
+          <AppLinkButton href={ROUTES.signIn} variant="outlined">
             {t('signIn')}
           </AppLinkButton>
 
-          <AppLinkButton href="/sign-up" variant="contained">
+          <AppLinkButton href={ROUTES.signUp} variant="contained">
             {t('signUp')}
           </AppLinkButton>
         </>

@@ -2,6 +2,9 @@ import { AppLinkButton } from '@components';
 import { AppBar, Container, Stack, Typography } from '@mui/material';
 import { getTranslations } from 'next-intl/server';
 
+import { BRAND_NAME } from '@/constants/brand';
+import { EXTERNAL_LINKS, ROUTES } from '@/constants/routes';
+
 export async function Footer() {
   const t = await getTranslations('footer');
 
@@ -30,16 +33,18 @@ export async function Footer() {
           }}
         >
           <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-            <AppLinkButton href="/about">{t('aboutLink')}</AppLinkButton>
+            <AppLinkButton href={ROUTES.about}>{t('aboutLink')}</AppLinkButton>
             <AppLinkButton
-              href="https://github.com/AlyaEngineer/swagger-editor-app"
+              href={EXTERNAL_LINKS.githubRepo}
               rel="noopener noreferrer"
               target="_blank"
             >
               {t('githubLink')}
             </AppLinkButton>
           </Stack>
-          <Typography variant="body1">© {year} Swagger Editor App</Typography>
+          <Typography variant="body1">
+            © {year} {BRAND_NAME}
+          </Typography>
         </Stack>
       </Container>
     </AppBar>

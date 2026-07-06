@@ -4,7 +4,6 @@
     "description": "Description"
   },
   "Header": {
-    "brand": "Swagger Editor",
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signOut": "Sign Out",

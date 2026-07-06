@@ -2,6 +2,9 @@ import type { ReactNode } from 'react';
 
 import { render, screen } from '@testing-library/react';
 
+import { BRAND_NAME } from '@/constants/brand';
+import { EXTERNAL_LINKS, ROUTES } from '@/constants/routes';
+
 import { Footer } from './footer';
 
 vi.mock('next-intl/server', () => ({
@@ -28,7 +31,7 @@ describe('Footer', () => {
     const footerComponent = await Footer();
     render(footerComponent);
 
-    expect(screen.getByRole('link', { name: 'aboutLink' })).toHaveAttribute('href', '/about');
+    expect(screen.getByRole('link', { name: 'aboutLink' })).toHaveAttribute('href', ROUTES.about);
   });
 
   it('renders GitHub link and open it in a new tab', async () => {
@@ -36,10 +39,7 @@ describe('Footer', () => {
     render(footerComponent);
 
     const githubLink = screen.getByRole('link', { name: 'githubLink' });
-    expect(githubLink).toHaveAttribute(
-      'href',
-      'https://github.com/AlyaEngineer/swagger-editor-app',
-    );
+    expect(githubLink).toHaveAttribute('href', EXTERNAL_LINKS.githubRepo);
     expect(githubLink).toHaveAttribute('target', '_blank');
     expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
   });
@@ -49,6 +49,6 @@ describe('Footer', () => {
     render(footerComponent);
 
     const year = new Date().getFullYear();
-    expect(screen.getByText(`© ${year} Swagger Editor App`)).toBeInTheDocument();
+    expect(screen.getByText(`© ${year} ${BRAND_NAME}`)).toBeInTheDocument();
   });
 });

@@ -3,6 +3,8 @@ import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
 import { AppLinkButton, AuthNavigation, LanguageSwitcher } from '@/components';
+import { BRAND_NAME } from '@/constants/brand';
+import { ROUTES } from '@/constants/routes';
 
 const STICKY_SCROLL_OFFSET = 32;
 
@@ -48,10 +50,7 @@ export function Header() {
             }),
         }}
       >
-        <Box sx={flex}>
-          <AppLinkButton href="/">{t('brand')}</AppLinkButton>
-          <LanguageSwitcher />
-        </Box>
+        <AppLinkButton href={ROUTES.home}>{BRAND_NAME}</AppLinkButton>
 
         <Box
           aria-label="Main navigation"
@@ -61,9 +60,11 @@ export function Header() {
             ml: 'auto',
           }}
         >
-          <AppLinkButton href="/about">{t('about')}</AppLinkButton>
+          <AppLinkButton href={ROUTES.about}>{t('about')}</AppLinkButton>
 
           <AuthNavigation />
+
+          <LanguageSwitcher />
         </Box>
       </Toolbar>
     </AppBar>

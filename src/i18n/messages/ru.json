@@ -4,7 +4,6 @@
     "description": "Описание сайта"
   },
   "Header": {
-    "brand": "Swagger Editor",
     "signIn": "Войти",
     "signUp": "Зарегистрироваться",
     "signOut": "Выйти",
