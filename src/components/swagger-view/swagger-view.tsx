@@ -6,6 +6,7 @@ import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { useTranslations } from 'next-intl';
 
 import type { SwaggerEndpoint } from '@/utils/swagger-editor/get-swagger-endpoints';
 
@@ -15,14 +16,14 @@ type SwaggerViewerProps = {
 };
 
 export function SwaggerViewer({ endpoints, isValid }: SwaggerViewerProps) {
+  const t = useTranslations('swaggerViewer');
+
   if (!isValid) {
-    return (
-      <Alert severity="info">Paste a valid OpenAPI/Swagger schema to populate the viewer.</Alert>
-    );
+    return <Alert severity="info">{t('emptyPrompt')}</Alert>;
   }
 
   if (endpoints.length === 0) {
-    return <Alert severity="warning">Schema is valid, but no endpoints were found in paths.</Alert>;
+    return <Alert severity="warning">{t('noEndpoints')}</Alert>;
   }
 
   return (

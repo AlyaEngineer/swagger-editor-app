@@ -4,6 +4,7 @@ import type { SxProps, Theme } from '@mui/material/styles';
 
 import { SwaggerMonacoEditor } from '@components';
 import { Alert, Box, Paper, Stack } from '@mui/material';
+import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 import { useSwaggerHook } from '@/utils/hooks/swagger-hook';
@@ -56,6 +57,8 @@ export const SwaggerEditor = () => {
 
   const endpoints = useMemo(() => getSwaggerEndpoints(schema), [schema]);
 
+  const t = useTranslations('swaggerEditor');
+
   return (
     <Box sx={pageSx}>
       <Stack spacing={2}>
@@ -64,7 +67,7 @@ export const SwaggerEditor = () => {
         {error && <Alert severity="error">{error}</Alert>}
 
         {isValid && !error && (
-          <Alert severity="success">Schema is valid. {endpoints.length} endpoint(s) found.</Alert>
+          <Alert severity="success">{t('schemaValid', { count: endpoints.length })}</Alert>
         )}
 
         <SwaggerControl

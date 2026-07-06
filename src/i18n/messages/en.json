@@ -15,5 +15,15 @@
     "title": "Swagger/OpenAPI UI",
     "description": "Edit, view and test OpenAPI specifications in one app."
   },
-  "check": "check english"
+  "swaggerEditor": {
+    "schemaValid": "Schema is valid. {count} endpoint(s) found."
+  },
+  "swaggerViewer": {
+    "emptyPrompt": "Paste a valid OpenAPI/Swagger schema to populate the viewer.",
+    "noEndpoints": "Schema is valid, but no endpoints were found in paths."
+  },
+  "swaggerControl": {
+    "saveButton": "Save schema",
+    "saving": "Saving..."
+  }
 }

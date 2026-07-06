@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, FormControlLabel, Stack, Switch } from '@mui/material';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 type Props = {
@@ -18,6 +19,8 @@ export const SwaggerControl = ({
   setError,
 }: Props) => {
   const [isSaving, setIsSaving] = useState(false);
+
+  const t = useTranslations('swaggerControl');
 
   // TODO: заменить на рабочую авторизацию
   const { isAuthenticated } = {
@@ -69,7 +72,7 @@ export const SwaggerControl = ({
 
       {isAuthenticated && (
         <Button disabled={!isValid || isSaving} onClick={handleSaveSchema} variant="contained">
-          {isSaving ? 'Saving...' : 'Save schema'}
+          {isSaving ? t('saving') : t('saveButton')}
         </Button>
       )}
     </Stack>

@@ -15,5 +15,15 @@
     "title": "Swagger/OpenAPI UI",
     "description": "Редактируйте, просматривайте и тестируйте OpenAPI-спецификации в одном приложении."
   },
-  "check": "проверка русского"
+  "swaggerEditor": {
+    "schemaValid": "Схема валидна. Найдено эндпоинтов: {count}"
+  },
+  "swaggerViewer": {
+    "emptyPrompt": "Вставьте валидную схему OpenAPI/Swagger, чтобы отобразить эндпоинты",
+    "noEndpoints": "Схема валидна, но эндпоинтов в paths не найдено"
+  },
+  "swaggerControl": {
+    "saveButton": "Сохранить схему",
+    "saving": "Сохранение..."
+  }
 }
