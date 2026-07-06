@@ -37,7 +37,7 @@ export function parseSchema(source: string): ParsedSchema {
     };
   } catch {}
 
-  const parsedYaml = parse(trimmedSource);
+  const parsedYaml = parse(trimmedSource, { uniqueKeys: true });
 
   if (!isObject(parsedYaml)) {
     throw new Error('Schema must be an object');
