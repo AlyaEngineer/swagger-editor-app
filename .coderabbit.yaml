@@ -1,0 +1,48 @@
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "develop"
+      - "main"
+      - "feature/.*"
+      - "story/.*"
+
+  path_instructions:
+    - path: "src/**/*.{ts,tsx}"
+      instructions: |
+        Flag any usage of `any` type and `@ts-ignore` - these are penalized in grading criteria.
+        Flag commented-out code blocks (dead code left in comments) - penalized per block.
+        Flag code smells: God-objects, duplicate code chunks, unused files or exports.
+        Flag console.log statements left in production code (not console.error inside error boundaries, which is an accepted Next.js pattern for error.tsx / global-error.tsx).
+        Flag missing error handling around async operations (network requests, Supabase calls) that could produce unhandled runtime errors or warnings.
+        Flag components missing 'use client' directive when using hooks, and flag unnecessary 'use client' on components with no hooks or client-only APIs.
+
+        HTTP 4xx and 5xx status codes returned from user-executed API requests (Try-It-Out feature) must be displayed within the response section of the UI, not surfaced as application-level error toasts or error boundaries. Flag any code that routes API response errors through the error/toast handling instead of the response display.
+
+    - path: "src/**/*"
+      instructions: |
+        Flag files or exports that appear unused across the codebase (no imports found elsewhere).
+        Flag duplicate implementations of the same logic in different files (e.g. two hooks or components solving the same UI concern).
+
+    - path: "src/app/**/page.tsx"
+      instructions: |
+        Flag routes that should be lazy-loaded but aren't using dynamic import - specifically the History & Analytics route per project requirements. Static imports of heavy route components are penalized.
+
+    - path: "src/**/sign-*/**/*.{ts,tsx}"
+      instructions: |
+        Password validation must enforce: minimum 8 characters, at least one letter, one digit, one special character, with Unicode support. Email validation must check format. Flag forms missing any of these checks.
+
+    - path: "src/**/middleware.ts"
+      instructions: |
+        Unauthenticated access to private routes must return HTTP 401, not 403 or a generic redirect without status code, per RFC 9110.
+
+    - path: "**/*"
+      instructions: |
+        For pull requests targeting the main branch (final submission PR from develop to main), verify the RS School acceptance criteria checklist format. Internal PRs between feature/story branches and develop do not require this checklist format.
+
+chat:
+  auto_reply: true
