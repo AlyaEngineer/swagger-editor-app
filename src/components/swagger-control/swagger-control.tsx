@@ -12,6 +12,8 @@ type Props = {
   setError: (message: string) => void;
 };
 
+const SAVE_TIMEOUT_MS = 10000;
+
 const tooltipPopperProps = {
   popper: {
     modifiers: [
@@ -55,19 +57,28 @@ export const SwaggerControl = ({
 
     setIsSaving(true);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), SAVE_TIMEOUT_MS);
+
     try {
       const response = await fetch('/api/schema', {
         body: JSON.stringify({ content: editorValue, format }),
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',
+        signal: controller.signal,
       });
 
       if (!response.ok) {
         throw new Error('Failed to save schema');
       }
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : 'Failed to save schema');
+      if (saveError instanceof Error && saveError.name === 'AbortError') {
+        setError(t('timeoutError'));
+      } else {
+        setError(saveError instanceof Error ? saveError.message : 'Failed to save schema');
+      }
     } finally {
+      clearTimeout(timeoutId);
       setIsSaving(false);
     }
   }

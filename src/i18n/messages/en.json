@@ -23,6 +23,7 @@
     "noEndpoints": "Schema is valid, but no endpoints were found in paths."
   },
   "swaggerControl": {
+    "timeoutError": "Request timed out. Please check your network connection.",
     "disabledHint": "Correct the errors in the schema to switch the format",
     "saveButton": "Save schema",
     "saving": "Saving..."
