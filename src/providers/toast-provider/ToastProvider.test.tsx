@@ -23,7 +23,7 @@ describe('ToastProvider', () => {
     const { result } = renderHook(() => useToast(), { wrapper });
 
     act(() => {
-      result.current.showToast('Hello toast', 'success');
+      result.current('Hello toast', 'success');
     });
 
     await waitFor(() => {
@@ -35,7 +35,7 @@ describe('ToastProvider', () => {
     const { result } = renderHook(() => useToast(), { wrapper });
 
     act(() => {
-      result.current.showToast('Default severity');
+      result.current('Default severity');
     });
 
     await waitFor(() => {
@@ -48,7 +48,7 @@ describe('ToastProvider', () => {
     const { result } = renderHook(() => useToast(), { wrapper });
 
     act(() => {
-      result.current.showToast('Error occurred', 'error');
+      result.current('Error occurred', 'error');
     });
 
     await waitFor(() => {
@@ -62,7 +62,7 @@ describe('ToastProvider', () => {
     const { result } = renderHook(() => useToast(), { wrapper });
 
     act(() => {
-      result.current.showToast('Closable toast', 'success');
+      result.current('Closable toast', 'success');
     });
 
     await waitFor(() => {

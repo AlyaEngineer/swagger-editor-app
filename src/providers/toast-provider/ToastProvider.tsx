@@ -1,13 +1,11 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 
 import { Toast } from './Toast';
 import { ToastType } from './types';
 
-type ToastContextValue = {
-  showToast: (message: string, severity?: ToastType) => void;
-};
+type ShowToast = (message: string, severity?: ToastType) => void;
 
 type ToastState = {
   message: string;
@@ -15,7 +13,7 @@ type ToastState = {
   severity: ToastType;
 };
 
-const ToastContext = createContext<null | ToastContextValue>(null);
+const ToastContext = createContext<null | ShowToast>(null);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toast, setToast] = useState<ToastState>({
@@ -32,10 +30,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToast((prev) => ({ ...prev, open: false }));
   }, []);
 
-  const value = useMemo(() => ({ showToast }), [showToast]);
-
   return (
-    <ToastContext.Provider value={value}>
+    <ToastContext.Provider value={showToast}>
       {children}
 
       <Toast
