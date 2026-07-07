@@ -14,13 +14,12 @@ const fallbackTheme = createTheme({
   },
 });
 
-export default function GlobalError({
-  error,
-  unstable_retry,
-}: {
+type Props = {
   error: Error & { digest?: string };
   unstable_retry: () => void;
-}) {
+};
+
+export default function GlobalError({ error, unstable_retry }: Props) {
   useEffect(() => {
     console.error(error);
   }, [error]);

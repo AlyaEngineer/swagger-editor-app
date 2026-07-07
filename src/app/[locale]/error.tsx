@@ -31,13 +31,12 @@ const ErrorCard = styled(Box)(({ theme }) => ({
   }),
 }));
 
-export default function ErrorPage({
-  error,
-  unstable_retry,
-}: {
+type Props = {
   error: Error & { digest?: string };
   unstable_retry: () => void;
-}) {
+};
+
+export default function ErrorPage({ error, unstable_retry }: Props) {
   useEffect(() => {
     console.error(error);
   }, [error]);
