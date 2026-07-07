@@ -24,6 +24,8 @@ export function parseSchema(source: string): ParsedSchema {
     throw new Error('Schema is empty');
   }
 
+  let jsonError: Error | null = null;
+
   try {
     const parsedJson = JSON.parse(trimmedSource);
 
@@ -35,20 +37,32 @@ export function parseSchema(source: string): ParsedSchema {
       format: 'json',
       schema: parsedJson,
     };
-  } catch {}
-
-  const parsedYaml = parse(trimmedSource, { uniqueKeys: true });
-
-  if (!isObject(parsedYaml)) {
-    throw new Error('Schema must be an object');
+  } catch (caughtJsonError) {
+    jsonError = caughtJsonError instanceof Error ? caughtJsonError : new Error('Invalid JSON');
   }
+  try {
+    const parsedYaml = parse(trimmedSource, { uniqueKeys: true });
 
-  return {
-    format: 'yaml',
-    schema: parsedYaml,
-  };
+    if (!isObject(parsedYaml)) {
+      throw new Error('Schema must be an object');
+    }
+
+    return {
+      format: 'yaml',
+      schema: parsedYaml,
+    };
+  } catch (yamlError) {
+    if (looksLikeJson(trimmedSource)) {
+      throw jsonError;
+    }
+    throw yamlError instanceof Error ? yamlError : new Error('Invalid YAML');
+  }
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function looksLikeJson(source: string): boolean {
+  return source.startsWith('{') || source.startsWith('[');
 }
