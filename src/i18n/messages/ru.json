@@ -1,0 +1,23 @@
+{
+  "Metadata": {
+    "title": "Название сайта",
+    "description": "Описание сайта"
+  },
+  "Header": {
+    "signIn": "Войти",
+    "signUp": "Зарегистрироваться",
+    "signOut": "Выйти",
+    "history": "История",
+    "about": "О проекте",
+    "language": "Язык"
+  },
+  "HomePage": {
+    "title": "Swagger/OpenAPI UI",
+    "description": "Редактируйте, просматривайте и тестируйте OpenAPI-спецификации в одном приложении."
+  },
+  "footer": {
+    "aboutLink": "О проекте",
+    "githubLink": "GitHub"
+  },
+  "check": "проверка русского"
+}
