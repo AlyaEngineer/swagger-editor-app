@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_SCHEMA } from '@/constants/default-schema';
 import { OpenApiDocument } from '@/types';
@@ -11,6 +11,7 @@ export const useSwaggerHook = () => {
   const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState<null | string>(null);
   const [format, setFormat] = useState<SchemaFormat>('yaml');
+  const hasUserEditedRef = useRef(false);
 
   // TO DO заменить на рабочую авторизацию
   const { isAuthenticated } = {
@@ -47,7 +48,7 @@ export const useSwaggerHook = () => {
 
       const data = await response.json();
 
-      if (data.schema?.content) {
+      if (data.schema?.content && !hasUserEditedRef.current) {
         setEditorValue(data.schema.content);
         setFormat(data.schema.format);
       }
@@ -56,12 +57,17 @@ export const useSwaggerHook = () => {
     restoreSchema();
   }, [isAuthenticated]);
 
+  function handleEditorChange(value: string) {
+    hasUserEditedRef.current = true;
+    setEditorValue(value);
+  }
   function handleFormatToggle() {
     const nextFormat: SchemaFormat = format === 'json' ? 'yaml' : 'json';
 
     try {
       const convertedSchema = convertSchema(editorValue, nextFormat);
 
+      hasUserEditedRef.current = true;
       setEditorValue(convertedSchema);
       setFormat(nextFormat);
       setError(null);
@@ -76,10 +82,10 @@ export const useSwaggerHook = () => {
     editorValue,
     error,
     format,
+    handleEditorChange,
     handleFormatToggle,
     isValid,
     schema,
-    setEditorValue,
     setError,
   };
 };
