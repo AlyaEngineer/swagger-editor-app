@@ -7,39 +7,28 @@ import { ToastType } from './types';
 
 type ShowToast = (message: string, severity?: ToastType) => void;
 
-type ToastState = {
-  message: string;
-  open: boolean;
-  severity: ToastType;
-};
-
 const ToastContext = createContext<null | ShowToast>(null);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [toast, setToast] = useState<ToastState>({
-    message: '',
-    open: false,
-    severity: 'success',
-  });
+  const [message, setMessage] = useState('');
+  const [open, setOpen] = useState(false);
+  const [severity, setSeverity] = useState<ToastType>('success');
 
-  const showToast = useCallback((message: string, severity: ToastType = 'success') => {
-    setToast({ message, open: true, severity });
+  const showToast = useCallback((newMessage: string, newSeverity: ToastType = 'success') => {
+    setMessage(newMessage);
+    setSeverity(newSeverity);
+    setOpen(true);
   }, []);
 
   const handleClose = useCallback(() => {
-    setToast((prev) => ({ ...prev, open: false }));
+    setOpen(false);
   }, []);
 
   return (
     <ToastContext.Provider value={showToast}>
       {children}
 
-      <Toast
-        message={toast.message}
-        onClose={handleClose}
-        open={toast.open}
-        severity={toast.severity}
-      />
+      <Toast message={message} onClose={handleClose} open={open} severity={severity} />
     </ToastContext.Provider>
   );
 }
