@@ -2,10 +2,12 @@ import '../globals.css';
 
 import type { Metadata } from 'next';
 
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
-import CssBaseline from '@mui/material/CssBaseline';
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
+
+import { appFont, swaggerEditorFont } from '@/fonts';
+import { MuiProvider } from '@/providers/mui-provider';
 
 type MetadataProps = {
   params: Promise<{ locale: string }>;
@@ -34,14 +36,12 @@ export default async function RootLayout({ children, params }: Props) {
   const { locale } = await params;
 
   return (
-    <html lang={locale}>
+    <html className={`${appFont.variable} ${swaggerEditorFont.variable}`} lang={locale}>
       <body>
-        <AppRouterCacheProvider>
-          <NextIntlClientProvider>
-            <CssBaseline />
-            {children}
-          </NextIntlClientProvider>
-        </AppRouterCacheProvider>
+        <InitColorSchemeScript defaultMode="system" />
+        <NextIntlClientProvider>
+          <MuiProvider>{children}</MuiProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

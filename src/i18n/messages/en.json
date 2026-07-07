@@ -35,5 +35,9 @@
     "signOutError": "Failed to sign out",
     "historyLoadError": "Failed to load request history"
   },
+  "footer": {
+    "aboutLink": "About",
+    "githubLink": "GitHub"
+  },
   "check": "check english"
 }

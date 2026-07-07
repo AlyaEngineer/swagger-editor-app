@@ -35,5 +35,9 @@
     "signOutError": "Не удалось выйти из аккаунта",
     "historyLoadError": "Не удалось загрузить историю запросов"
   },
+  "footer": {
+    "aboutLink": "О проекте",
+    "githubLink": "GitHub"
+  },
   "check": "проверка русского"
 }
