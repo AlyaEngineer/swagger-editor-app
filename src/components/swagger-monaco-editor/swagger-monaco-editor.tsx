@@ -1,7 +1,9 @@
 'use client';
+import type { OnMount } from '@monaco-editor/react';
 
 import { Box, CircularProgress } from '@mui/material';
 import dynamic from 'next/dynamic';
+import { useEffect, useRef } from 'react';
 
 import { flex } from '@/constants';
 import { SchemaFormat } from '@/utils/swagger-editor/schema-format';
@@ -30,11 +32,31 @@ type SchemaCodeEditorProps = {
 };
 
 export function SwaggerMonacoEditor({ format, onChange, value }: SchemaCodeEditorProps) {
+  const editorRef = useRef<null | Parameters<OnMount>[0]>(null);
+  const monacoRef = useRef<null | Parameters<OnMount>[1]>(null);
+  const handleMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
+  };
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    const monaco = monacoRef.current;
+    if (!editor || !monaco) {
+      return;
+    }
+
+    const model = editor.getModel();
+
+    if (model) {
+      monaco.editor.setModelLanguage(model, format);
+    }
+  }, [format]);
   return (
     <MonacoEditor
       height="100%"
-      language={format === 'json' ? 'json' : 'yaml'}
       onChange={(nextValue) => onChange(nextValue ?? '')}
+      onMount={handleMount}
       options={{
         automaticLayout: true,
         fontSize: FONT_SIZE,
