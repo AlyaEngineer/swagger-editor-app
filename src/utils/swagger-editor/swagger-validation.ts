@@ -19,7 +19,11 @@ export async function validateSwaggerSchema(source: string): Promise<ValidationR
       throw new Error('Schema must contain "openapi" or "swagger", "info", and "paths" fields');
     }
 
-    await SwaggerParser.validate(schema);
+    await SwaggerParser.validate(schema, {
+      resolve: {
+        external: false,
+      },
+    });
 
     return {
       detectedFormat: format,
