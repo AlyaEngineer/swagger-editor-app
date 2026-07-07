@@ -48,10 +48,10 @@ export const SwaggerEditor = () => {
     editorValue,
     error,
     format,
+    handleEditorChange,
     handleFormatToggle,
     isValid,
     schema,
-    setEditorValue,
     setError,
   } = useSwaggerHook();
 
@@ -80,7 +80,11 @@ export const SwaggerEditor = () => {
 
         <Box sx={workspaceSx}>
           <Paper sx={editorPanelSx}>
-            <SwaggerMonacoEditor format={format} onChange={setEditorValue} value={editorValue} />
+            <SwaggerMonacoEditor
+              format={format}
+              onChange={handleEditorChange}
+              value={editorValue}
+            />
           </Paper>
 
           <Paper sx={viewerPanelSx}>SwaggerViewer</Paper>
