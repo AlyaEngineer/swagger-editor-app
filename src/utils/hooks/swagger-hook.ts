@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_SCHEMA } from '@/constants/default-schema';
@@ -12,6 +13,7 @@ export const useSwaggerHook = () => {
   const [error, setError] = useState<null | string>(null);
   const [format, setFormat] = useState<SchemaFormat>('yaml');
   const hasUserEditedRef = useRef(false);
+  const t = useTranslations('swaggerEditor');
 
   // TO DO заменить на рабочую авторизацию
   const { isAuthenticated } = {
@@ -54,8 +56,10 @@ export const useSwaggerHook = () => {
       }
     }
 
-    restoreSchema();
-  }, [isAuthenticated]);
+    restoreSchema().catch((restoreError) => {
+      setError(restoreError instanceof Error ? restoreError.message : t('restoreError'));
+    });
+  }, [isAuthenticated, t]);
 
   function handleEditorChange(value: string) {
     hasUserEditedRef.current = true;
