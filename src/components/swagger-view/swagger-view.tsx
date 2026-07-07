@@ -40,7 +40,13 @@ export function SwaggerViewer({ endpoints, isValid }: SwaggerViewerProps) {
           }}
           variant="outlined"
         >
-          <Stack alignItems="center" direction="row" spacing={2}>
+          <Stack
+            spacing={2}
+            sx={{
+              alignItems: 'center',
+              flexDirection: 'row',
+            }}
+          >
             <Chip
               color="primary"
               label={endpoint.method}
@@ -51,7 +57,7 @@ export function SwaggerViewer({ endpoints, isValid }: SwaggerViewerProps) {
             />
 
             <Box>
-              <Typography fontWeight={700}>{endpoint.path}</Typography>
+              <Typography sx={{ fontWeight: 700 }}>{endpoint.path}</Typography>
               <Typography color="text.secondary" variant="body2">
                 {endpoint.summary}
               </Typography>
