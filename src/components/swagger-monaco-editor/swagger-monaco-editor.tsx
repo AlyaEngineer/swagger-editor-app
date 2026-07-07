@@ -37,6 +37,11 @@ export function SwaggerMonacoEditor({ format, onChange, value }: SchemaCodeEdito
   const handleMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
     monacoRef.current = monaco;
+    const model = editor.getModel();
+
+    if (model) {
+      monaco.editor.setModelLanguage(model, format);
+    }
   };
 
   useEffect(() => {
