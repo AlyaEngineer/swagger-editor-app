@@ -28,10 +28,6 @@ export function SwaggerViewer({ endpoints, isValid }: SwaggerViewerProps) {
 
   return (
     <Stack spacing={2}>
-      <Typography component="h2" variant="h5">
-        Swagger Viewer
-      </Typography>
-
       {endpoints.map((endpoint) => (
         <Paper
           key={`${endpoint.method}-${endpoint.path}`}
