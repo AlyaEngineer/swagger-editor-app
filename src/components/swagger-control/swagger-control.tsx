@@ -1,46 +1,28 @@
 'use client';
 
-import { Button, FormControlLabel, Stack, Switch, Tooltip } from '@mui/material';
+import { FormatToggle } from '@components';
+import { Button, Stack } from '@mui/material';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { useToast } from '@/providers/toast-provider/ToastProvider';
+import { saveSchema } from '@/services/schema-service';
+import { getSignalWithTimeout } from '@/utils/network/get-signal-with-timeout';
+import { SchemaFormat } from '@/utils/swagger-editor/schema-format';
+
 type Props = {
   editorValue: string;
-  format: 'json' | 'yaml';
+  format: SchemaFormat;
   handleFormatToggle: () => void;
   isValid: boolean;
-  setError: (message: string) => void;
 };
 
-const SAVE_TIMEOUT_MS = 10000;
+const SAVE_TIMEOUT_MS = 10_000;
 
-const tooltipPopperProps = {
-  popper: {
-    modifiers: [
-      {
-        name: 'offset',
-        options: {
-          offset: [0, -5],
-        },
-      },
-    ],
-  },
-  tooltip: {
-    sx: {
-      textAlign: 'center',
-    },
-  },
-};
-
-export const SwaggerControl = ({
-  editorValue,
-  format,
-  handleFormatToggle,
-  isValid,
-  setError,
-}: Props) => {
+export const SwaggerControl = ({ editorValue, format, handleFormatToggle, isValid }: Props) => {
   const [isSaving, setIsSaving] = useState(false);
 
+  const showToast = useToast();
   const t = useTranslations('swaggerControl');
 
   // TODO: заменить на рабочую авторизацию
@@ -57,54 +39,31 @@ export const SwaggerControl = ({
 
     setIsSaving(true);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), SAVE_TIMEOUT_MS);
+    const { cleanup, signal } = getSignalWithTimeout(SAVE_TIMEOUT_MS);
 
     try {
-      const response = await fetch('/api/schema', {
-        body: JSON.stringify({ content: editorValue, format }),
-        headers: { 'Content-Type': 'application/json' },
-        method: 'POST',
-        signal: controller.signal,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save schema');
-      }
+      await saveSchema({ content: editorValue, format, signal });
+      showToast(t('saveSuccess'), 'success');
     } catch (saveError) {
       if (saveError instanceof Error && saveError.name === 'AbortError') {
-        setError(t('timeoutError'));
+        showToast(t('timeoutError'), 'error');
       } else {
-        setError(saveError instanceof Error ? saveError.message : 'Failed to save schema');
+        showToast(t('saveError'), 'error');
       }
     } finally {
-      clearTimeout(timeoutId);
+      cleanup();
       setIsSaving(false);
     }
   }
 
-  const toggleControl = (
-    <FormControlLabel
-      control={<Switch checked={format === 'yaml'} onChange={handleFormatToggle} />}
-      disabled={isToggleDisabled}
-      label={format === 'yaml' ? 'YAML' : 'JSON'}
-    />
-  );
-
   return (
     <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-      {isToggleDisabled ? (
-        <Tooltip
-          describeChild
-          placement="top"
-          slotProps={tooltipPopperProps}
-          title={t('disabledHint')}
-        >
-          <span>{toggleControl}</span>
-        </Tooltip>
-      ) : (
-        toggleControl
-      )}
+      <FormatToggle
+        disabled={isToggleDisabled}
+        disabledHint={t('disabledHint')}
+        format={format}
+        onToggle={handleFormatToggle}
+      />
 
       {isAuthenticated && (
         <Button disabled={isToggleDisabled} onClick={handleSaveSchema} variant="contained">

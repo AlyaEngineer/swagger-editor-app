@@ -44,16 +44,8 @@ const viewerPanelSx: SxProps<Theme> = {
 };
 
 export const SwaggerEditor = () => {
-  const {
-    editorValue,
-    error,
-    format,
-    handleEditorChange,
-    handleFormatToggle,
-    isValid,
-    schema,
-    setError,
-  } = useSwaggerHook();
+  const { editorValue, error, format, handleEditorChange, handleFormatToggle, isValid, schema } =
+    useSwaggerHook();
 
   const endpoints = useMemo(() => getSwaggerEndpoints(schema), [schema]);
 
@@ -75,7 +67,6 @@ export const SwaggerEditor = () => {
           format={format}
           handleFormatToggle={handleFormatToggle}
           isValid={isValid}
-          setError={setError}
         />
 
         <Box sx={workspaceSx}>
