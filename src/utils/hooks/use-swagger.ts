@@ -22,6 +22,8 @@ export const useSwagger = () => {
     isAuthenticated: true,
   };
 
+  const VALIDATION_DEBOUNCE_MS = 400;
+
   useEffect(() => {
     const timeoutId = window.setTimeout(async () => {
       const result = await validateSwaggerSchema(editorValue);
@@ -33,7 +35,7 @@ export const useSwagger = () => {
       if (result.isValid) {
         setFormat(result.detectedFormat);
       }
-    }, 400);
+    }, VALIDATION_DEBOUNCE_MS);
 
     return () => window.clearTimeout(timeoutId);
   }, [editorValue]);
