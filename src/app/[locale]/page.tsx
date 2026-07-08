@@ -1,4 +1,3 @@
-import { Header } from '@components';
 import { getTranslations } from 'next-intl/server';
 
 export default async function Home() {
@@ -6,83 +5,6 @@ export default async function Home() {
 
   return (
     <>
-      <Header />
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
-      <div>{t('check')}</div>
       <div>{t('check')}</div>
     </>
   );

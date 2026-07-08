@@ -1,8 +1,11 @@
 'use client';
 
 import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
+import { useTranslations } from 'next-intl';
 
-import { AppLink, AuthNavigation, LanguageSwitcher } from '@/components';
+import { AppLinkButton, AuthNavigation, LanguageSwitcher } from '@/components';
+import { BRAND_NAME } from '@/constants/brand';
+import { ROUTES } from '@/constants/routes';
 
 const STICKY_SCROLL_OFFSET = 32;
 
@@ -18,6 +21,8 @@ const flex = {
 };
 
 export function Header() {
+  const t = useTranslations('Header');
+
   const isCompact = useScrollTrigger({
     disableHysteresis: true,
     threshold: STICKY_SCROLL_OFFSET,
@@ -26,22 +31,29 @@ export function Header() {
   const { minHeight, py } = isCompact ? HEADER_SIZES.compact : HEADER_SIZES.expanded;
 
   return (
-    <AppBar elevation={0} position="sticky">
+    <AppBar
+      elevation={0}
+      position="sticky"
+      sx={{
+        backgroundColor: 'background.paper',
+        borderBottom: 1,
+        borderColor: 'divider',
+      }}
+    >
       <Toolbar
-        sx={{
+        style={{
           minHeight,
+          transition: 'min-height 200ms',
+        }}
+        sx={{
           py,
           transition: (theme) =>
-            theme.transitions.create(['min-height', 'padding'], {
+            theme.transitions.create(['padding'], {
               duration: theme.transitions.duration.short,
             }),
         }}
       >
-        <Box sx={flex}>
-          <AppLink href="/">Swagger Editor</AppLink>
-
-          <LanguageSwitcher />
-        </Box>
+        <AppLinkButton href={ROUTES.home}>{BRAND_NAME}</AppLinkButton>
 
         <Box
           aria-label="Main navigation"
@@ -51,9 +63,11 @@ export function Header() {
             ml: 'auto',
           }}
         >
-          <AppLink href="/about">About</AppLink>
+          <AppLinkButton href={ROUTES.about}>{t('about')}</AppLinkButton>
 
           <AuthNavigation />
+
+          <LanguageSwitcher />
         </Box>
       </Toolbar>
     </AppBar>

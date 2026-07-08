@@ -4,6 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 
+import { ToastProvider } from '@/providers/toast-provider/ToastProvider';
 import { theme } from '@/theme/theme';
 
 type MuiProviderProps = {
@@ -13,9 +14,9 @@ type MuiProviderProps = {
 export function MuiProvider({ children }: MuiProviderProps) {
   return (
     <AppRouterCacheProvider>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider defaultMode="system" theme={theme}>
         <CssBaseline />
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </ThemeProvider>
     </AppRouterCacheProvider>
   );
