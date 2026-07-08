@@ -2,6 +2,8 @@ import '../globals.css';
 
 import type { Metadata } from 'next';
 
+import { Header } from '@components';
+import { Footer } from '@components';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
@@ -44,7 +46,11 @@ export default async function RootLayout({ children, params }: Props) {
       <body>
         <InitColorSchemeScript defaultMode="system" />
         <NextIntlClientProvider>
-          <MuiProvider>{children}</MuiProvider>
+          <MuiProvider>
+            <Header />
+            {children}
+            <Footer />
+          </MuiProvider>
         </NextIntlClientProvider>
       </body>
     </html>
