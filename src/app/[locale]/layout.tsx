@@ -36,7 +36,11 @@ export default async function RootLayout({ children, params }: Props) {
   const { locale } = await params;
 
   return (
-    <html className={`${appFont.variable} ${swaggerEditorFont.variable}`} lang={locale}>
+    <html
+      className={`${appFont.variable} ${swaggerEditorFont.variable}`}
+      lang={locale}
+      suppressHydrationWarning
+    >
       <body>
         <InitColorSchemeScript defaultMode="system" />
         <NextIntlClientProvider>
