@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useRef } from 'react';
 
 import { flex } from '@/constants';
-import { SchemaFormat } from '@/utils/swagger-editor/schema-format';
+import { SchemaFormat } from '@/utils/swagger-editor/schema-types';
 
 const TAB_SIZE = 2;
 const FONT_SIZE = 14;

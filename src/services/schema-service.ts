@@ -1,4 +1,4 @@
-import { SchemaFormat } from '@/utils/swagger-editor/schema-format';
+import { SchemaFormat } from '@/utils/swagger-editor/schema-types';
 
 type SaveSchemaParams = {
   content: string;

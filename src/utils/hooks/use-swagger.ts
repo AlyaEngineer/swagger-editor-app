@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_SCHEMA } from '@/constants/default-schema';
 import { OpenApiDocument } from '@/types';
-import { convertSchema, type SchemaFormat } from '@/utils/swagger-editor/schema-format';
+import { convertSchema } from '@/utils/swagger-editor/schema-format';
+import { type SchemaFormat } from '@/utils/swagger-editor/schema-types';
 import { validateSwaggerSchema } from '@/utils/swagger-editor/swagger-validation';
 
 export const useSwagger = () => {

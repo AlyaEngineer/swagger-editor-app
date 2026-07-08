@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useToast } from '@/providers/toast-provider/ToastProvider';
 import { saveSchema } from '@/services/schema-service';
 import { getSignalWithTimeout } from '@/utils/network/get-signal-with-timeout';
-import { SchemaFormat } from '@/utils/swagger-editor/schema-format';
+import { SchemaFormat } from '@/utils/swagger-editor/schema-types';
 
 type Props = {
   editorValue: string;

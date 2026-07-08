@@ -2,7 +2,7 @@
 
 import { FormControlLabel, Switch, Tooltip } from '@mui/material';
 
-import { SchemaFormat } from '@/utils/swagger-editor/schema-format';
+import { SchemaFormat } from '@/utils/swagger-editor/schema-types';
 
 type FormatToggleProps = {
   disabled: boolean;

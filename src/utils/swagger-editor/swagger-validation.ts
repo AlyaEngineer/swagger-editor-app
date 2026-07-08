@@ -3,9 +3,10 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 import { OpenApiDocument } from '@/types';
 
 import { parseSchema } from './schema-format';
+import { isRecord, type SchemaFormat } from './schema-types';
 
 export type ValidationResult = {
-  detectedFormat: 'json' | 'yaml';
+  detectedFormat: SchemaFormat;
   error: null | string;
   isValid: boolean;
   schema: null | OpenApiDocument;
@@ -51,8 +52,4 @@ function isOpenApiDocument(schema: unknown): schema is OpenApiDocument {
     isRecord(schema.paths) &&
     (typeof schema.openapi === 'string' || typeof schema.swagger === 'string')
   );
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

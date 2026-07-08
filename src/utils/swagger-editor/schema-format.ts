@@ -1,11 +1,11 @@
 import { parse, stringify } from 'yaml';
 
+import { isRecord, type SchemaFormat } from './schema-types';
+
 export type ParsedSchema = {
   format: SchemaFormat;
   schema: Record<string, unknown>;
 };
-
-export type SchemaFormat = 'json' | 'yaml';
 
 export function convertSchema(source: string, targetFormat: SchemaFormat): string {
   const { schema } = parseSchema(source);
@@ -29,7 +29,7 @@ export function parseSchema(source: string): ParsedSchema {
   try {
     const parsedJson = JSON.parse(trimmedSource);
 
-    if (!isObject(parsedJson)) {
+    if (!isRecord(parsedJson)) {
       throw new Error('Schema must be an object');
     }
 
@@ -43,7 +43,7 @@ export function parseSchema(source: string): ParsedSchema {
   try {
     const parsedYaml = parse(trimmedSource, { uniqueKeys: true });
 
-    if (!isObject(parsedYaml)) {
+    if (!isRecord(parsedYaml)) {
       throw new Error('Schema must be an object');
     }
 
@@ -57,10 +57,6 @@ export function parseSchema(source: string): ParsedSchema {
     }
     throw yamlError instanceof Error ? yamlError : new Error('Invalid YAML');
   }
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 function looksLikeJson(source: string): boolean {
