@@ -13,6 +13,7 @@ vi.mock('next-intl', () => ({
 vi.mock('@components', () => ({
   FormatToggle: () => <div data-testid="format-toggle-stub" />,
   SwaggerMonacoEditor: () => <div data-testid="monaco-stub" />,
+  SwaggerViewer: () => <div data-testid="swagger-viewer-stub" />,
 }));
 
 const mockUseSwagger = vi.fn();

@@ -22,7 +22,8 @@
   },
   "swaggerViewer": {
     "emptyPrompt": "Paste a valid OpenAPI/Swagger schema to populate the viewer.",
-    "noEndpoints": "Schema is valid, but no endpoints were found in paths."
+    "noEndpoints": "Schema is valid, but no endpoints were found in paths.",
+    "placeholder": "{count} endpoint(s) detected. Full viewer implementation coming soon."
   },
   "swaggerControl": {
     "timeoutError": "Request timed out. Please check your network connection.",

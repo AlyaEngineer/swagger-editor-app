@@ -6,3 +6,4 @@ export { Header } from './header/header';
 export { LanguageSwitcher } from './language-switcher/language-switcher';
 export { SwaggerEditor } from './swagger-editor/swagger-editor';
 export { SwaggerMonacoEditor } from './swagger-monaco-editor/swagger-monaco-editor';
+export { SwaggerViewer } from './swagger-viewer/swagger-viewer';

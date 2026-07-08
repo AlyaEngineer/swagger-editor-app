@@ -2,7 +2,7 @@
 
 import type { SxProps, Theme } from '@mui/material/styles';
 
-import { SwaggerMonacoEditor } from '@components';
+import { SwaggerMonacoEditor, SwaggerViewer } from '@components';
 import { Alert, alpha, Box, Paper, Stack } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
@@ -90,7 +90,9 @@ export const SwaggerEditor = () => {
             />
           </Paper>
 
-          <Paper sx={viewerPanelSx}>SwaggerViewer</Paper>
+          <Paper sx={viewerPanelSx}>
+            <SwaggerViewer endpoints={endpoints} isValid={isValid} />
+          </Paper>
         </Box>
       </Stack>
     </Box>
