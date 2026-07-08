@@ -12,15 +12,15 @@ vi.mock('@components', () => ({
   SwaggerMonacoEditor: () => <div data-testid="monaco-stub" />,
 }));
 
-const mockUseSwaggerHook = vi.fn();
+const mockUseSwagger = vi.fn();
 
-vi.mock('@/utils/hooks/swagger-hook', () => ({
-  useSwaggerHook: () => mockUseSwaggerHook(),
+vi.mock('@/utils/hooks/use-swagger', () => ({
+  useSwagger: () => mockUseSwagger(),
 }));
 
 describe('SwaggerEditor', () => {
   it('shows an error alert when the schema is invalid', () => {
-    mockUseSwaggerHook.mockReturnValue({
+    mockUseSwagger.mockReturnValue({
       editorValue: '',
       error: 'Something is wrong',
       format: 'yaml',
@@ -37,7 +37,7 @@ describe('SwaggerEditor', () => {
   });
 
   it('shows a success alert with the endpoint count when the schema is valid', () => {
-    mockUseSwaggerHook.mockReturnValue({
+    mockUseSwagger.mockReturnValue({
       editorValue: '',
       error: null,
       format: 'yaml',

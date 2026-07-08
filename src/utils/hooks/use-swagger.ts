@@ -6,7 +6,7 @@ import { OpenApiDocument } from '@/types';
 import { convertSchema, type SchemaFormat } from '@/utils/swagger-editor/schema-format';
 import { validateSwaggerSchema } from '@/utils/swagger-editor/swagger-validation';
 
-export const useSwaggerHook = () => {
+export const useSwagger = () => {
   const [editorValue, setEditorValue] = useState(DEFAULT_SCHEMA);
   const [schema, setSchema] = useState<null | OpenApiDocument>(null);
   const [isValid, setIsValid] = useState(false);

@@ -1,7 +1,11 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useSwaggerHook } from './swagger-hook';
+import { useSwagger } from './use-swagger';
+
+vi.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+}));
 
 function mockFetchOnce(response: { json: unknown; ok: boolean }) {
   global.fetch = vi.fn().mockResolvedValue({
@@ -10,7 +14,7 @@ function mockFetchOnce(response: { json: unknown; ok: boolean }) {
   }) as unknown as typeof fetch;
 }
 
-describe('useSwaggerHook', () => {
+describe('useSwagger', () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     mockFetchOnce({ json: {}, ok: true });
@@ -22,7 +26,7 @@ describe('useSwaggerHook', () => {
   });
 
   it('initializes with the default schema and validates it after debounce', async () => {
-    const { result } = renderHook(() => useSwaggerHook());
+    const { result } = renderHook(() => useSwagger());
 
     expect(result.current.isValid).toBe(false);
 
@@ -48,7 +52,7 @@ describe('useSwaggerHook', () => {
       ok: true,
     });
 
-    const { result } = renderHook(() => useSwaggerHook());
+    const { result } = renderHook(() => useSwagger());
 
     await waitFor(() => {
       expect(result.current.editorValue).toContain('Restored');
@@ -58,7 +62,7 @@ describe('useSwaggerHook', () => {
   it('keeps the default schema when the restore response has no content or fails', async () => {
     mockFetchOnce({ json: {}, ok: false });
 
-    const { result } = renderHook(() => useSwaggerHook());
+    const { result } = renderHook(() => useSwagger());
     const initialValue = result.current.editorValue;
 
     await waitFor(() => {
@@ -69,7 +73,7 @@ describe('useSwaggerHook', () => {
   });
 
   it('toggles format without losing data, and sets an error on invalid schema', async () => {
-    const { result } = renderHook(() => useSwaggerHook());
+    const { result } = renderHook(() => useSwagger());
 
     await act(async () => {
       vi.advanceTimersByTime(400);
@@ -88,7 +92,7 @@ describe('useSwaggerHook', () => {
     expect(() => JSON.parse(result.current.editorValue)).not.toThrow();
 
     act(() => {
-      result.current.setEditorValue('not a valid schema {{{');
+      result.current.handleEditorChange('not a valid schema {{{');
     });
 
     act(() => {

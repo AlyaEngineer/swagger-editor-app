@@ -5,9 +5,8 @@ import type { SxProps, Theme } from '@mui/material/styles';
 import { SwaggerMonacoEditor } from '@components';
 import { Alert, Box, Paper, Stack } from '@mui/material';
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
 
-import { useSwaggerHook } from '@/utils/hooks/swagger-hook';
+import { useSwagger } from '@/utils/hooks/use-swagger';
 import { getSwaggerEndpoints } from '@/utils/swagger-editor/get-swagger-endpoints';
 
 import { MainText } from '../main-text/main-text';
@@ -45,9 +44,9 @@ const viewerPanelSx: SxProps<Theme> = {
 
 export const SwaggerEditor = () => {
   const { editorValue, error, format, handleEditorChange, handleFormatToggle, isValid, schema } =
-    useSwaggerHook();
+    useSwagger();
 
-  const endpoints = useMemo(() => getSwaggerEndpoints(schema), [schema]);
+  const endpoints = getSwaggerEndpoints(schema);
 
   const t = useTranslations('swaggerEditor');
 
