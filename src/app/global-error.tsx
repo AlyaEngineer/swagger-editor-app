@@ -33,9 +33,9 @@ export default function GlobalError({ error, unstable_retry }: Props) {
         <ThemeProvider defaultMode="system" noSsr theme={fallbackTheme}>
           <CssBaseline enableColorScheme />
           <ErrorCard
+            buttonText="Try again"
             description="Try refreshing the page or come back later"
-            onRetry={unstable_retry}
-            retryLabel="Try again"
+            onButtonClick={unstable_retry}
             title="Something went wrong"
           />
         </ThemeProvider>

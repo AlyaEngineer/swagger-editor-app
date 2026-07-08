@@ -19,9 +19,9 @@ export default function ErrorPage({ error, unstable_retry }: Props) {
 
   return (
     <ErrorCard
+      buttonText={t('retry')}
       description={t('description')}
-      onRetry={() => unstable_retry()}
-      retryLabel={t('retry')}
+      onButtonClick={() => unstable_retry()}
       title={t('title')}
     />
   );

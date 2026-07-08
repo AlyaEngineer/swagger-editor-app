@@ -2,13 +2,13 @@ import { Box, Button, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 
 type ErrorCardProps = {
+  buttonText: string;
   description: string;
-  onRetry: () => void;
-  retryLabel: string;
+  onButtonClick: () => void;
   title: string;
 };
 
-export function ErrorCard({ description, onRetry, retryLabel, title }: ErrorCardProps) {
+export function ErrorCard({ buttonText, description, onButtonClick, title }: ErrorCardProps) {
   return (
     <Box
       sx={{
@@ -44,11 +44,11 @@ export function ErrorCard({ description, onRetry, retryLabel, title }: ErrorCard
         <Typography color="text.secondary">{description}</Typography>
 
         <Button
-          onClick={onRetry}
+          onClick={onButtonClick}
           sx={{ borderRadius: '8px', textTransform: 'uppercase' }}
           variant="outlined"
         >
-          {retryLabel}
+          {buttonText}
         </Button>
       </Box>
     </Box>
