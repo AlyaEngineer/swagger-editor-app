@@ -34,17 +34,8 @@ type SchemaCodeEditorProps = {
 export function SwaggerMonacoEditor({ format, onChange, value }: SchemaCodeEditorProps) {
   const editorRef = useRef<null | Parameters<OnMount>[0]>(null);
   const monacoRef = useRef<null | Parameters<OnMount>[1]>(null);
-  const handleMount: OnMount = (editor, monaco) => {
-    editorRef.current = editor;
-    monacoRef.current = monaco;
-    const model = editor.getModel();
 
-    if (model) {
-      monaco.editor.setModelLanguage(model, format);
-    }
-  };
-
-  useEffect(() => {
+  function applyLanguage(nextFormat: SchemaFormat) {
     const editor = editorRef.current;
     const monaco = monacoRef.current;
     if (!editor || !monaco) {
@@ -54,8 +45,18 @@ export function SwaggerMonacoEditor({ format, onChange, value }: SchemaCodeEdito
     const model = editor.getModel();
 
     if (model) {
-      monaco.editor.setModelLanguage(model, format);
+      monaco.editor.setModelLanguage(model, nextFormat);
     }
+  }
+
+  const handleMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
+    monacoRef.current = monaco;
+    applyLanguage(format);
+  };
+
+  useEffect(() => {
+    applyLanguage(format);
   }, [format]);
   return (
     <MonacoEditor
