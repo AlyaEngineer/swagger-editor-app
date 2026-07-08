@@ -2,6 +2,7 @@
 import type { OnMount } from '@monaco-editor/react';
 
 import { Box, CircularProgress } from '@mui/material';
+import { useColorScheme } from '@mui/material/styles';
 import dynamic from 'next/dynamic';
 import { useEffect, useRef } from 'react';
 
@@ -13,12 +14,7 @@ const FONT_SIZE = 14;
 
 const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
   loading: () => (
-    <Box
-      sx={{
-        ...flex(),
-        height: '100%',
-      }}
-    >
+    <Box sx={{ ...flex(), height: '100%' }}>
       <CircularProgress />
     </Box>
   ),
@@ -34,6 +30,10 @@ type SchemaCodeEditorProps = {
 export function SwaggerMonacoEditor({ format, onChange, value }: SchemaCodeEditorProps) {
   const editorRef = useRef<null | Parameters<OnMount>[0]>(null);
   const monacoRef = useRef<null | Parameters<OnMount>[1]>(null);
+  const { mode, systemMode } = useColorScheme();
+
+  const resolvedMode = mode === 'system' ? systemMode : mode;
+  const monacoTheme = resolvedMode === 'dark' ? 'vs-dark' : 'vs';
 
   function applyLanguage(nextFormat: SchemaFormat) {
     const editor = editorRef.current;
@@ -73,7 +73,7 @@ export function SwaggerMonacoEditor({ format, onChange, value }: SchemaCodeEdito
         tabSize: TAB_SIZE,
         wordWrap: 'on',
       }}
-      theme="vs-dark"
+      theme={monacoTheme}
       value={value}
     />
   );
