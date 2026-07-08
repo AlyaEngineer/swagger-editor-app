@@ -1,6 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
+
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import { ToastProvider } from '@/providers/toast-provider/ToastProvider';
 
 import { SwaggerControl } from './swagger-control';
 
@@ -8,12 +12,25 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
+vi.mock('@/i18n/navigation', () => ({
+  Link: ({ children, href, ...props }: { children: ReactNode; href: string }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+  usePathname: () => '/',
+  useRouter: () => ({ replace: vi.fn() }),
+}));
+
 const baseProps = {
   editorValue: 'openapi: 3.0.0',
   format: 'yaml' as const,
   handleFormatToggle: vi.fn(),
-  setError: vi.fn(),
 };
+
+function renderWithToast(ui: React.ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -21,21 +38,21 @@ afterEach(() => {
 
 describe('SwaggerControl', () => {
   it('enables the toggle and save button when the schema is valid', () => {
-    render(<SwaggerControl {...baseProps} isValid />);
+    renderWithToast(<SwaggerControl {...baseProps} isValid />);
 
     expect(screen.getByRole('switch')).not.toBeDisabled();
     expect(screen.getByRole('button', { name: 'saveButton' })).not.toBeDisabled();
   });
 
   it('disables the toggle and shows a tooltip hint when the schema is invalid', () => {
-    render(<SwaggerControl {...baseProps} isValid={false} />);
+    renderWithToast(<SwaggerControl {...baseProps} isValid={false} />);
 
     expect(screen.getByRole('switch')).toBeDisabled();
     expect(screen.getByRole('button', { name: 'saveButton' })).toBeDisabled();
   });
 
   it('calls handleFormatToggle when the switch is clicked', async () => {
-    render(<SwaggerControl {...baseProps} isValid />);
+    renderWithToast(<SwaggerControl {...baseProps} isValid />);
 
     await userEvent.click(screen.getByRole('switch'));
 
@@ -51,7 +68,7 @@ describe('SwaggerControl', () => {
         }),
     ) as unknown as typeof fetch;
 
-    render(<SwaggerControl {...baseProps} isValid />);
+    renderWithToast(<SwaggerControl {...baseProps} isValid />);
 
     await userEvent.click(screen.getByRole('button', { name: 'saveButton' }));
 
@@ -61,16 +78,17 @@ describe('SwaggerControl', () => {
     expect(fetch).toHaveBeenCalledWith('/api/schema', expect.objectContaining({ method: 'POST' }));
   });
 
-  it('sets an error when the save request fails', async () => {
+  it('shows a toast when the save request fails', async () => {
     global.fetch = vi.fn().mockResolvedValue({ ok: false }) as unknown as typeof fetch;
-    const setError = vi.fn();
 
-    render(<SwaggerControl {...baseProps} isValid setError={setError} />);
+    renderWithToast(<SwaggerControl {...baseProps} isValid />);
 
     await userEvent.click(screen.getByRole('button', { name: 'saveButton' }));
 
     await screen.findByRole('button', { name: 'saveButton' });
 
-    expect(setError).toHaveBeenCalledWith('Failed to save schema');
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('saveError');
+    });
   });
 });

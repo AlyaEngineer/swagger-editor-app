@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { ToastProvider } from '@/providers/toast-provider/ToastProvider';
+
 import { SwaggerEditor } from './swagger-editor';
 
 vi.mock('next-intl', () => ({
@@ -9,6 +11,7 @@ vi.mock('next-intl', () => ({
 }));
 
 vi.mock('@components', () => ({
+  FormatToggle: () => <div data-testid="format-toggle-stub" />,
   SwaggerMonacoEditor: () => <div data-testid="monaco-stub" />,
 }));
 
@@ -18,20 +21,23 @@ vi.mock('@/utils/hooks/use-swagger', () => ({
   useSwagger: () => mockUseSwagger(),
 }));
 
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
+
 describe('SwaggerEditor', () => {
   it('shows an error alert when the schema is invalid', () => {
     mockUseSwagger.mockReturnValue({
       editorValue: '',
       error: 'Something is wrong',
       format: 'yaml',
+      handleEditorChange: vi.fn(),
       handleFormatToggle: vi.fn(),
       isValid: false,
       schema: null,
-      setEditorValue: vi.fn(),
-      setError: vi.fn(),
     });
 
-    render(<SwaggerEditor />);
+    renderWithProviders(<SwaggerEditor />);
 
     expect(screen.getByText('Something is wrong')).toBeInTheDocument();
   });
@@ -41,14 +47,13 @@ describe('SwaggerEditor', () => {
       editorValue: '',
       error: null,
       format: 'yaml',
+      handleEditorChange: vi.fn(),
       handleFormatToggle: vi.fn(),
       isValid: true,
       schema: { paths: { '/users': { get: {} } } },
-      setEditorValue: vi.fn(),
-      setError: vi.fn(),
     });
 
-    render(<SwaggerEditor />);
+    renderWithProviders(<SwaggerEditor />);
 
     expect(screen.getByText(/schemaValid/)).toBeInTheDocument();
   });

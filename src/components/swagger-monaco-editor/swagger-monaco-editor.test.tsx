@@ -5,20 +5,40 @@ import { SwaggerMonacoEditor } from './swagger-monaco-editor';
 
 vi.mock('@monaco-editor/react', () => ({
   default: ({
-    language,
     onChange,
+    onMount,
     value,
   }: {
-    language: string;
     onChange: (value: string) => void;
+    onMount: (editor: unknown, monaco: unknown) => void;
     value: string;
-  }) => (
-    <textarea
-      aria-label={`monaco-${language}`}
-      onChange={(event) => onChange(event.target.value)}
-      value={value}
-    />
-  ),
+  }) => {
+    let currentLanguage = 'plaintext';
+
+    const model = {};
+
+    const editor = {
+      getModel: () => model,
+    };
+
+    const monaco = {
+      editor: {
+        setModelLanguage: (_model: unknown, language: string) => {
+          currentLanguage = language;
+        },
+      },
+    };
+
+    onMount(editor, monaco);
+
+    return (
+      <textarea
+        aria-label={`monaco-${currentLanguage}`}
+        onChange={(event) => onChange(event.target.value)}
+        value={value}
+      />
+    );
+  },
 }));
 
 describe('SwaggerMonacoEditor', () => {
