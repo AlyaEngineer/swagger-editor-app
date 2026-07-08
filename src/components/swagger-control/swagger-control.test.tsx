@@ -88,7 +88,7 @@ describe('SwaggerControl', () => {
     await screen.findByRole('button', { name: 'saveButton' });
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('saveError');
+      expect(screen.getByRole('alert')).toHaveTextContent('schemaSaveError');
     });
   });
 });

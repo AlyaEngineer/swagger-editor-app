@@ -24,6 +24,7 @@ export const SwaggerControl = ({ editorValue, format, handleFormatToggle, isVali
 
   const showToast = useToast();
   const t = useTranslations('swaggerControl');
+  const tToast = useTranslations('toaster');
 
   // TODO: заменить на рабочую авторизацию
   const { isAuthenticated } = {
@@ -43,12 +44,12 @@ export const SwaggerControl = ({ editorValue, format, handleFormatToggle, isVali
 
     try {
       await SchemaService.save({ content: editorValue, format, signal });
-      showToast(t('saveSuccess'), 'success');
+      showToast(tToast('schemaSaveSuccess'), 'success');
     } catch (saveError) {
       if (saveError instanceof Error && saveError.name === 'AbortError') {
-        showToast(t('timeoutError'), 'error');
+        showToast(tToast('requestTimeoutError'), 'error');
       } else {
-        showToast(t('saveError'), 'error');
+        showToast(tToast('schemaSaveError'), 'error');
       }
     } finally {
       cleanup();
