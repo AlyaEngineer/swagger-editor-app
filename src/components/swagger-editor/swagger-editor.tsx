@@ -3,7 +3,7 @@
 import type { SxProps, Theme } from '@mui/material/styles';
 
 import { SwaggerMonacoEditor } from '@components';
-import { Alert, Box, Paper, Stack } from '@mui/material';
+import { Alert, alpha, Box, Paper, Stack } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
 import { useSwagger } from '@/utils/hooks/use-swagger';
@@ -35,13 +35,20 @@ const workspaceSx: SxProps<Theme> = {
   minHeight: 680,
 };
 
-const editorPanelSx: SxProps<Theme> = {
+const panelBaseSx: SxProps<Theme> = {
+  borderRadius: '8px',
+  boxShadow: (theme) =>
+    `0 2px 8px ${alpha(theme.palette.primary.main, 0.2)}, 0 8px 24px ${alpha(theme.palette.primary.main, 0.24)}`,
   minHeight: 420,
+};
+
+const editorPanelSx: SxProps<Theme> = {
+  ...panelBaseSx,
   overflow: 'hidden',
 };
 
 const viewerPanelSx: SxProps<Theme> = {
-  minHeight: 420,
+  ...panelBaseSx,
   overflow: 'auto',
   p: 2,
 };
