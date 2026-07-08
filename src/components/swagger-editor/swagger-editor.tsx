@@ -17,6 +17,10 @@ const pageSx: SxProps<Theme> = {
   p: 3,
 };
 
+const statusSx: SxProps<Theme> = {
+  minHeight: 80,
+};
+
 const workspaceSx: SxProps<Theme> = {
   '@media (orientation: landscape)': {
     gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
@@ -55,11 +59,13 @@ export const SwaggerEditor = () => {
       <Stack spacing={2}>
         <MainText />
 
-        {error && <Alert severity="error">{error}</Alert>}
+        <Box sx={statusSx}>
+          {error && <Alert severity="error">{error}</Alert>}
 
-        {isValid && !error && (
-          <Alert severity="success">{t('schemaValid', { count: endpoints.length })}</Alert>
-        )}
+          {isValid && !error && (
+            <Alert severity="success">{t('schemaValid', { count: endpoints.length })}</Alert>
+          )}
+        </Box>
 
         <SwaggerControl
           editorValue={editorValue}
