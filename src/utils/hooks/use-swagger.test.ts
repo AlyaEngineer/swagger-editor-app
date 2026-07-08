@@ -66,7 +66,7 @@ describe('useSwagger', () => {
     const initialValue = result.current.editorValue;
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/api/schema');
+      expect(fetch).toHaveBeenCalledWith('/api/schema', expect.anything());
     });
 
     expect(result.current.editorValue).toBe(initialValue);

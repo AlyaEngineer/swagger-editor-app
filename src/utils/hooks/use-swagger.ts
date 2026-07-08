@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DEFAULT_SCHEMA } from '@/constants/default-schema';
 import { SchemaService } from '@/services/schema-service';
 import { OpenApiDocument } from '@/types';
+import { getSignalWithTimeout } from '@/utils/network/get-signal-with-timeout';
 import { convertSchema } from '@/utils/swagger-editor/schema-format';
 import { type SchemaFormat } from '@/utils/swagger-editor/schema-types';
 import { validateSwaggerSchema } from '@/utils/swagger-editor/swagger-validation';
@@ -23,6 +24,7 @@ export const useSwagger = () => {
   };
 
   const VALIDATION_DEBOUNCE_MS = 400;
+  const RESTORE_TIMEOUT_MS = 10_000;
 
   useEffect(() => {
     const timeoutId = window.setTimeout(async () => {
@@ -45,8 +47,10 @@ export const useSwagger = () => {
       return;
     }
 
+    const { cleanup, signal } = getSignalWithTimeout(RESTORE_TIMEOUT_MS);
+
     async function restoreSchema() {
-      const restored = await SchemaService.restore();
+      const restored = await SchemaService.restore(signal);
 
       if (restored && !hasUserEditedRef.current) {
         setEditorValue(restored.content);
@@ -55,8 +59,14 @@ export const useSwagger = () => {
     }
 
     restoreSchema().catch((restoreError) => {
+      if (restoreError instanceof Error && restoreError.name === 'AbortError') {
+        return;
+      }
+
       setError(restoreError instanceof Error ? restoreError.message : t('restoreError'));
     });
+
+    return cleanup;
   }, [isAuthenticated, t]);
 
   function handleEditorChange(value: string) {

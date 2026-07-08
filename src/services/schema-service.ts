@@ -1,3 +1,4 @@
+import { isRecord } from '@/utils/swagger-editor/is-record';
 import { SchemaFormat } from '@/utils/swagger-editor/schema-types';
 
 type RestoredSchema = {
@@ -6,13 +7,21 @@ type RestoredSchema = {
 };
 
 interface SchemaServiceInterface {
-  restore(): Promise<null | RestoredSchema>;
+  restore(signal?: AbortSignal): Promise<null | RestoredSchema>;
   save(params: { content: string; format: SchemaFormat; signal: AbortSignal }): Promise<void>;
 }
 
+function isRestoredSchema(value: unknown): value is RestoredSchema {
+  return (
+    isRecord(value) &&
+    typeof value.content === 'string' &&
+    (value.format === 'json' || value.format === 'yaml')
+  );
+}
+
 export const SchemaService: SchemaServiceInterface = {
-  async restore(): Promise<null | RestoredSchema> {
-    const response = await fetch('/api/schema');
+  async restore(signal?: AbortSignal): Promise<null | RestoredSchema> {
+    const response = await fetch('/api/schema', { signal });
 
     if (!response.ok) {
       return null;
@@ -20,7 +29,7 @@ export const SchemaService: SchemaServiceInterface = {
 
     const data = await response.json();
 
-    return data.schema?.content ? data.schema : null;
+    return isRestoredSchema(data.schema) ? data.schema : null;
   },
 
   async save({ content, format, signal }): Promise<void> {
