@@ -2,8 +2,9 @@ import SwaggerParser from '@apidevtools/swagger-parser';
 
 import { OpenApiDocument } from '@/types';
 
+import { isRecord } from './is-record';
 import { parseSchema } from './schema-format';
-import { isRecord, type SchemaFormat } from './schema-types';
+import { type SchemaFormat } from './schema-types';
 
 export type ValidationResult = {
   detectedFormat: SchemaFormat;

@@ -1,6 +1,7 @@
 import { parse, stringify } from 'yaml';
 
-import { isRecord, type SchemaFormat } from './schema-types';
+import { isRecord } from './is-record';
+import { type SchemaFormat } from './schema-types';
 
 export type ParsedSchema = {
   format: SchemaFormat;
