@@ -35,6 +35,7 @@ export function Header() {
       position="sticky"
       sx={{
         backgroundColor: 'background.paper',
+        borderBottom: 1,
         borderColor: 'divider',
       }}
     >
