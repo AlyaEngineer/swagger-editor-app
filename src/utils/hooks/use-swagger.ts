@@ -76,9 +76,7 @@ export const useSwagger = () => {
       setFormat(nextFormat);
       setError(null);
     } catch (conversionError) {
-      setError(
-        conversionError instanceof Error ? conversionError.message : 'Failed to convert schema',
-      );
+      setError(conversionError instanceof Error ? conversionError.message : t('conversionError'));
     }
   }
 

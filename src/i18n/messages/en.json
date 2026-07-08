@@ -16,6 +16,7 @@
     "description": "Edit, view and test OpenAPI specifications in one app."
   },
   "swaggerEditor": {
+    "conversionError": "Failed to convert schema format.",
     "restoreError": "Failed to restore saved schema.",
     "schemaValid": "Schema is valid. {count} endpoint(s) found."
   },
