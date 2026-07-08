@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
 import { DEFAULT_SCHEMA } from '@/constants/default-schema';
+import { SchemaService } from '@/services/schema-service';
 import { OpenApiDocument } from '@/types';
 import { convertSchema } from '@/utils/swagger-editor/schema-format';
 import { type SchemaFormat } from '@/utils/swagger-editor/schema-types';
@@ -43,17 +44,11 @@ export const useSwagger = () => {
     }
 
     async function restoreSchema() {
-      const response = await fetch('/api/schema');
+      const restored = await SchemaService.restore();
 
-      if (!response.ok) {
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data.schema?.content && !hasUserEditedRef.current) {
-        setEditorValue(data.schema.content);
-        setFormat(data.schema.format);
+      if (restored && !hasUserEditedRef.current) {
+        setEditorValue(restored.content);
+        setFormat(restored.format);
       }
     }
 

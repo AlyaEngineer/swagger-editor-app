@@ -6,9 +6,9 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { useToast } from '@/providers/toast-provider/ToastProvider';
-import { saveSchema } from '@/services/schema-service';
+import { SchemaService } from '@/services/schema-service';
 import { getSignalWithTimeout } from '@/utils/network/get-signal-with-timeout';
-import { SchemaFormat } from '@/utils/swagger-editor/schema-types';
+import { type SchemaFormat } from '@/utils/swagger-editor/schema-types';
 
 type Props = {
   editorValue: string;
@@ -42,7 +42,7 @@ export const SwaggerControl = ({ editorValue, format, handleFormatToggle, isVali
     const { cleanup, signal } = getSignalWithTimeout(SAVE_TIMEOUT_MS);
 
     try {
-      await saveSchema({ content: editorValue, format, signal });
+      await SchemaService.save({ content: editorValue, format, signal });
       showToast(t('saveSuccess'), 'success');
     } catch (saveError) {
       if (saveError instanceof Error && saveError.name === 'AbortError') {
