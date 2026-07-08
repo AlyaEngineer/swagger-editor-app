@@ -2,8 +2,8 @@ import '../globals.css';
 
 import type { Metadata } from 'next';
 
-import { Header } from '@components';
-import { Footer } from '@components';
+import { Footer, Header } from '@components';
+import { Box } from '@mui/material';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
@@ -48,7 +48,9 @@ export default async function RootLayout({ children, params }: Props) {
         <NextIntlClientProvider>
           <MuiProvider>
             <Header />
-            {children}
+            <Box component="main" sx={{ maxWidth: 1200, mx: 'auto', px: 2, py: 4, width: '100%' }}>
+              {children}
+            </Box>
             <Footer />
           </MuiProvider>
         </NextIntlClientProvider>
