@@ -1,13 +1,16 @@
 'use client';
 
-import { Box, Button, CssBaseline, Typography } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useEffect } from 'react';
 
+import { ErrorCard } from '@/components/error-card/error-card';
+import { darkPalette, lightPalette } from '@/theme/palette';
+
 const fallbackTheme = createTheme({
   colorSchemes: {
-    dark: true,
-    light: true,
+    dark: { palette: darkPalette },
+    light: { palette: lightPalette },
   },
   cssVariables: {
     colorSchemeSelector: 'media',
@@ -29,30 +32,12 @@ export default function GlobalError({ error, unstable_retry }: Props) {
       <body>
         <ThemeProvider defaultMode="system" noSsr theme={fallbackTheme}>
           <CssBaseline enableColorScheme />
-          <Box
-            sx={{
-              alignItems: 'center',
-              bgcolor: 'background.default',
-              color: 'text.primary',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 2,
-              justifyContent: 'center',
-              minHeight: '100vh',
-              p: 2,
-              textAlign: 'center',
-            }}
-          >
-            <Typography color="error" variant="h4">
-              Something went wrong
-            </Typography>
-            <Typography color="text.secondary">
-              Try refreshing the page or come back later
-            </Typography>
-            <Button color="error" onClick={unstable_retry} variant="contained">
-              Try again
-            </Button>
-          </Box>
+          <ErrorCard
+            description="Try refreshing the page or come back later"
+            onRetry={unstable_retry}
+            retryLabel="Try again"
+            title="Something went wrong"
+          />
         </ThemeProvider>
       </body>
     </html>
