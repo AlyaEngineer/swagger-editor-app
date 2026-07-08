@@ -1,4 +1,5 @@
 'use client';
+
 import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
@@ -34,6 +35,7 @@ export function Header() {
       position="sticky"
       sx={{
         backgroundColor: 'background.paper',
+        borderBottom: 1,
         borderColor: 'divider',
       }}
     >
