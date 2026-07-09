@@ -9,6 +9,9 @@ import { convertSchema } from '@/utils/swagger-editor/schema-format';
 import { type SchemaFormat } from '@/utils/swagger-editor/schema-types';
 import { validateSwaggerSchema } from '@/utils/swagger-editor/swagger-validation';
 
+const VALIDATION_DEBOUNCE_MS = 400;
+const RESTORE_TIMEOUT_MS = 10_000;
+
 export const useSwagger = () => {
   const [editorValue, setEditorValue] = useState(DEFAULT_SCHEMA);
   const [schema, setSchema] = useState<null | OpenApiDocument>(null);
@@ -23,24 +26,27 @@ export const useSwagger = () => {
     isAuthenticated: true,
   };
 
-  const VALIDATION_DEBOUNCE_MS = 400;
-  const RESTORE_TIMEOUT_MS = 10_000;
-
   useEffect(() => {
-    const timeoutId = window.setTimeout(async () => {
-      const result = await validateSwaggerSchema(editorValue);
+    const timeoutId = window.setTimeout(() => {
+      validateSwaggerSchema(editorValue)
+        .then((result) => {
+          setIsValid(result.isValid);
+          setError(result.error);
+          setSchema(result.schema);
 
-      setIsValid(result.isValid);
-      setError(result.error);
-      setSchema(result.schema);
-
-      if (result.isValid) {
-        setFormat(result.detectedFormat);
-      }
+          if (result.isValid) {
+            setFormat(result.detectedFormat);
+          }
+        })
+        .catch((validationError) => {
+          setError(
+            validationError instanceof Error ? validationError.message : t('conversionError'),
+          );
+        });
     }, VALIDATION_DEBOUNCE_MS);
 
     return () => window.clearTimeout(timeoutId);
-  }, [editorValue]);
+  }, [editorValue, t]);
 
   useEffect(() => {
     if (!isAuthenticated) {
