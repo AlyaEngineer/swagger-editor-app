@@ -23,8 +23,20 @@
   "swaggerViewer": {
     "emptyPrompt": "Paste a valid OpenAPI/Swagger schema to populate the viewer.",
     "endpointListLabel": "OpenAPI endpoint list",
+    "examplesLabel": "Examples",
+    "noParameters": "No parameters",
+    "noRequestBody": "No request body",
+    "noResponses": "No responses",
     "noEndpoints": "Schema is valid, but no endpoints were found in paths.",
-    "noSummary": "No summary"
+    "noSummary": "No summary",
+    "operationIdLabel": "Operation ID",
+    "optionalLabel": "Optional",
+    "parametersTitle": "Parameters",
+    "requestBodyTitle": "Request body",
+    "requiredLabel": "Required",
+    "responsesTitle": "Responses",
+    "schemaLabel": "Schema",
+    "schemaNotSpecified": "Not specified"
   },
   "swaggerControl": {
     "disabledHint": "Correct the errors in the schema to switch the format",

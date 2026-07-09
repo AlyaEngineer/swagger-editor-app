@@ -23,8 +23,20 @@
   "swaggerViewer": {
     "emptyPrompt": "Вставьте валидную схему OpenAPI/Swagger, чтобы отобразить эндпоинты",
     "endpointListLabel": "Список эндпоинтов OpenAPI",
+    "examplesLabel": "Примеры",
+    "noParameters": "Параметров нет",
+    "noRequestBody": "Тело запроса не требуется",
+    "noResponses": "Ответы не описаны",
     "noEndpoints": "Схема валидна, но эндпоинтов в paths не найдено",
-    "noSummary": "Без описания"
+    "noSummary": "Без описания",
+    "operationIdLabel": "Operation ID",
+    "optionalLabel": "Необязательный",
+    "parametersTitle": "Параметры",
+    "requestBodyTitle": "Тело запроса",
+    "requiredLabel": "Обязательный",
+    "responsesTitle": "Ответы",
+    "schemaLabel": "Схема",
+    "schemaNotSpecified": "Не указана"
   },
   "swaggerControl": {
     "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",
