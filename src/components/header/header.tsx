@@ -4,6 +4,7 @@ import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
 import { AppLinkButton, AuthNavigation, LanguageSwitcher } from '@/components';
+import { flex } from '@/constants';
 import { BRAND_NAME } from '@/constants/brand';
 import { ROUTES } from '@/constants/routes';
 
@@ -14,14 +15,9 @@ const HEADER_SIZES = {
   expanded: { minHeight: 64, py: 1.25 },
 };
 
-const flex = {
-  alignItems: 'center',
-  display: 'flex',
-  gap: 1.5,
-};
-
 export function Header() {
   const t = useTranslations('Header');
+
   const isCompact = useScrollTrigger({
     disableHysteresis: true,
     threshold: STICKY_SCROLL_OFFSET,
@@ -58,7 +54,7 @@ export function Header() {
           aria-label="Main navigation"
           component="nav"
           sx={{
-            ...flex,
+            ...flex(),
             ml: 'auto',
           }}
         >

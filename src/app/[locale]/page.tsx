@@ -1,11 +1,5 @@
-import { getTranslations } from 'next-intl/server';
+import { SwaggerEditor } from '@components';
 
-export default async function Home() {
-  const t = await getTranslations();
-
-  return (
-    <>
-      <div>{t('check')}</div>
-    </>
-  );
+export default function Home() {
+  return <SwaggerEditor />;
 }

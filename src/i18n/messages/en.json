@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "name",
-    "description": "Description"
+    "title": "Swagger Editor",
+    "description": "Paste JSON or YAML OpenAPI/Swagger schema. Valid schemas will automatically populate the viewer."
   },
   "Header": {
     "signIn": "Sign In",
@@ -14,6 +14,21 @@
   "HomePage": {
     "title": "Swagger/OpenAPI UI",
     "description": "Edit, view and test OpenAPI specifications in one app."
+  },
+  "swaggerEditor": {
+    "conversionError": "Failed to convert schema format.",
+    "restoreError": "Failed to restore saved schema.",
+    "schemaValid": "Schema is valid. {count} endpoint(s) found."
+  },
+  "swaggerViewer": {
+    "emptyPrompt": "Paste a valid OpenAPI/Swagger schema to populate the viewer.",
+    "noEndpoints": "Schema is valid, but no endpoints were found in paths.",
+    "placeholder": "{count} endpoint(s) detected. Full viewer implementation coming soon."
+  },
+  "swaggerControl": {
+    "disabledHint": "Correct the errors in the schema to switch the format",
+    "saveButton": "Save schema",
+    "saving": "Saving..."
   },
   "errorPage": {
     "title": "Something went wrong",

@@ -1,7 +1,7 @@
 {
   "Metadata": {
-    "title": "Название сайта",
-    "description": "Описание сайта"
+    "title": "Swagger Editor",
+    "description": "Вставьте OpenAPI/Swagger-схему в формате JSON или YAML. Валидные схемы автоматически заполнят просмотрщик."
   },
   "Header": {
     "signIn": "Войти",
@@ -14,6 +14,21 @@
   "HomePage": {
     "title": "Swagger/OpenAPI UI",
     "description": "Редактируйте, просматривайте и тестируйте OpenAPI-спецификации в одном приложении."
+  },
+  "swaggerEditor": {
+    "conversionError": "Не удалось преобразовать формат схемы.",
+    "restoreError": "Не удалось восстановить сохранённую схему.",
+    "schemaValid": "Схема валидна. Найдено эндпоинтов: {count}"
+  },
+  "swaggerViewer": {
+    "emptyPrompt": "Вставьте валидную схему OpenAPI/Swagger, чтобы отобразить эндпоинты",
+    "noEndpoints": "Схема валидна, но эндпоинтов в paths не найдено",
+    "placeholder": "Найдено эндпоинтов: {count}. Полная реализация просмотрщика в разработке."
+  },
+  "swaggerControl": {
+    "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",
+    "saveButton": "Сохранить схему",
+    "saving": "Сохранение..."
   },
   "errorPage": {
     "title": "Что-то пошло не так",
