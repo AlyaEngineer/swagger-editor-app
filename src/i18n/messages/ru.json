@@ -22,8 +22,9 @@
   },
   "swaggerViewer": {
     "emptyPrompt": "Вставьте валидную схему OpenAPI/Swagger, чтобы отобразить эндпоинты",
+    "endpointListLabel": "Список эндпоинтов OpenAPI",
     "noEndpoints": "Схема валидна, но эндпоинтов в paths не найдено",
-    "placeholder": "Найдено эндпоинтов: {count}. Полная реализация просмотрщика в разработке."
+    "noSummary": "Без описания"
   },
   "swaggerControl": {
     "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",

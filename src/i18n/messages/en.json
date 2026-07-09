@@ -22,8 +22,9 @@
   },
   "swaggerViewer": {
     "emptyPrompt": "Paste a valid OpenAPI/Swagger schema to populate the viewer.",
+    "endpointListLabel": "OpenAPI endpoint list",
     "noEndpoints": "Schema is valid, but no endpoints were found in paths.",
-    "placeholder": "{count} endpoint(s) detected. Full viewer implementation coming soon."
+    "noSummary": "No summary"
   },
   "swaggerControl": {
     "disabledHint": "Correct the errors in the schema to switch the format",

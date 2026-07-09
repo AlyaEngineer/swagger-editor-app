@@ -13,7 +13,23 @@ vi.mock('next-intl', () => ({
 vi.mock('@components', () => ({
   FormatToggle: () => <div data-testid="format-toggle-stub" />,
   SwaggerMonacoEditor: () => <div data-testid="monaco-stub" />,
-  SwaggerViewer: () => <div data-testid="swagger-viewer-stub" />,
+  SwaggerViewer: ({
+    apiInfo,
+    endpoints,
+  }: {
+    apiInfo: null | {
+      title: string;
+    };
+    endpoints: Array<{
+      method: string;
+      path: string;
+    }>;
+  }) => (
+    <div data-testid="swagger-viewer-stub">
+      {apiInfo?.title}
+      {endpoints.map((endpoint) => `${endpoint.method} ${endpoint.path}`).join(', ')}
+    </div>
+  ),
 }));
 
 const mockUseSwagger = vi.fn();
@@ -51,11 +67,19 @@ describe('SwaggerEditor', () => {
       handleEditorChange: vi.fn(),
       handleFormatToggle: vi.fn(),
       isValid: true,
-      schema: { paths: { '/users': { get: {} } } },
+      schema: {
+        info: {
+          title: 'Petstore',
+          version: '1.0.0',
+        },
+        paths: { '/users': { get: {} } },
+      },
     });
 
     renderWithProviders(<SwaggerEditor />);
 
     expect(screen.getByText(/schemaValid/)).toBeInTheDocument();
+    expect(screen.getByTestId('swagger-viewer-stub')).toHaveTextContent('Petstore');
+    expect(screen.getByTestId('swagger-viewer-stub')).toHaveTextContent('GET /users');
   });
 });
