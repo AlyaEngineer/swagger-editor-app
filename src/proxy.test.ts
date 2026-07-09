@@ -33,4 +33,37 @@ describe('proxy', () => {
 
     expect(response).toBeDefined();
   });
+
+  it('logs the error when getClaims fails', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    vi.mocked(createServerClient).mockReturnValueOnce({
+      auth: {
+        getClaims: vi.fn().mockResolvedValue({ data: null, error: new Error('token expired') }),
+      },
+    });
+
+    const request = new NextRequest('https://example.com/en');
+
+    await proxy(request);
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed to refresh Supabase session in proxy:',
+      expect.anything(),
+    );
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('setAll writes cookies to both the request and the intl response', async () => {
+    const request = new NextRequest('https://example.com/en');
+
+    await proxy(request);
+
+    const [, , options] = vi.mocked(createServerClient).mock.calls[0];
+    const cookiesToSet = [{ name: 'session', options: { httpOnly: true }, value: 'token' }];
+
+    expect(options.cookies.setAll).toBeDefined();
+    expect(() => options.cookies.setAll?.(cookiesToSet, {})).not.toThrow();
+  });
 });
