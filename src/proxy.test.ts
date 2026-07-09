@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextRequest, NextResponse } from 'next/server';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { proxy } from './proxy';
 
@@ -17,6 +17,10 @@ vi.mock('@supabase/ssr', () => ({
 }));
 
 describe('proxy', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('calls getClaims to refresh the auth session', async () => {
     const request = new NextRequest('https://example.com/en');
 
@@ -35,11 +39,12 @@ describe('proxy', () => {
   });
 
   it('logs the error when getClaims fails', async () => {
+    const testError = new Error('token expired');
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     vi.mocked(createServerClient).mockReturnValueOnce({
       auth: {
-        getClaims: vi.fn().mockResolvedValue({ data: null, error: new Error('token expired') }),
+        getClaims: vi.fn().mockResolvedValue({ data: null, error: testError }),
       },
     });
 
@@ -49,21 +54,25 @@ describe('proxy', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       'Failed to refresh Supabase session in proxy:',
-      expect.anything(),
+      testError,
     );
-
-    consoleErrorSpy.mockRestore();
   });
 
-  it('setAll writes cookies to both the request and the intl response', async () => {
+  it('setAll writes cookies to the request and applies response headers', async () => {
+    vi.mocked(createServerClient).mockClear();
+
     const request = new NextRequest('https://example.com/en');
+    const response = await proxy(request);
 
-    await proxy(request);
+    const calls = vi.mocked(createServerClient).mock.calls;
+    const [, , options] = calls[calls.length - 1];
 
-    const [, , options] = vi.mocked(createServerClient).mock.calls[0];
     const cookiesToSet = [{ name: 'session', options: { httpOnly: true }, value: 'token' }];
+    const responseHeaders = { 'cache-control': 'no-store' };
 
-    expect(options.cookies.setAll).toBeDefined();
-    expect(() => options.cookies.setAll?.(cookiesToSet, {})).not.toThrow();
+    options.cookies.setAll?.(cookiesToSet, responseHeaders);
+
+    expect(request.cookies.get('session')?.value).toBe('token');
+    expect(response.headers.get('cache-control')).toBe('no-store');
   });
 });

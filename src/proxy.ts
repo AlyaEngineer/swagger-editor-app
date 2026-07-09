@@ -17,11 +17,17 @@ export async function proxy(request: NextRequest) {
         getAll() {
           return request.cookies.getAll();
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           cookiesToSet.forEach(({ name, options, value }) => {
             intlResponse.cookies.set(name, value, options);
           });
+
+          if (headers) {
+            Object.entries(headers).forEach(([key, value]) => {
+              intlResponse.headers.set(key, value);
+            });
+          }
         },
       },
     },
