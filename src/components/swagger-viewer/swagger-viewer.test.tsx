@@ -30,18 +30,55 @@ describe('SwaggerViewer', () => {
         }}
         endpoints={[
           {
+            description: 'Delete all users.',
             method: 'DELETE',
+            operationId: 'deleteUsers',
+            parameters: [],
             path: '/users',
+            requestBody: null,
+            responses: [],
             summary: 'Delete users',
           },
           {
+            description: 'Returns all users.',
             method: 'GET',
+            operationId: 'listUsers',
+            parameters: [
+              {
+                description: 'Page number.',
+                in: 'query',
+                name: 'page',
+                required: false,
+                schema: 'integer',
+              },
+            ],
             path: '/users',
+            requestBody: null,
+            responses: [
+              {
+                contentTypes: ['application/json'],
+                description: 'Users response.',
+                examples: ['{"users":[]}'],
+                schema: 'object { users }',
+                statusCode: '200',
+              },
+            ],
             summary: 'Get users',
           },
           {
+            description: '',
             method: 'POST',
+            operationId: '',
+            parameters: [],
             path: '/users',
+            requestBody: {
+              contentTypes: ['application/json'],
+              description: 'User payload.',
+              examples: ['{"name":"Ada"}'],
+              required: true,
+              schema: 'object { name }',
+            },
+            responses: [],
             summary: '',
           },
         ]}
@@ -56,6 +93,15 @@ describe('SwaggerViewer', () => {
     expect(screen.getByText('/users')).toBeInTheDocument();
     expect(screen.getByText('Get users')).toBeInTheDocument();
     expect(screen.getByText('noSummary')).toBeInTheDocument();
+    expect(screen.getAllByText('parametersTitle')).not.toHaveLength(0);
+    expect(screen.getByText('page')).toBeInTheDocument();
+    expect(screen.getByText('Page number.')).toBeInTheDocument();
+    expect(screen.getAllByText('requestBodyTitle')).not.toHaveLength(0);
+    expect(screen.getByText('User payload.')).toBeInTheDocument();
+    expect(screen.getAllByText('responsesTitle')).not.toHaveLength(0);
+    expect(screen.getByText('200')).toBeInTheDocument();
+    expect(screen.getByText('Users response.')).toBeInTheDocument();
+    expect(screen.getByText('{"users":[]}')).toBeInTheDocument();
 
     const endpointArticle = screen.getByRole('article');
     const methods = within(endpointArticle).getAllByText(/DELETE|GET|POST/);
