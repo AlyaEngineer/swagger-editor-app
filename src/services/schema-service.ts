@@ -29,6 +29,10 @@ export const SchemaService: SchemaServiceInterface = {
 
     const data = await response.json();
 
+    if (!isRecord(data)) {
+      return null;
+    }
+
     return isRestoredSchema(data.schema) ? data.schema : null;
   },
 
