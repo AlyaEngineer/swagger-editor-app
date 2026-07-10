@@ -54,4 +54,16 @@ describe('getAuthenticatedUser', () => {
 
     expect(unauthorized).toHaveBeenCalled();
   });
+
+  it('calls unauthorized when getClaims throws unexpectedly', async () => {
+    vi.mocked(createClient).mockResolvedValue({
+      auth: {
+        getClaims: vi.fn().mockRejectedValue(new Error('network error')),
+      },
+    } as unknown as Awaited<ReturnType<typeof createClient>>);
+
+    await getAuthenticatedUser();
+
+    expect(unauthorized).toHaveBeenCalled();
+  });
 });
