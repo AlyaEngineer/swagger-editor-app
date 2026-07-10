@@ -220,4 +220,39 @@ describe('SwaggerViewer', () => {
     expect(screen.getByText('{"ok":true}')).toBeInTheDocument();
     expect(screen.getByText('content-type: application/json')).toBeInTheDocument();
   });
+
+  it('maps server error codes to translated viewer messages', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        json: () => Promise.resolve({ errorCode: 'blockedUrl' }),
+        ok: false,
+      }),
+    );
+
+    renderViewer(
+      <SwaggerViewer
+        endpoints={[
+          {
+            description: '',
+            method: 'GET',
+            operationId: '',
+            parameters: [],
+            path: '/internal',
+            requestBody: null,
+            responses: [],
+            serverUrl: 'http://127.0.0.1',
+            summary: 'Internal endpoint',
+          },
+        ]}
+        isValid
+      />,
+    );
+
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole('button', { name: 'executeButton' }));
+
+    expect(await screen.findByText('tryItOutBlockedUrl')).toBeInTheDocument();
+  });
 });

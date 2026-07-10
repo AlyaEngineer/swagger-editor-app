@@ -67,8 +67,11 @@
     "schemaLabel": "Schema",
     "schemaNotSpecified": "Not specified",
     "serverUrlLabel": "Server URL",
+    "tryItOutBlockedUrl": "This destination is not allowed",
     "tryItOutFailed": "Request execution failed",
+    "tryItOutInvalidPayload": "Invalid request payload",
     "tryItOutInvalidUrl": "Enter a valid absolute HTTP server URL",
+    "tryItOutTimeout": "Request timed out",
     "tryItOutTitle": "Try it out"
   },
   "swaggerControl": {
