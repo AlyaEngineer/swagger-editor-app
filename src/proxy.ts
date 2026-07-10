@@ -35,23 +35,51 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  const { data, error } = await supabase.auth.getClaims();
+  let isAuthenticated = false;
 
-  if (error) {
-    console.error('Failed to refresh Supabase session in proxy:', error);
+  try {
+    const { data, error } = await supabase.auth.getClaims();
+
+    if (error) {
+      console.error('Failed to refresh Supabase session in proxy:', error);
+    }
+
+    isAuthenticated = !!data && !error;
+  } catch (unexpectedError) {
+    console.error('Unexpected error while checking Supabase session in proxy:', unexpectedError);
   }
 
-  const isAuthenticated = !!data && !error;
-
-  const isAuthRoute = AUTH_ROUTES.some((route) => request.nextUrl.pathname.includes(route));
+  const isAuthRoute = matchesRoute(request.nextUrl.pathname, AUTH_ROUTES);
 
   if (isAuthRoute && isAuthenticated) {
-    const mainUrl = new URL('/', request.url);
+    const currentLocale = getCurrentLocale(request.nextUrl.pathname);
+    const mainUrl = new URL(`/${currentLocale}`, request.url);
 
-    return NextResponse.redirect(mainUrl);
+    const redirectResponse = NextResponse.redirect(mainUrl);
+
+    intlResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie);
+    });
+
+    return redirectResponse;
   }
 
   return intlResponse;
+}
+
+function getCurrentLocale(pathname: string) {
+  const localePattern = routing.locales.join('|');
+  const match = pathname.match(new RegExp(`^/(${localePattern})(?:/|$)`));
+
+  return match?.[1] ?? routing.defaultLocale;
+}
+
+function matchesRoute(pathname: string, routes: string[]) {
+  return routes.some((route) => {
+    const pattern = new RegExp(`(^|/)${route.replace('/', '')}(/|$)`);
+
+    return pattern.test(pathname);
+  });
 }
 
 export const config = {

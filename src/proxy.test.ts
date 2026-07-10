@@ -58,7 +58,7 @@ describe('proxy', () => {
     );
   });
 
-  it('redirects authenticated users away from sign-in route', async () => {
+  it('redirects authenticated users away from sign-in route, preserving the locale', async () => {
     vi.mocked(createServerClient).mockReturnValueOnce({
       auth: {
         getClaims: vi.fn().mockResolvedValue({ data: { sub: 'user-id' }, error: null }),
@@ -70,21 +70,22 @@ describe('proxy', () => {
     const response = await proxy(request);
 
     expect(response.status).toBe(307);
-    expect(response.headers.get('location')).toContain('https://example.com/');
+    expect(response.headers.get('location')).toBe('https://example.com/en');
   });
 
-  it('redirects authenticated users away from sign-up route', async () => {
+  it('redirects authenticated users away from sign-up route, preserving the locale', async () => {
     vi.mocked(createServerClient).mockReturnValueOnce({
       auth: {
         getClaims: vi.fn().mockResolvedValue({ data: { sub: 'user-id' }, error: null }),
       },
     });
 
-    const request = new NextRequest('https://example.com/en/sign-up');
+    const request = new NextRequest('https://example.com/ru/sign-up');
 
     const response = await proxy(request);
 
     expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('https://example.com/ru');
   });
 
   it('does not redirect unauthenticated users on sign-in route', async () => {
@@ -93,6 +94,31 @@ describe('proxy', () => {
     const response = await proxy(request);
 
     expect(response.status).not.toBe(307);
+  });
+
+  it('carries refreshed session cookies onto the auth-route redirect', async () => {
+    vi.mocked(createServerClient).mockImplementationOnce((...args) => {
+      const options = args[2] as {
+        cookies: { setAll?: (cookies: unknown[], headers?: Record<string, string>) => void };
+      };
+
+      options.cookies.setAll?.(
+        [{ name: 'sb-session', options: { httpOnly: true }, value: 'refreshed-token' }],
+        {},
+      );
+
+      return {
+        auth: {
+          getClaims: vi.fn().mockResolvedValue({ data: { sub: 'user-id' }, error: null }),
+        },
+      };
+    });
+
+    const request = new NextRequest('https://example.com/en/sign-in');
+
+    const response = await proxy(request);
+
+    expect(response.cookies.get('sb-session')?.value).toBe('refreshed-token');
   });
 
   it('setAll writes cookies to the request and applies response headers', async () => {
