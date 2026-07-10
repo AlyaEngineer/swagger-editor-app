@@ -1,8 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
 import createIntlMiddleware from 'next-intl/middleware';
-import { type NextRequest } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 import { routing } from './i18n/routing';
+
+const AUTH_ROUTES = ['/sign-in', '/sign-up'];
 
 const handleIntl = createIntlMiddleware(routing);
 
@@ -33,10 +35,20 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  const { error } = await supabase.auth.getClaims();
+  const { data, error } = await supabase.auth.getClaims();
 
   if (error) {
     console.error('Failed to refresh Supabase session in proxy:', error);
+  }
+
+  const isAuthenticated = !!data && !error;
+
+  const isAuthRoute = AUTH_ROUTES.some((route) => request.nextUrl.pathname.includes(route));
+
+  if (isAuthRoute && isAuthenticated) {
+    const mainUrl = new URL('/', request.url);
+
+    return NextResponse.redirect(mainUrl);
   }
 
   return intlResponse;
