@@ -44,8 +44,12 @@
   },
   "swaggerViewer": {
     "emptyPrompt": "Вставьте валидную схему OpenAPI/Swagger, чтобы отобразить эндпоинты",
+    "emptyResponseBody": "Тело ответа пустое",
     "endpointListLabel": "Список эндпоинтов OpenAPI",
+    "executeButton": "Выполнить",
+    "executingLabel": "Выполнение...",
     "examplesLabel": "Примеры",
+    "noResponseHeaders": "Заголовков ответа нет",
     "noParameters": "Параметров нет",
     "noRequestBody": "Тело запроса не требуется",
     "noResponses": "Ответы не описаны",
@@ -56,9 +60,16 @@
     "parametersTitle": "Параметры",
     "requestBodyTitle": "Тело запроса",
     "requiredLabel": "Обязательный",
+    "requestBodyInputLabel": "Тело запроса",
+    "responseBodyLabel": "Тело ответа",
+    "responseHeadersLabel": "Заголовки ответа",
     "responsesTitle": "Ответы",
     "schemaLabel": "Схема",
-    "schemaNotSpecified": "Не указана"
+    "schemaNotSpecified": "Не указана",
+    "serverUrlLabel": "URL сервера",
+    "tryItOutFailed": "Не удалось выполнить запрос",
+    "tryItOutInvalidUrl": "Введите абсолютный HTTP URL сервера",
+    "tryItOutTitle": "Try it out"
   },
   "swaggerControl": {
     "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",

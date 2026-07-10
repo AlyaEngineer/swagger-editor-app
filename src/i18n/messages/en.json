@@ -44,8 +44,12 @@
   },
   "swaggerViewer": {
     "emptyPrompt": "Paste a valid OpenAPI/Swagger schema to populate the viewer.",
+    "emptyResponseBody": "Empty response body",
     "endpointListLabel": "OpenAPI endpoint list",
+    "executeButton": "Execute",
+    "executingLabel": "Executing...",
     "examplesLabel": "Examples",
+    "noResponseHeaders": "No response headers",
     "noParameters": "No parameters",
     "noRequestBody": "No request body",
     "noResponses": "No responses",
@@ -56,9 +60,16 @@
     "parametersTitle": "Parameters",
     "requestBodyTitle": "Request body",
     "requiredLabel": "Required",
+    "requestBodyInputLabel": "Request body",
+    "responseBodyLabel": "Response body",
+    "responseHeadersLabel": "Response headers",
     "responsesTitle": "Responses",
     "schemaLabel": "Schema",
-    "schemaNotSpecified": "Not specified"
+    "schemaNotSpecified": "Not specified",
+    "serverUrlLabel": "Server URL",
+    "tryItOutFailed": "Request execution failed",
+    "tryItOutInvalidUrl": "Enter a valid absolute HTTP server URL",
+    "tryItOutTitle": "Try it out"
   },
   "swaggerControl": {
     "disabledHint": "Correct the errors in the schema to switch the format",

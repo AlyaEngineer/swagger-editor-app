@@ -1,5 +1,8 @@
 import { render, screen, within } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import { ToastProvider } from '@/providers/toast-provider/ToastProvider';
 
 import { SwaggerViewer } from './swagger-viewer';
 
@@ -7,21 +10,29 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
+function renderViewer(ui: React.ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
+
 describe('SwaggerViewer', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('shows the empty prompt when the schema is invalid', () => {
-    render(<SwaggerViewer endpoints={[]} isValid={false} />);
+    renderViewer(<SwaggerViewer endpoints={[]} isValid={false} />);
 
     expect(screen.getByText('emptyPrompt')).toBeInTheDocument();
   });
 
   it('shows the no-endpoints warning when the schema is valid but empty', () => {
-    render(<SwaggerViewer endpoints={[]} isValid />);
+    renderViewer(<SwaggerViewer endpoints={[]} isValid />);
 
     expect(screen.getByText('noEndpoints')).toBeInTheDocument();
   });
 
   it('renders schema metadata and endpoints grouped by path with sorted methods', () => {
-    render(
+    renderViewer(
       <SwaggerViewer
         apiInfo={{
           description: 'Swagger Petstore description.',
@@ -37,6 +48,7 @@ describe('SwaggerViewer', () => {
             path: '/users',
             requestBody: null,
             responses: [],
+            serverUrl: 'https://api.example.com',
             summary: 'Delete users',
           },
           {
@@ -63,6 +75,7 @@ describe('SwaggerViewer', () => {
                 statusCode: '200',
               },
             ],
+            serverUrl: 'https://api.example.com',
             summary: 'Get users',
           },
           {
@@ -79,6 +92,7 @@ describe('SwaggerViewer', () => {
               schema: 'object { name }',
             },
             responses: [],
+            serverUrl: 'https://api.example.com',
             summary: '',
           },
         ]}
@@ -107,5 +121,103 @@ describe('SwaggerViewer', () => {
     const methods = within(endpointArticle).getAllByText(/DELETE|GET|POST/);
 
     expect(methods.map((method) => method.textContent)).toEqual(['GET', 'POST', 'DELETE']);
+  });
+
+  it('executes an endpoint through the server route and displays the response', async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          body: '{"ok":true}',
+          durationMs: 42,
+          headers: { 'content-type': 'application/json' },
+          status: 200,
+          statusText: 'OK',
+        }),
+      ok: true,
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderViewer(
+      <SwaggerViewer
+        endpoints={[
+          {
+            description: '',
+            method: 'POST',
+            operationId: '',
+            parameters: [
+              {
+                description: '',
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: 'string',
+              },
+              {
+                description: '',
+                in: 'query',
+                name: 'includePosts',
+                required: false,
+                schema: 'boolean',
+              },
+              {
+                description: '',
+                in: 'header',
+                name: 'X-Trace',
+                required: false,
+                schema: 'string',
+              },
+              {
+                description: '',
+                in: 'cookie',
+                name: 'session',
+                required: false,
+                schema: 'string',
+              },
+            ],
+            path: '/users/{id}',
+            requestBody: {
+              contentTypes: ['application/json'],
+              description: '',
+              examples: ['{"name":"Ada"}'],
+              required: true,
+              schema: 'object { name }',
+            },
+            responses: [],
+            serverUrl: 'https://api.example.com/v1',
+            summary: 'Create user',
+          },
+        ]}
+        isValid
+      />,
+    );
+
+    const user = userEvent.setup();
+
+    await user.type(screen.getByLabelText(/path: id/), '42');
+    await user.type(screen.getByLabelText(/query: includePosts/), 'true');
+    await user.type(screen.getByLabelText(/header: X-Trace/), 'abc');
+    await user.type(screen.getByLabelText(/cookie: session/), 'token');
+    await user.click(screen.getByRole('button', { name: 'executeButton' }));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/try-it-out',
+      expect.objectContaining({
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      }),
+    );
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+      body: '{"name":"Ada"}',
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: 'session=token',
+        'X-Trace': 'abc',
+      },
+      method: 'POST',
+      url: 'https://api.example.com/v1/users/42?includePosts=true',
+    });
+    expect(await screen.findByText('200 OK')).toBeInTheDocument();
+    expect(screen.getByText('{"ok":true}')).toBeInTheDocument();
+    expect(screen.getByText('content-type: application/json')).toBeInTheDocument();
   });
 });
