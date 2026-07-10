@@ -1,4 +1,8 @@
+import type { IncomingHttpHeaders, RequestOptions } from 'node:http';
+
 import { lookup } from 'node:dns/promises';
+import { request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
 import { isIP } from 'node:net';
 
 const ALLOWED_METHODS = new Set(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
@@ -16,6 +20,20 @@ const FORBIDDEN_HEADERS = new Set([
 ]);
 const MAX_REDIRECTS = 5;
 const REQUEST_TIMEOUT_MS = 15_000;
+
+export const runtime = 'nodejs';
+
+type ProxiedResponse = {
+  body: string;
+  headers: Record<string, string>;
+  status: number;
+  statusText: string;
+};
+
+type ResolvedAddress = {
+  address: string;
+  family: 4 | 6;
+};
 
 type TryItOutPayload = {
   body?: unknown;
@@ -49,12 +67,11 @@ export async function POST(request: Request) {
       headers: getHeaders(payload.headers),
       method,
     });
-    const responseBody = await response.text();
 
     return Response.json({
-      body: responseBody,
+      body: response.body,
       durationMs: Math.round(performance.now() - startedAt),
-      headers: Object.fromEntries(response.headers.entries()),
+      headers: response.headers,
       status: response.status,
       statusText: response.statusText,
     });
@@ -71,31 +88,13 @@ export async function POST(request: Request) {
   }
 }
 
-async function assertPublicUrl(url: URL) {
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-    throw new BlockedUrlError();
-  }
-
-  const hostname = url.hostname;
-  const ipVersion = isIP(hostname);
-  const addresses =
-    ipVersion === 0
-      ? await lookup(hostname, { all: true, verbatim: true })
-      : [{ address: hostname }];
-
-  if (addresses.length === 0 || addresses.some(({ address }) => !isPublicIp(address))) {
-    throw new BlockedUrlError();
-  }
-}
-
 async function fetchValidatedUrl(url: URL, init: RequestInit) {
   let currentUrl = url;
 
   for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
-    await assertPublicUrl(currentUrl);
-
-    const response = await fetchWithTimeout(currentUrl, init);
-    const location = response.headers.get('location');
+    const address = await resolvePublicAddress(currentUrl);
+    const response = await requestWithPinnedIp(currentUrl, init, address);
+    const location = response.headers.location;
 
     if (!isRedirect(response.status) || !location) {
       return response;
@@ -105,27 +104,6 @@ async function fetchValidatedUrl(url: URL, init: RequestInit) {
   }
 
   throw new BlockedUrlError();
-}
-
-async function fetchWithTimeout(url: URL, init: RequestInit) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
-  try {
-    return await fetch(url, {
-      ...init,
-      redirect: 'manual',
-      signal: controller.signal,
-    });
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new RequestTimeoutError();
-    }
-
-    throw error;
-  } finally {
-    clearTimeout(timeout);
-  }
 }
 
 function getBody(value: unknown) {
@@ -156,6 +134,18 @@ function getHeaders(value: unknown) {
   }
 
   return headers;
+}
+
+function getHeaderValue(value: string | string[] | undefined) {
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+
+  return value ?? '';
+}
+
+function getHostname(url: URL) {
+  return url.hostname.replace(/^\[/, '').replace(/\]$/, '');
 }
 
 function getMethod(value: unknown) {
@@ -230,7 +220,7 @@ function isPublicIp(address: string) {
       normalizedAddress.startsWith('2001:db8:') ||
       normalizedAddress.startsWith('fc') ||
       normalizedAddress.startsWith('fd') ||
-      normalizedAddress.startsWith('fe80:') ||
+      /^fe[89ab][0-9a-f]:/.test(normalizedAddress) ||
       normalizedAddress.startsWith('ff')
     );
   }
@@ -240,4 +230,85 @@ function isPublicIp(address: string) {
 
 function isRedirect(status: number) {
   return status >= 300 && status < 400;
+}
+
+function normalizeHeaders(headers: IncomingHttpHeaders) {
+  return Object.fromEntries(
+    Object.entries(headers)
+      .map(([key, value]) => [key, getHeaderValue(value)])
+      .filter(([, value]) => value),
+  );
+}
+
+async function requestWithPinnedIp(
+  url: URL,
+  init: RequestInit,
+  resolvedAddress: ResolvedAddress,
+): Promise<ProxiedResponse> {
+  const request = url.protocol === 'https:' ? httpsRequest : httpRequest;
+  const headers = init.headers instanceof Headers ? Object.fromEntries(init.headers.entries()) : {};
+  const body = typeof init.body === 'string' ? init.body : undefined;
+  const options: RequestOptions = {
+    headers,
+    hostname: getHostname(url),
+    lookup: (_hostname, _options, callback) => {
+      callback(null, resolvedAddress.address, resolvedAddress.family);
+    },
+    method: init.method,
+    path: `${url.pathname}${url.search}`,
+    port: url.port,
+    protocol: url.protocol,
+  };
+
+  return new Promise((resolve, reject) => {
+    const requestMessage = request(options, (response) => {
+      const chunks: Buffer[] = [];
+
+      response.on('data', (chunk: Buffer) => {
+        chunks.push(chunk);
+      });
+      response.on('end', () => {
+        resolve({
+          body: Buffer.concat(chunks).toString('utf8'),
+          headers: normalizeHeaders(response.headers),
+          status: response.statusCode ?? 0,
+          statusText: response.statusMessage ?? '',
+        });
+      });
+    });
+
+    const timeout = setTimeout(() => {
+      requestMessage.destroy(new RequestTimeoutError());
+    }, REQUEST_TIMEOUT_MS);
+
+    requestMessage.on('error', reject);
+    requestMessage.on('close', () => {
+      clearTimeout(timeout);
+    });
+
+    if (body) {
+      requestMessage.write(body);
+    }
+
+    requestMessage.end();
+  });
+}
+
+async function resolvePublicAddress(url: URL): Promise<ResolvedAddress> {
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new BlockedUrlError();
+  }
+
+  const hostname = getHostname(url);
+  const ipVersion = isIP(hostname);
+  const addresses =
+    ipVersion === 0
+      ? await lookup(hostname, { all: true, verbatim: true })
+      : [{ address: hostname, family: ipVersion }];
+
+  if (addresses.length === 0 || addresses.some(({ address }) => !isPublicIp(address))) {
+    throw new BlockedUrlError();
+  }
+
+  return addresses[0] as ResolvedAddress;
 }

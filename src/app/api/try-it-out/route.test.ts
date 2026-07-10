@@ -1,10 +1,25 @@
+import type { RequestOptions } from 'node:http';
+
 import { lookup } from 'node:dns/promises';
+import { EventEmitter } from 'node:events';
+import { request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { POST } from './route';
 
 const mocks = vi.hoisted(() => ({
+  httpRequest: vi.fn(),
+  httpsRequest: vi.fn(),
   lookup: vi.fn(),
+  requests: [] as Array<{
+    options: RequestOptions;
+    request: EventEmitter & {
+      destroy: ReturnType<typeof vi.fn>;
+      end: ReturnType<typeof vi.fn>;
+      write: ReturnType<typeof vi.fn>;
+    };
+  }>,
 }));
 
 vi.mock('node:dns/promises', () => ({
@@ -14,11 +29,32 @@ vi.mock('node:dns/promises', () => ({
   lookup: mocks.lookup,
 }));
 
+vi.mock('node:http', () => ({
+  default: {
+    request: mocks.httpRequest,
+  },
+  request: mocks.httpRequest,
+}));
+
+vi.mock('node:https', () => ({
+  default: {
+    request: mocks.httpsRequest,
+  },
+  request: mocks.httpsRequest,
+}));
+
+const httpRequestMock = vi.mocked(httpRequest);
+const httpsRequestMock = vi.mocked(httpsRequest);
 const lookupMock = vi.mocked(lookup);
 
 describe('try-it-out route', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.requests = [];
+    queuedResponses.length = 0;
     lookupMock.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
+    httpsRequestMock.mockImplementation(createRequestImplementation());
+    httpRequestMock.mockImplementation(createRequestImplementation());
   });
 
   afterEach(() => {
@@ -26,15 +62,13 @@ describe('try-it-out route', () => {
     vi.useRealTimers();
   });
 
-  it('executes a request and returns response details', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response('{"ok":true}', {
-        headers: { 'content-type': 'application/json' },
-        status: 201,
-        statusText: 'Created',
-      }),
-    );
-    vi.stubGlobal('fetch', fetchMock);
+  it('executes a request through a pinned public IP and returns response details', async () => {
+    queueResponse({
+      body: '{"ok":true}',
+      headers: { 'content-type': 'application/json' },
+      status: 201,
+      statusText: 'Created',
+    });
 
     const response = await POST(
       new Request('http://localhost/api/try-it-out', {
@@ -52,27 +86,24 @@ describe('try-it-out route', () => {
       }),
     );
     const payload = await response.json();
+    const request = mocks.requests[0];
 
     expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[0][0].toString()).toBe('https://api.example.com/users');
+    expect(httpsRequestMock).toHaveBeenCalledTimes(1);
+    expect(request.options).toMatchObject({
+      hostname: 'api.example.com',
+      method: 'POST',
+      path: '/users',
+      protocol: 'https:',
+    });
+    expect(request.options.headers).toEqual({
+      'content-type': 'application/json',
+      cookie: 'session=token',
+    });
+    expect(request.request.write).toHaveBeenCalledWith('{"name":"Ada"}');
+    expect(request.options.lookup).toBeTypeOf('function');
 
-    const requestOptions = fetchMock.mock.calls[0][1] as {
-      body: string;
-      headers: Headers;
-      method: string;
-      redirect: string;
-      signal: AbortSignal;
-    };
-    const requestHeaders = requestOptions.headers;
-
-    expect(requestOptions.body).toBe('{"name":"Ada"}');
-    expect(requestOptions.method).toBe('POST');
-    expect(requestOptions.redirect).toBe('manual');
-    expect(requestOptions.signal).toBeInstanceOf(AbortSignal);
-    expect(requestHeaders.get('Content-Type')).toBe('application/json');
-    expect(requestHeaders.get('Cookie')).toBe('session=token');
-    expect(requestHeaders.get('Host')).toBeNull();
+    await expectPinnedLookup(request.options, 'api.example.com', '93.184.216.34', 4);
     expect(payload).toMatchObject({
       body: '{"ok":true}',
       headers: { 'content-type': 'application/json' },
@@ -99,10 +130,7 @@ describe('try-it-out route', () => {
     });
   });
 
-  it('blocks private destinations before fetch', async () => {
-    const fetchMock = vi.fn();
-    vi.stubGlobal('fetch', fetchMock);
-
+  it('blocks private destinations before creating a request', async () => {
     const response = await POST(
       new Request('http://localhost/api/try-it-out', {
         body: JSON.stringify({
@@ -114,14 +142,41 @@ describe('try-it-out route', () => {
     );
 
     expect(response.status).toBe(400);
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(httpRequestMock).not.toHaveBeenCalled();
+    expect(httpsRequestMock).not.toHaveBeenCalled();
     await expect(response.json()).resolves.toEqual({
       errorCode: 'blockedUrl',
     });
   });
 
+  it('blocks IPv6 link-local destinations from the whole fe80::/10 range', async () => {
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'http://[febf::1]/admin',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(httpRequestMock).not.toHaveBeenCalled();
+    await expect(response.json()).resolves.toEqual({ errorCode: 'blockedUrl' });
+  });
+
   it('returns a transport error when the proxied request fails', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')));
+    httpsRequestMock.mockImplementation(() => {
+      const request = createRequestMessage();
+
+      request.end.mockImplementation(() => {
+        request.emit('error', new Error('network'));
+        request.emit('close');
+        return request;
+      });
+
+      return request;
+    });
 
     const response = await POST(
       new Request('http://localhost/api/try-it-out', {
@@ -138,16 +193,15 @@ describe('try-it-out route', () => {
   });
 
   it('follows only validated redirects', async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response('', {
-          headers: { location: 'https://api.example.com/redirected' },
-          status: 302,
-        }),
-      )
-      .mockResolvedValueOnce(new Response('redirected', { status: 200, statusText: 'OK' }));
-    vi.stubGlobal('fetch', fetchMock);
+    queueResponse({
+      headers: { location: 'https://api.example.com/redirected' },
+      status: 302,
+    });
+    queueResponse({
+      body: 'redirected',
+      status: 200,
+      statusText: 'OK',
+    });
 
     const response = await POST(
       new Request('http://localhost/api/try-it-out', {
@@ -161,19 +215,16 @@ describe('try-it-out route', () => {
     const payload = await response.json();
 
     expect(response.status).toBe(200);
-    expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(fetchMock.mock.calls[1][0].toString()).toBe('https://api.example.com/redirected');
+    expect(httpsRequestMock).toHaveBeenCalledTimes(2);
+    expect(mocks.requests[1].options.path).toBe('/redirected');
     expect(payload.body).toBe('redirected');
   });
 
   it('blocks redirects to private destinations', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response('', {
-        headers: { location: 'http://127.0.0.1/admin' },
-        status: 302,
-      }),
-    );
-    vi.stubGlobal('fetch', fetchMock);
+    queueResponse({
+      headers: { location: 'http://127.0.0.1/admin' },
+      status: 302,
+    });
 
     const response = await POST(
       new Request('http://localhost/api/try-it-out', {
@@ -186,25 +237,20 @@ describe('try-it-out route', () => {
     );
 
     expect(response.status).toBe(400);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(httpsRequestMock).toHaveBeenCalledTimes(1);
+    expect(httpRequestMock).not.toHaveBeenCalled();
     await expect(response.json()).resolves.toEqual({ errorCode: 'blockedUrl' });
   });
 
   it('returns a timeout error when the proxied request hangs', async () => {
     vi.useFakeTimers();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(
-        (_url: URL, init?: RequestInit) =>
-          new Promise((_resolve, reject) => {
-            init?.signal?.addEventListener('abort', () => {
-              const error = new Error('aborted');
-              error.name = 'AbortError';
-              reject(error);
-            });
-          }),
-      ),
-    );
+    httpsRequestMock.mockImplementation((options) => {
+      const request = createRequestMessage();
+
+      mocks.requests.push({ options, request });
+
+      return request;
+    });
 
     const responsePromise = POST(
       new Request('http://localhost/api/try-it-out', {
@@ -221,6 +267,98 @@ describe('try-it-out route', () => {
     const response = await responsePromise;
 
     expect(response.status).toBe(504);
+    expect(mocks.requests[0].request.destroy).toHaveBeenCalled();
     await expect(response.json()).resolves.toEqual({ errorCode: 'timeout' });
   });
 });
+
+type QueuedResponse = {
+  body?: string;
+  headers?: Record<string, string>;
+  status: number;
+  statusText?: string;
+};
+
+function createRequestImplementation() {
+  return (options: RequestOptions, callback?: (response: EventEmitter) => void) => {
+    const request = createRequestMessage();
+    const response = queuedResponses.shift() ?? { status: 200 };
+
+    mocks.requests.push({ options, request });
+    request.end.mockImplementation(() => {
+      const responseMessage = createResponseMessage(response);
+
+      callback?.(responseMessage);
+      if (response.body) {
+        responseMessage.emit('data', Buffer.from(response.body));
+      }
+      responseMessage.emit('end');
+      request.emit('close');
+
+      return request;
+    });
+
+    return request;
+  };
+}
+
+const queuedResponses: QueuedResponse[] = [];
+
+function createRequestMessage() {
+  const request = new EventEmitter() as EventEmitter & {
+    destroy: ReturnType<typeof vi.fn>;
+    end: ReturnType<typeof vi.fn>;
+    write: ReturnType<typeof vi.fn>;
+  };
+
+  request.destroy = vi.fn((error?: Error) => {
+    if (error) {
+      request.emit('error', error);
+    }
+    request.emit('close');
+
+    return request;
+  });
+  request.end = vi.fn(() => request);
+  request.write = vi.fn(() => true);
+
+  return request;
+}
+
+function createResponseMessage(response: QueuedResponse) {
+  const responseMessage = new EventEmitter() as EventEmitter & {
+    headers: Record<string, string>;
+    statusCode: number;
+    statusMessage: string;
+  };
+
+  responseMessage.headers = response.headers ?? {};
+  responseMessage.statusCode = response.status;
+  responseMessage.statusMessage = response.statusText ?? '';
+
+  return responseMessage;
+}
+
+async function expectPinnedLookup(
+  options: RequestOptions,
+  hostname: string,
+  expectedAddress: string,
+  expectedFamily: 4 | 6,
+) {
+  await new Promise<void>((resolve, reject) => {
+    options.lookup?.(hostname, {}, (error, address, family) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      expect(address).toBe(expectedAddress);
+      expect(family).toBe(expectedFamily);
+      resolve();
+    });
+  });
+}
+
+function queueResponse(response: QueuedResponse) {
+  queuedResponses.push(response);
+}
