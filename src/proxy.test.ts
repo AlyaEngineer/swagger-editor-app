@@ -30,7 +30,7 @@ describe('proxy', () => {
     expect(mockClient.auth.getClaims).toHaveBeenCalled();
   });
 
-  it('passes the request through to the intl response', async () => {
+  it('passes the request through when the route is not an auth route', async () => {
     const request = new NextRequest('https://example.com/en');
 
     const response = await proxy(request);
@@ -56,6 +56,43 @@ describe('proxy', () => {
       'Failed to refresh Supabase session in proxy:',
       testError,
     );
+  });
+
+  it('redirects authenticated users away from sign-in route', async () => {
+    vi.mocked(createServerClient).mockReturnValueOnce({
+      auth: {
+        getClaims: vi.fn().mockResolvedValue({ data: { sub: 'user-id' }, error: null }),
+      },
+    });
+
+    const request = new NextRequest('https://example.com/en/sign-in');
+
+    const response = await proxy(request);
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toContain('https://example.com/');
+  });
+
+  it('redirects authenticated users away from sign-up route', async () => {
+    vi.mocked(createServerClient).mockReturnValueOnce({
+      auth: {
+        getClaims: vi.fn().mockResolvedValue({ data: { sub: 'user-id' }, error: null }),
+      },
+    });
+
+    const request = new NextRequest('https://example.com/en/sign-up');
+
+    const response = await proxy(request);
+
+    expect(response.status).toBe(307);
+  });
+
+  it('does not redirect unauthenticated users on sign-in route', async () => {
+    const request = new NextRequest('https://example.com/en/sign-in');
+
+    const response = await proxy(request);
+
+    expect(response.status).not.toBe(307);
   });
 
   it('setAll writes cookies to the request and applies response headers', async () => {
