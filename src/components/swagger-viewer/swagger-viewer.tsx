@@ -1,16 +1,19 @@
 'use client';
 
 import type { ChipProps } from '@mui/material/Chip';
-import type { ReactNode } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 import type {
   SwaggerEndpoint,
@@ -19,6 +22,7 @@ import type {
   SwaggerEndpointResponse,
 } from '@/utils/swagger-editor/get-swagger-endpoints';
 
+import { useToast } from '@/providers/toast-provider/ToastProvider';
 import { getMethodColor } from '@/utils/swagger-editor/get-method-color';
 import { groupEndpointsByPath } from '@/utils/swagger-editor/group-endpoints-by-path';
 
@@ -32,6 +36,14 @@ type SwaggerViewerProps = {
   apiInfo?: null | SwaggerViewerApiInfo;
   endpoints: SwaggerEndpoint[];
   isValid: boolean;
+};
+
+type TryItOutResponse = {
+  body: string;
+  durationMs: number;
+  headers: Record<string, string>;
+  status: number;
+  statusText: string;
 };
 
 export function SwaggerViewer({ apiInfo, endpoints, isValid }: SwaggerViewerProps) {
@@ -78,77 +90,79 @@ export function SwaggerViewer({ apiInfo, endpoints, isValid }: SwaggerViewerProp
 
           <Stack divider={<Divider flexItem />} spacing={0}>
             {pathEndpoints.map((endpoint) => (
-              <Stack
-                key={`${endpoint.method}:${endpoint.path}`}
-                spacing={1}
-                sx={{
-                  alignItems: { sm: 'center', xs: 'flex-start' },
-                  flexDirection: { sm: 'row', xs: 'column' },
-                  justifyContent: 'space-between',
-                  px: 2,
-                  py: 1.5,
-                }}
-              >
-                <Stack spacing={1} sx={{ minWidth: 0 }}>
-                  <Chip
-                    color={getMethodColor(endpoint.method) as ChipProps['color']}
-                    label={endpoint.method}
-                    size="small"
-                    sx={{ minWidth: 78 }}
-                  />
-
-                  <Typography component="h4" sx={{ fontWeight: 700 }} variant="subtitle1">
-                    {endpoint.summary || t('noSummary')}
-                  </Typography>
-                  {endpoint.operationId && (
-                    <Typography color="text.secondary" variant="caption">
-                      {t('operationIdLabel')}: {endpoint.operationId}
-                    </Typography>
-                  )}
-                  {endpoint.description && (
-                    <Typography color="text.secondary" variant="body2">
-                      {endpoint.description}
-                    </Typography>
-                  )}
-
-                  <DetailSection title={t('parametersTitle')}>
-                    {endpoint.parameters.length > 0 ? (
-                      endpoint.parameters.map((parameter) => (
-                        <ParameterDetails
-                          key={`${parameter.in}:${parameter.name}`}
-                          parameter={parameter}
-                        />
-                      ))
-                    ) : (
-                      <EmptyDetails>{t('noParameters')}</EmptyDetails>
-                    )}
-                  </DetailSection>
-
-                  <DetailSection title={t('requestBodyTitle')}>
-                    {endpoint.requestBody ? (
-                      <RequestBodyDetails requestBody={endpoint.requestBody} />
-                    ) : (
-                      <EmptyDetails>{t('noRequestBody')}</EmptyDetails>
-                    )}
-                  </DetailSection>
-
-                  <DetailSection title={t('responsesTitle')}>
-                    {endpoint.responses.length > 0 ? (
-                      endpoint.responses.map((response) => (
-                        <ResponseDetails key={response.statusCode} response={response} />
-                      ))
-                    ) : (
-                      <EmptyDetails>{t('noResponses')}</EmptyDetails>
-                    )}
-                  </DetailSection>
-                </Stack>
-              </Stack>
+              <EndpointPanel endpoint={endpoint} key={`${endpoint.method}:${endpoint.path}`} />
             ))}
           </Stack>
         </Paper>
       ))}
     </Stack>
   );
+}
+
+function applyPathParameters(
+  path: string,
+  parameters: SwaggerEndpointParameter[],
+  parameterValues: Record<string, string>,
+) {
+  return parameters
+    .filter((parameter) => parameter.in === 'path')
+    .reduce((currentPath, parameter) => {
+      const value = parameterValues[getParameterKey(parameter)] ?? '';
+
+      return currentPath.replaceAll(`{${parameter.name}}`, encodeURIComponent(value));
+    }, path);
+}
+
+function buildTryItOutRequest(
+  endpoint: SwaggerEndpoint,
+  serverUrl: string,
+  parameterValues: Record<string, string>,
+  body: string,
+) {
+  try {
+    const url = new URL(
+      joinUrl(serverUrl, applyPathParameters(endpoint.path, endpoint.parameters, parameterValues)),
+    );
+    const headers: Record<string, string> = {};
+    const cookieValues: string[] = [];
+
+    for (const parameter of endpoint.parameters) {
+      const value = parameterValues[getParameterKey(parameter)] ?? '';
+
+      if (!value) {
+        continue;
+      }
+
+      if (parameter.in === 'query') {
+        url.searchParams.set(parameter.name, value);
+      }
+
+      if (parameter.in === 'header') {
+        headers[parameter.name] = value;
+      }
+
+      if (parameter.in === 'cookie') {
+        cookieValues.push(`${parameter.name}=${value}`);
+      }
+    }
+
+    if (cookieValues.length > 0) {
+      headers.Cookie = cookieValues.join('; ');
+    }
+
+    if (endpoint.requestBody?.contentTypes[0]) {
+      headers['Content-Type'] = endpoint.requestBody.contentTypes[0];
+    }
+
+    return {
+      body,
+      headers,
+      method: endpoint.method,
+      url: url.toString(),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function ContentTypes({ contentTypes }: { contentTypes: string[] }) {
@@ -184,6 +198,67 @@ function EmptyDetails({ children }: { children: ReactNode }) {
   );
 }
 
+function EndpointPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
+  const t = useTranslations('swaggerViewer');
+
+  return (
+    <Stack spacing={1.5} sx={{ px: 2, py: 1.5 }}>
+      <Stack spacing={1} sx={{ minWidth: 0 }}>
+        <Chip
+          color={getMethodColor(endpoint.method) as ChipProps['color']}
+          label={endpoint.method}
+          size="small"
+          sx={{ minWidth: 78 }}
+        />
+
+        <Typography component="h4" sx={{ fontWeight: 700 }} variant="subtitle1">
+          {endpoint.summary || t('noSummary')}
+        </Typography>
+        {endpoint.operationId && (
+          <Typography color="text.secondary" variant="caption">
+            {t('operationIdLabel')}: {endpoint.operationId}
+          </Typography>
+        )}
+        {endpoint.description && (
+          <Typography color="text.secondary" variant="body2">
+            {endpoint.description}
+          </Typography>
+        )}
+
+        <DetailSection title={t('parametersTitle')}>
+          {endpoint.parameters.length > 0 ? (
+            endpoint.parameters.map((parameter) => (
+              <ParameterDetails key={`${parameter.in}:${parameter.name}`} parameter={parameter} />
+            ))
+          ) : (
+            <EmptyDetails>{t('noParameters')}</EmptyDetails>
+          )}
+        </DetailSection>
+
+        <DetailSection title={t('requestBodyTitle')}>
+          {endpoint.requestBody ? (
+            <RequestBodyDetails requestBody={endpoint.requestBody} />
+          ) : (
+            <EmptyDetails>{t('noRequestBody')}</EmptyDetails>
+          )}
+        </DetailSection>
+
+        <DetailSection title={t('responsesTitle')}>
+          {endpoint.responses.length > 0 ? (
+            endpoint.responses.map((response) => (
+              <ResponseDetails key={response.statusCode} response={response} />
+            ))
+          ) : (
+            <EmptyDetails>{t('noResponses')}</EmptyDetails>
+          )}
+        </DetailSection>
+
+        <TryItOutPanel endpoint={endpoint} />
+      </Stack>
+    </Stack>
+  );
+}
+
 function Examples({ examples }: { examples: string[] }) {
   const t = useTranslations('swaggerViewer');
 
@@ -215,6 +290,14 @@ function Examples({ examples }: { examples: string[] }) {
       ))}
     </Stack>
   );
+}
+
+function getParameterKey(parameter: SwaggerEndpointParameter) {
+  return `${parameter.in}:${parameter.name}`;
+}
+
+function joinUrl(serverUrl: string, path: string) {
+  return `${serverUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
 }
 
 function ParameterDetails({ parameter }: { parameter: SwaggerEndpointParameter }) {
@@ -300,5 +383,166 @@ function SchemaText({ schema }: { schema: string }) {
     <Typography color="text.secondary" variant="body2">
       {t('schemaLabel')}: {schema || t('schemaNotSpecified')}
     </Typography>
+  );
+}
+
+function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
+  const t = useTranslations('swaggerViewer');
+  const tToast = useTranslations('toaster');
+  const showToast = useToast();
+  const [body, setBody] = useState(endpoint.requestBody?.examples[0] ?? '');
+  const [error, setError] = useState('');
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
+  const [response, setResponse] = useState<null | TryItOutResponse>(null);
+  const [serverUrl, setServerUrl] = useState(endpoint.serverUrl);
+
+  const handleParameterChange = (parameter: SwaggerEndpointParameter, value: string) => {
+    setParameterValues((currentValues) => ({
+      ...currentValues,
+      [getParameterKey(parameter)]: value,
+    }));
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError('');
+    setResponse(null);
+
+    const request = buildTryItOutRequest(endpoint, serverUrl, parameterValues, body);
+
+    if (!request) {
+      setError(t('tryItOutInvalidUrl'));
+      return;
+    }
+
+    setIsExecuting(true);
+
+    try {
+      const result = await fetch('/api/try-it-out', {
+        body: JSON.stringify(request),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      });
+      const payload = await result.json();
+
+      if (!result.ok) {
+        const message = typeof payload.error === 'string' ? payload.error : t('tryItOutFailed');
+
+        setError(message);
+        showToast(tToast('requestNetworkError'), 'error');
+        return;
+      }
+
+      setResponse(payload as TryItOutResponse);
+    } catch {
+      setError(t('tryItOutFailed'));
+      showToast(tToast('requestNetworkError'), 'error');
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  return (
+    <Box component="form" onSubmit={handleSubmit}>
+      <DetailSection title={t('tryItOutTitle')}>
+        <TextField
+          fullWidth
+          label={t('serverUrlLabel')}
+          onChange={(event) => setServerUrl(event.target.value)}
+          size="small"
+          value={serverUrl}
+        />
+
+        {endpoint.parameters.map((parameter) => (
+          <TextField
+            fullWidth
+            key={getParameterKey(parameter)}
+            label={`${parameter.in}: ${parameter.name}`}
+            onChange={(event) => handleParameterChange(parameter, event.target.value)}
+            required={parameter.required}
+            size="small"
+            value={parameterValues[getParameterKey(parameter)] ?? ''}
+          />
+        ))}
+
+        {endpoint.requestBody && (
+          <TextField
+            fullWidth
+            label={t('requestBodyInputLabel')}
+            minRows={4}
+            multiline
+            onChange={(event) => setBody(event.target.value)}
+            size="small"
+            value={body}
+          />
+        )}
+
+        <Button disabled={isExecuting} type="submit" variant="contained">
+          {isExecuting ? t('executingLabel') : t('executeButton')}
+        </Button>
+
+        {error && <Alert severity="error">{error}</Alert>}
+        {response && <TryItOutResponseDetails response={response} />}
+      </DetailSection>
+    </Box>
+  );
+}
+
+function TryItOutResponseDetails({ response }: { response: TryItOutResponse }) {
+  const t = useTranslations('swaggerViewer');
+  const responseHeaders = Object.entries(response.headers);
+
+  return (
+    <Paper sx={{ p: 1.5 }} variant="outlined">
+      <Stack spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+          <Chip
+            color={response.status >= 400 ? 'error' : 'success'}
+            label={`${response.status} ${response.statusText}`}
+            size="small"
+          />
+          <Chip label={`${response.durationMs}ms`} size="small" variant="outlined" />
+        </Stack>
+
+        <Typography sx={{ fontWeight: 600 }} variant="caption">
+          {t('responseHeadersLabel')}
+        </Typography>
+        <Box
+          component="pre"
+          sx={{
+            bgcolor: 'action.hover',
+            borderRadius: 1,
+            fontSize: '0.75rem',
+            m: 0,
+            overflow: 'auto',
+            p: 1,
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          {responseHeaders.length > 0
+            ? responseHeaders.map(([key, value]) => `${key}: ${value}`).join('\n')
+            : t('noResponseHeaders')}
+        </Box>
+
+        <Typography sx={{ fontWeight: 600 }} variant="caption">
+          {t('responseBodyLabel')}
+        </Typography>
+        <Box
+          component="pre"
+          sx={{
+            bgcolor: 'action.hover',
+            borderRadius: 1,
+            fontSize: '0.75rem',
+            m: 0,
+            overflow: 'auto',
+            p: 1,
+            whiteSpace: 'pre-wrap',
+          }}
+        >
+          {response.body || t('emptyResponseBody')}
+        </Box>
+      </Stack>
+    </Paper>
   );
 }

@@ -80,6 +80,7 @@ describe('getSwaggerEndpoints', () => {
           },
         },
       },
+      servers: [{ url: 'https://api.example.com/v1' }],
     } as OpenApiDocument;
 
     expect(getSwaggerEndpoints(schema)).toEqual([
@@ -128,6 +129,7 @@ describe('getSwaggerEndpoints', () => {
             statusCode: '404',
           },
         ],
+        serverUrl: 'https://api.example.com/v1',
         summary: 'Get user',
       },
       {
@@ -160,6 +162,7 @@ describe('getSwaggerEndpoints', () => {
             statusCode: '201',
           },
         ],
+        serverUrl: 'https://api.example.com/v1',
         summary: 'No summary',
       },
     ]);
@@ -167,6 +170,8 @@ describe('getSwaggerEndpoints', () => {
 
   it('extracts Swagger 2 body parameters and response schemas', () => {
     const schema = {
+      basePath: '/v2',
+      host: 'api.example.com',
       paths: {
         '/pets': {
           post: {
@@ -192,6 +197,7 @@ describe('getSwaggerEndpoints', () => {
           },
         },
       },
+      schemes: ['http'],
       swagger: '2.0',
     } as OpenApiDocument;
 
@@ -218,6 +224,7 @@ describe('getSwaggerEndpoints', () => {
             statusCode: 'default',
           },
         ],
+        serverUrl: 'http://api.example.com/v2',
         summary: 'No summary',
       },
     ]);

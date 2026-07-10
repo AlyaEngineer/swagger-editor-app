@@ -13,6 +13,7 @@ export type SwaggerEndpoint = {
   path: string;
   requestBody: null | SwaggerEndpointRequestBody;
   responses: SwaggerEndpointResponse[];
+  serverUrl: string;
   summary: string;
 };
 
@@ -58,6 +59,7 @@ export function getSwaggerEndpoints(schema: null | OpenApiDocument): SwaggerEndp
   }
 
   const paths = schema.paths as Record<string, unknown>;
+  const serverUrl = getDefaultServerUrl(schema);
 
   return Object.entries(paths).flatMap(([path, pathItem]) => {
     if (!isRecord(pathItem)) {
@@ -85,6 +87,7 @@ export function getSwaggerEndpoints(schema: null | OpenApiDocument): SwaggerEndp
           path,
           requestBody,
           responses: getResponses(operationObject.responses),
+          serverUrl,
           summary: getString(operationObject.summary) || operationId || 'No summary',
         };
       });
@@ -125,6 +128,31 @@ function getContentDetails(content: unknown) {
     examples,
     schema: schemas[0] ?? '',
   };
+}
+
+function getDefaultServerUrl(schema: OpenApiDocument) {
+  const schemaRecord = schema as Record<string, unknown>;
+  const servers = schemaRecord.servers;
+
+  if (Array.isArray(servers)) {
+    const firstServer = servers.find((server) => isRecord(server) && getString(server.url));
+
+    if (isRecord(firstServer)) {
+      return getString(firstServer.url);
+    }
+  }
+
+  const host = getString(schemaRecord.host);
+
+  if (!host) {
+    return '';
+  }
+
+  const schemes = schemaRecord.schemes;
+  const scheme = Array.isArray(schemes) && typeof schemes[0] === 'string' ? schemes[0] : 'https';
+  const basePath = getString(schemaRecord.basePath);
+
+  return `${scheme}://${host}${basePath}`;
 }
 
 function getMediaTypeExamples(mediaType: Record<string, unknown>) {
