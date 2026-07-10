@@ -296,6 +296,21 @@ function getParameterKey(parameter: SwaggerEndpointParameter) {
   return `${parameter.in}:${parameter.name}`;
 }
 
+function getTryItOutErrorKey(errorCode: unknown) {
+  switch (errorCode) {
+    case 'blockedUrl':
+      return 'tryItOutBlockedUrl';
+    case 'invalidPayload':
+      return 'tryItOutInvalidPayload';
+    case 'invalidUrl':
+      return 'tryItOutInvalidUrl';
+    case 'timeout':
+      return 'tryItOutTimeout';
+    default:
+      return 'tryItOutFailed';
+  }
+}
+
 function joinUrl(serverUrl: string, path: string) {
   return `${serverUrl.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
 }
@@ -427,9 +442,7 @@ function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
       const payload = await result.json();
 
       if (!result.ok) {
-        const message = typeof payload.error === 'string' ? payload.error : t('tryItOutFailed');
-
-        setError(message);
+        setError(t(getTryItOutErrorKey(payload.errorCode)));
         showToast(tToast('requestNetworkError'), 'error');
         return;
       }

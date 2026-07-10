@@ -45,9 +45,12 @@
     "schemaLabel": "Схема",
     "schemaNotSpecified": "Не указана",
     "serverUrlLabel": "URL сервера",
+    "tryItOutBlockedUrl": "Этот адрес недоступен для запроса",
     "tryItOutFailed": "Не удалось выполнить запрос",
+    "tryItOutInvalidPayload": "Некорректные данные запроса",
     "tryItOutInvalidUrl": "Введите абсолютный HTTP URL сервера",
-    "tryItOutTitle": "Try it out"
+    "tryItOutTimeout": "Превышено время ожидания ответа",
+    "tryItOutTitle": "Опробовать"
   },
   "swaggerControl": {
     "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",
