@@ -113,6 +113,20 @@ function applyPathParameters(
     }, path);
 }
 
+function buildCurlCommand(request: NonNullable<ReturnType<typeof buildTryItOutRequest>>) {
+  const parts = ['curl', '-X', request.method, shellQuote(request.url)];
+
+  for (const [key, value] of Object.entries(request.headers)) {
+    parts.push('-H', shellQuote(`${key}: ${value}`));
+  }
+
+  if (request.body) {
+    parts.push('--data', shellQuote(request.body));
+  }
+
+  return parts.join(' ');
+}
+
 function buildTryItOutRequest(
   endpoint: SwaggerEndpoint,
   serverUrl: string,
@@ -401,11 +415,16 @@ function SchemaText({ schema }: { schema: string }) {
   );
 }
 
+function shellQuote(value: string) {
+  return `'${value.replaceAll("'", "'\\''")}'`;
+}
+
 function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
   const t = useTranslations('swaggerViewer');
   const tToast = useTranslations('toaster');
   const showToast = useToast();
   const [body, setBody] = useState(endpoint.requestBody?.examples[0] ?? '');
+  const [curlCommand, setCurlCommand] = useState('');
   const [error, setError] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
   const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
@@ -417,6 +436,29 @@ function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
       ...currentValues,
       [getParameterKey(parameter)]: value,
     }));
+  };
+
+  const handleCopyCurl = async () => {
+    try {
+      await navigator.clipboard.writeText(curlCommand);
+      showToast(tToast('curlCopySuccess'), 'success');
+    } catch {
+      showToast(tToast('curlCopyError'), 'error');
+    }
+  };
+
+  const handleGenerateCurl = () => {
+    setError('');
+
+    const request = buildTryItOutRequest(endpoint, serverUrl, parameterValues, body);
+
+    if (!request) {
+      setCurlCommand('');
+      setError(t('tryItOutInvalidUrl'));
+      return;
+    }
+
+    setCurlCommand(buildCurlCommand(request));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -491,9 +533,47 @@ function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
           />
         )}
 
-        <Button disabled={isExecuting} type="submit" variant="contained">
-          {isExecuting ? t('executingLabel') : t('executeButton')}
-        </Button>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+          <Button disabled={isExecuting} type="submit" variant="contained">
+            {isExecuting ? t('executingLabel') : t('executeButton')}
+          </Button>
+          <Button onClick={handleGenerateCurl} type="button" variant="outlined">
+            {t('generateCurlButton')}
+          </Button>
+        </Stack>
+
+        {curlCommand && (
+          <Paper sx={{ p: 1.5 }} variant="outlined">
+            <Stack spacing={1}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <Typography sx={{ fontWeight: 600 }} variant="caption">
+                  {t('curlCommandLabel')}
+                </Typography>
+                <Button onClick={handleCopyCurl} size="small" type="button" variant="text">
+                  {t('copyCurlButton')}
+                </Button>
+              </Stack>
+              <Box
+                component="pre"
+                sx={{
+                  bgcolor: 'action.hover',
+                  borderRadius: 1,
+                  fontSize: '0.75rem',
+                  m: 0,
+                  overflow: 'auto',
+                  p: 1,
+                  whiteSpace: 'pre-wrap',
+                }}
+              >
+                {curlCommand}
+              </Box>
+            </Stack>
+          </Paper>
+        )}
 
         {error && <Alert severity="error">{error}</Alert>}
         {response && <TryItOutResponseDetails response={response} />}
