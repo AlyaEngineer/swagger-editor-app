@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { ROUTES } from '@/constants/routes';
+import { useRouter } from '@/i18n/navigation';
 import { createClient } from '@/lib/client';
 
 type AuthContextValue = {
@@ -15,6 +17,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const supabase = createClient();
@@ -38,7 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) {
       throw error;
     }
-  }, []);
+
+    router.push(ROUTES.home);
+  }, [router]);
 
   const value = useMemo(
     () => ({ isAuthenticated, isAuthLoading, signOut }),

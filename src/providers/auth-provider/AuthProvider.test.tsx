@@ -8,6 +8,12 @@ vi.mock('@/lib/client', () => ({
   createClient: vi.fn(),
 }));
 
+const pushMock = vi.fn();
+
+vi.mock('@/i18n/navigation', () => ({
+  useRouter: () => ({ push: pushMock }),
+}));
+
 function mockSupabaseClient({
   authStateChangeCallback,
   user,
@@ -38,6 +44,7 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  pushMock.mockClear();
 });
 
 describe('AuthProvider', () => {
@@ -92,7 +99,7 @@ describe('AuthProvider', () => {
     });
   });
 
-  it('calls supabase signOut when signOut is invoked', async () => {
+  it('calls supabase signOut and redirects to home when signOut is invoked', async () => {
     const client = mockSupabaseClient({ user: { id: 'user-id' } });
     vi.mocked(createClient).mockReturnValue(client);
 
@@ -107,6 +114,7 @@ describe('AuthProvider', () => {
     });
 
     expect(client.auth.signOut).toHaveBeenCalled();
+    expect(pushMock).toHaveBeenCalledWith('/');
   });
 
   it('throws an error when useAuth is used outside AuthProvider', () => {
@@ -122,7 +130,7 @@ describe('AuthProvider', () => {
     expect((result.current as Error).message).toBe('useAuth must be used within AuthProvider');
   });
 
-  it('throws when supabase signOut returns an error', async () => {
+  it('throws when supabase signOut returns an error and does not redirect', async () => {
     vi.mocked(createClient).mockReturnValue({
       auth: {
         getUser: vi.fn().mockResolvedValue({ data: { user: { id: 'user-id' } } }),
@@ -138,5 +146,6 @@ describe('AuthProvider', () => {
     });
 
     await expect(result.current.signOut()).rejects.toThrow('sign out failed');
+    expect(pushMock).not.toHaveBeenCalled();
   });
 });
