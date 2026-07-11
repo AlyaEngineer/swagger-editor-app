@@ -264,6 +264,7 @@ async function requestWithPinnedIp(
     const requestMessage = request(options, (response) => {
       const chunks: Buffer[] = [];
 
+      response.on('error', reject);
       response.on('data', (chunk: Buffer) => {
         chunks.push(chunk);
       });
