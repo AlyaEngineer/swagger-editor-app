@@ -2,9 +2,11 @@ import { createServerClient } from '@supabase/ssr';
 import createIntlMiddleware from 'next-intl/middleware';
 import { type NextRequest, NextResponse } from 'next/server';
 
+import { ROUTES } from '@/constants/routes';
+
 import { routing } from './i18n/routing';
 
-const AUTH_ROUTES = ['/sign-in', '/sign-up'];
+const AUTH_ROUTES = [ROUTES.signIn, ROUTES.signUp];
 
 const handleIntl = createIntlMiddleware(routing);
 
@@ -20,8 +22,8 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet, headers) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           cookiesToSet.forEach(({ name, options, value }) => {
+            request.cookies.set(name, value);
             intlResponse.cookies.set(name, value, options);
           });
 
@@ -67,19 +69,16 @@ export async function proxy(request: NextRequest) {
   return intlResponse;
 }
 
-function getCurrentLocale(pathname: string) {
-  const localePattern = routing.locales.join('|');
-  const match = pathname.match(new RegExp(`^/(${localePattern})(?:/|$)`));
+function getCurrentLocale(pathname: string): string {
+  const currentLocale = pathname.split('/')[1];
 
-  return match?.[1] ?? routing.defaultLocale;
+  return routing.locales.find((locale) => locale === currentLocale) ?? routing.defaultLocale;
 }
 
 function matchesRoute(pathname: string, routes: string[]) {
-  return routes.some((route) => {
-    const pattern = new RegExp(`(^|/)${route.replace('/', '')}(/|$)`);
+  const segments = pathname.split('/');
 
-    return pattern.test(pathname);
-  });
+  return routes.some((route) => segments.includes(route.replace('/', '')));
 }
 
 export const config = {
