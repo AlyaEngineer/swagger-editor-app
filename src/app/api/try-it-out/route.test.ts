@@ -192,6 +192,38 @@ describe('try-it-out route', () => {
     await expect(response.json()).resolves.toEqual({ errorCode: 'requestFailed' });
   });
 
+  it('returns a transport error when the proxied response stream fails', async () => {
+    httpsRequestMock.mockImplementation((options, callback) => {
+      const request = createRequestMessage();
+
+      mocks.requests.push({ options, request });
+      request.end.mockImplementation(() => {
+        const response = createResponseMessage({ status: 200 });
+
+        callback?.(response);
+        response.emit('error', new Error('stream'));
+        request.emit('close');
+
+        return request;
+      });
+
+      return request;
+    });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'https://api.example.com/users',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({ errorCode: 'requestFailed' });
+  });
+
   it('follows only validated redirects', async () => {
     queueResponse({
       headers: { location: 'https://api.example.com/redirected' },
