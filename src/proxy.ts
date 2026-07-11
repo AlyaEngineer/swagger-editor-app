@@ -63,6 +63,10 @@ export async function proxy(request: NextRequest) {
       redirectResponse.cookies.set(cookie);
     });
 
+    intlResponse.headers.forEach((value, key) => {
+      redirectResponse.headers.set(key, value);
+    });
+
     return redirectResponse;
   }
 

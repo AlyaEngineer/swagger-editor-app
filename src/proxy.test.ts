@@ -121,6 +121,28 @@ describe('proxy', () => {
     expect(response.cookies.get('sb-session')?.value).toBe('refreshed-token');
   });
 
+  it('carries setAll headers onto the auth-route redirect', async () => {
+    vi.mocked(createServerClient).mockImplementationOnce((...args) => {
+      const options = args[2] as {
+        cookies: { setAll?: (cookies: unknown[], headers?: Record<string, string>) => void };
+      };
+
+      options.cookies.setAll?.([], { 'cache-control': 'no-store' });
+
+      return {
+        auth: {
+          getClaims: vi.fn().mockResolvedValue({ data: { sub: 'user-id' }, error: null }),
+        },
+      };
+    });
+
+    const request = new NextRequest('https://example.com/en/sign-in');
+
+    const response = await proxy(request);
+
+    expect(response.headers.get('cache-control')).toBe('no-store');
+  });
+
   it('setAll writes cookies to the request and applies response headers', async () => {
     vi.mocked(createServerClient).mockClear();
 
