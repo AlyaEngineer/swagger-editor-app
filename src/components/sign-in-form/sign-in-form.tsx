@@ -9,10 +9,16 @@ import { AppLinkButton } from '@/components/app-link/app-link';
 import { AuthCard } from '@/components/auth-card/auth-card';
 import { ControlledTextField } from '@/components/controlled-text-field/controlled-text-field';
 import { ROUTES } from '@/constants/routes';
+import { useRouter } from '@/i18n/navigation';
+import { createClient } from '@/lib/client';
+import { useToast } from '@/providers/toast-provider/ToastProvider';
 import { type SignInFormValues, signInSchema } from '@/utils/auth/auth-schemas';
 
 export default function SignInForm() {
   const t = useTranslations('authForm');
+  const tToast = useTranslations('toaster');
+  const showToast = useToast();
+  const router = useRouter();
 
   const methods = useForm<SignInFormValues>({
     defaultValues: {
@@ -25,7 +31,20 @@ export default function SignInForm() {
 
   const {
     formState: { errors, isSubmitting },
+    handleSubmit,
   } = methods;
+
+  async function onSubmit(values: SignInFormValues) {
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword(values);
+
+    if (error) {
+      showToast(tToast('signInError'), 'error');
+      return;
+    }
+
+    router.push(ROUTES.home);
+  }
 
   return (
     <AuthCard
@@ -41,6 +60,7 @@ export default function SignInForm() {
           autoComplete="off"
           component="form"
           noValidate
+          onSubmit={handleSubmit(onSubmit)}
           sx={{
             '& .MuiButton-root': { fontSize: '14px', height: '40px', py: 0 },
             display: 'flex',
