@@ -9,6 +9,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getTranslations } from 'next-intl/server';
 
 import { appFont, swaggerEditorFont } from '@/fonts';
+import { AuthProvider } from '@/providers/auth-provider/AuthProvider';
 import { MuiProvider } from '@/providers/mui-provider';
 
 type MetadataProps = {
@@ -47,11 +48,16 @@ export default async function RootLayout({ children, params }: Props) {
         <InitColorSchemeScript defaultMode="system" />
         <NextIntlClientProvider>
           <MuiProvider>
-            <Header />
-            <Box component="main" sx={{ maxWidth: 1200, mx: 'auto', px: 2, py: 4, width: '100%' }}>
-              {children}
-            </Box>
-            <Footer />
+            <AuthProvider>
+              <Header />
+              <Box
+                component="main"
+                sx={{ maxWidth: 1200, mx: 'auto', px: 2, py: 4, width: '100%' }}
+              >
+                {children}
+              </Box>
+              <Footer />
+            </AuthProvider>
           </MuiProvider>
         </NextIntlClientProvider>
       </body>

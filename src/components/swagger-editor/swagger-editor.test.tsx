@@ -16,6 +16,14 @@ vi.mock('@components', () => ({
   SwaggerViewer: () => <div data-testid="swagger-viewer-stub" />,
 }));
 
+vi.mock('@/providers/auth-provider/AuthProvider', () => ({
+  useAuth: () => ({
+    isAuthenticated: true,
+    isAuthLoading: false,
+    signOut: vi.fn(),
+  }),
+}));
+
 const mockUseSwagger = vi.fn();
 
 vi.mock('@/utils/hooks/use-swagger', () => ({

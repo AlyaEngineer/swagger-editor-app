@@ -5,6 +5,7 @@ import { Button, Stack } from '@mui/material';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { useAuth } from '@/providers/auth-provider/AuthProvider';
 import { useToast } from '@/providers/toast-provider/ToastProvider';
 import { SchemaService } from '@/services/schema-service';
 import { getSignalWithTimeout } from '@/utils/network/get-signal-with-timeout';
@@ -25,11 +26,7 @@ export const SwaggerControl = ({ editorValue, format, handleFormatToggle, isVali
   const showToast = useToast();
   const t = useTranslations('swaggerControl');
   const tToast = useTranslations('toaster');
-
-  // TODO: заменить на рабочую авторизацию
-  const { isAuthenticated } = {
-    isAuthenticated: true,
-  };
+  const { isAuthenticated } = useAuth();
 
   const isToggleDisabled = !isValid || isSaving;
 
