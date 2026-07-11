@@ -121,7 +121,7 @@ function buildCurlCommand(request: NonNullable<ReturnType<typeof buildTryItOutRe
   }
 
   if (request.body) {
-    parts.push('--data', shellQuote(request.body));
+    parts.push('--data-raw', shellQuote(request.body));
   }
 
   return parts.join(' ');
@@ -431,11 +431,26 @@ function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
   const [response, setResponse] = useState<null | TryItOutResponse>(null);
   const [serverUrl, setServerUrl] = useState(endpoint.serverUrl);
 
+  const resetGeneratedCurl = () => {
+    setCurlCommand('');
+  };
+
+  const handleBodyChange = (value: string) => {
+    resetGeneratedCurl();
+    setBody(value);
+  };
+
   const handleParameterChange = (parameter: SwaggerEndpointParameter, value: string) => {
+    resetGeneratedCurl();
     setParameterValues((currentValues) => ({
       ...currentValues,
       [getParameterKey(parameter)]: value,
     }));
+  };
+
+  const handleServerUrlChange = (value: string) => {
+    resetGeneratedCurl();
+    setServerUrl(value);
   };
 
   const handleCopyCurl = async () => {
@@ -504,7 +519,7 @@ function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
         <TextField
           fullWidth
           label={t('serverUrlLabel')}
-          onChange={(event) => setServerUrl(event.target.value)}
+          onChange={(event) => handleServerUrlChange(event.target.value)}
           size="small"
           value={serverUrl}
         />
@@ -527,7 +542,7 @@ function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
             label={t('requestBodyInputLabel')}
             minRows={4}
             multiline
-            onChange={(event) => setBody(event.target.value)}
+            onChange={(event) => handleBodyChange(event.target.value)}
             size="small"
             value={body}
           />

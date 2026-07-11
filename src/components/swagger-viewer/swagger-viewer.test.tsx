@@ -286,7 +286,7 @@ describe('SwaggerViewer', () => {
       },
     });
     const expectedCommand =
-      "curl -X POST 'https://api.example.com/v1/users/42?includePosts=true' -H 'X-Trace: abc' -H 'Cookie: session=token' -H 'Content-Type: application/json' --data '{\"name\":\"Ada\"}'";
+      "curl -X POST 'https://api.example.com/v1/users/42?includePosts=true' -H 'X-Trace: abc' -H 'Cookie: session=token' -H 'Content-Type: application/json' --data-raw '{\"name\":\"Ada\"}'";
 
     await user.type(screen.getByLabelText(/path: id/), '42');
     await user.type(screen.getByLabelText(/query: includePosts/), 'true');
@@ -301,6 +301,10 @@ describe('SwaggerViewer', () => {
 
     expect(writeTextMock).toHaveBeenCalledWith(expectedCommand);
     expect(await screen.findByText('curlCopySuccess')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/query: includePosts/), 'false');
+
+    expect(screen.queryByText(expectedCommand)).not.toBeInTheDocument();
   });
 
   it('maps server error codes to translated viewer messages', async () => {
