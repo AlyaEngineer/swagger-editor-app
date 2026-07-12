@@ -22,10 +22,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data }) => {
-      setIsAuthenticated(!!data.user);
-      setIsAuthLoading(false);
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data }) => {
+        setIsAuthenticated(!!data.user);
+      })
+      .catch((error) => {
+        console.error('Failed to check authentication status:', error);
+        setIsAuthenticated(false);
+      })
+      .finally(() => {
+        setIsAuthLoading(false);
+      });
 
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);

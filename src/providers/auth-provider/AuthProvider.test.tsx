@@ -148,4 +148,25 @@ describe('AuthProvider', () => {
     await expect(result.current.signOut()).rejects.toThrow('sign out failed');
     expect(pushMock).not.toHaveBeenCalled();
   });
+
+  it('sets isAuthLoading to false even when getUser rejects', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    vi.mocked(createClient).mockReturnValue({
+      auth: {
+        getUser: vi.fn().mockRejectedValue(new Error('network error')),
+        onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+        signOut: vi.fn(),
+      },
+    } as unknown as ReturnType<typeof createClient>);
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isAuthLoading).toBe(false);
+    });
+
+    expect(result.current.isAuthenticated).toBe(false);
+    expect(consoleErrorSpy).toHaveBeenCalled();
+  });
 });

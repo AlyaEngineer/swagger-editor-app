@@ -32,22 +32,26 @@ export default function SignUpForm() {
   } = methods;
 
   async function onSubmit(values: SignUpFormValues) {
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email: values.email,
-      options: {
-        data: { full_name: values.name },
-      },
-      password: values.password,
-    });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signUp({
+        email: values.email,
+        options: {
+          data: { full_name: values.name },
+        },
+        password: values.password,
+      });
 
-    if (error) {
+      if (error) {
+        showToast(tToast('signUpError'), 'error');
+        return;
+      }
+
+      showToast(tToast('signUpSuccess'), 'success');
+      router.push(ROUTES.home);
+    } catch {
       showToast(tToast('signUpError'), 'error');
-      return;
     }
-
-    showToast(tToast('signUpSuccess'), 'success');
-    router.push(ROUTES.home);
   }
 
   return (

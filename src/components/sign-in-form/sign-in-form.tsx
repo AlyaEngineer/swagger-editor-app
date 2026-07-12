@@ -35,15 +35,18 @@ export default function SignInForm() {
   } = methods;
 
   async function onSubmit(values: SignInFormValues) {
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword(values);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword(values);
 
-    if (error) {
+      if (error) {
+        showToast(tToast('signInError'), 'error');
+        return;
+      }
+      router.push(ROUTES.home);
+    } catch {
       showToast(tToast('signInError'), 'error');
-      return;
     }
-
-    router.push(ROUTES.home);
   }
 
   return (
