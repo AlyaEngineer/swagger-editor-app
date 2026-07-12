@@ -1,5 +1,3 @@
-'use client';
-
 import { Card as MuiCard, Stack, Typography } from '@mui/material';
 import { alpha, styled } from '@mui/material/styles';
 
