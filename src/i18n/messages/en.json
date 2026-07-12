@@ -55,7 +55,8 @@
   "errorPage": {
     "title": "Something went wrong",
     "description": "Try refreshing the page or come back later",
-    "retry": "Try again"
+    "retry": "Try again",
+    "redirecting": "Redirecting to the Main page..."
   },
   "toaster": {
     "schemaSaveError": "Failed to save schema",
