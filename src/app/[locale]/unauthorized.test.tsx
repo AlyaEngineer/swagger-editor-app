@@ -5,6 +5,10 @@ import { useRouter } from '@/i18n/navigation';
 
 import Unauthorized from './unauthorized';
 
+vi.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+}));
+
 vi.mock('@/i18n/navigation', () => ({
   useRouter: vi.fn(),
 }));

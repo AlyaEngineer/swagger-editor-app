@@ -144,18 +144,24 @@ describe('proxy', () => {
   });
 
   it('setAll writes cookies to the request and applies response headers', async () => {
-    vi.mocked(createServerClient).mockClear();
+    vi.mocked(createServerClient).mockImplementationOnce((...args) => {
+      const options = args[2] as {
+        cookies: { setAll?: (cookies: unknown[], headers?: Record<string, string>) => void };
+      };
+
+      options.cookies.setAll?.([{ name: 'session', options: { httpOnly: true }, value: 'token' }], {
+        'cache-control': 'no-store',
+      });
+
+      return {
+        auth: {
+          getClaims: vi.fn().mockResolvedValue({ data: null, error: null }),
+        },
+      };
+    });
 
     const request = new NextRequest('https://example.com/en');
     const response = await proxy(request);
-
-    const calls = vi.mocked(createServerClient).mock.calls;
-    const [, , options] = calls[calls.length - 1];
-
-    const cookiesToSet = [{ name: 'session', options: { httpOnly: true }, value: 'token' }];
-    const responseHeaders = { 'cache-control': 'no-store' };
-
-    options.cookies.setAll?.(cookiesToSet, responseHeaders);
 
     expect(request.cookies.get('session')?.value).toBe('token');
     expect(response.headers.get('cache-control')).toBe('no-store');
