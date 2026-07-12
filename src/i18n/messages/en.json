@@ -52,6 +52,7 @@
     "tryItOutFailed": "Request execution failed",
     "tryItOutInvalidPayload": "Invalid request payload",
     "tryItOutInvalidUrl": "Enter a valid absolute HTTP server URL",
+    "tryItOutMissingRequiredFields": "Fill in all required fields before generating cURL",
     "tryItOutTimeout": "Request timed out",
     "tryItOutTitle": "Try it out"
   },

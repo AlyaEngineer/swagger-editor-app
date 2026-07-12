@@ -73,6 +73,12 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
   const handleGenerateCurl = () => {
     setError('');
 
+    if (hasMissingRequiredFields(endpoint, parameterValues, body)) {
+      setCurlCommand('');
+      setError(t('tryItOutMissingRequiredFields'));
+      return;
+    }
+
     const request = buildTryItOutRequest(endpoint, serverUrl, parameterValues, body);
 
     if (!request) {
@@ -86,6 +92,11 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isExecuting) {
+      return;
+    }
+
     setError('');
     setResponse(null);
 
@@ -108,7 +119,6 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
 
       if (!result.ok) {
         setError(t(getTryItOutErrorKey(payload.errorCode)));
-        showToast(tToast('requestNetworkError'), 'error');
         return;
       }
 
@@ -122,7 +132,7 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
+    <Box aria-label={t('tryItOutTitle')} component="form" onSubmit={handleSubmit}>
       <DetailSection title={t('tryItOutTitle')}>
         <TextField
           fullWidth
@@ -172,4 +182,17 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
       </DetailSection>
     </Box>
   );
+}
+
+function hasMissingRequiredFields(
+  endpoint: SwaggerEndpoint,
+  parameterValues: Record<string, string>,
+  body: string,
+) {
+  const hasMissingParameter = endpoint.parameters.some(
+    (parameter) => parameter.required && !parameterValues[getParameterKey(parameter)]?.trim(),
+  );
+  const hasMissingBody = Boolean(endpoint.requestBody?.required && !body.trim());
+
+  return hasMissingParameter || hasMissingBody;
 }
