@@ -74,6 +74,7 @@
     "tryItOutFailed": "Не удалось выполнить запрос",
     "tryItOutInvalidPayload": "Некорректные данные запроса",
     "tryItOutInvalidUrl": "Введите абсолютный HTTP URL сервера",
+    "tryItOutMissingRequiredFields": "Заполните все обязательные поля перед генерацией cURL",
     "tryItOutTimeout": "Превышено время ожидания ответа",
     "tryItOutTitle": "Опробовать"
   },
