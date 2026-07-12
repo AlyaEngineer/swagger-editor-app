@@ -40,6 +40,7 @@ export function ControlledTextField({
         onClick={() => setShowPassword(!showPassword)}
         onMouseDown={(e) => e.preventDefault()}
         size="small"
+        type="button"
       >
         {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
       </IconButton>
