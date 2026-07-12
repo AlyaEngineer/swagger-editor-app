@@ -6,6 +6,7 @@ import { SwaggerMonacoEditor, SwaggerViewer } from '@components';
 import { Alert, alpha, Box, Paper, Stack } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
+import { type SavedSchema } from '@/services/schema-persistence';
 import { useSwagger } from '@/utils/hooks/use-swagger';
 import { getSwaggerEndpoints } from '@/utils/swagger-editor/get-swagger-endpoints';
 
@@ -53,9 +54,13 @@ const viewerPanelSx: SxProps<Theme> = {
   p: 2,
 };
 
-export const SwaggerEditor = () => {
+type Props = {
+  initialSchema?: null | SavedSchema;
+};
+
+export const SwaggerEditor = ({ initialSchema = null }: Props) => {
   const { editorValue, error, format, handleEditorChange, handleFormatToggle, isValid, schema } =
-    useSwagger();
+    useSwagger(initialSchema);
 
   const endpoints = getSwaggerEndpoints(schema);
 
