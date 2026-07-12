@@ -11,6 +11,28 @@
     "about": "About",
     "language": "Language"
   },
+  "authForm": {
+    "invalidEmail": "Please enter a valid email address",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "nameRequired": "Name is required",
+    "passwordTooShort": "Password must be at least 8 characters long",
+    "passwordMissingLetter": "Password must contain at least one letter",
+    "passwordMissingDigit": "Password must contain at least one digit",
+    "passwordMissingSpecialChar": "Password must contain at least one special character",
+    "signInTitle": "Sign In",
+    "signUpTitle": "Sign Up",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "signInButton": "Sign In",
+    "signUpButton": "Sign Up",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign In"
+  },
   "HomePage": {
     "title": "Swagger/OpenAPI UI",
     "description": "Edit, view and test OpenAPI specifications in one app."

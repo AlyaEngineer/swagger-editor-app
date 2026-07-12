@@ -22,6 +22,14 @@ vi.mock('@/i18n/navigation', () => ({
   useRouter: () => ({ replace: vi.fn() }),
 }));
 
+vi.mock('@/providers/auth-provider/AuthProvider', () => ({
+  useAuth: () => ({
+    isAuthenticated: true,
+    isAuthLoading: false,
+    signOut: vi.fn(),
+  }),
+}));
+
 const baseProps = {
   editorValue: 'openapi: 3.0.0',
   format: 'yaml' as const,
