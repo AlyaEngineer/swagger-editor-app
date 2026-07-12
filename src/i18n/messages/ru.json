@@ -77,5 +77,64 @@
     "aboutLink": "О проекте",
     "githubLink": "GitHub"
   },
-  "check": "проверка русского"
+  "AboutPage": {
+    "metadata": {
+      "title": "О проекте | Swagger Editor App",
+      "description": "Узнайте о React-курсе RS School, Swagger Editor App и команде разработки."
+    },
+    "hero": {
+      "eyebrow": "React-курс RS School 2026",
+      "title": "Swagger Editor App",
+      "description": "Командное приложение для редактирования, изучения и тестирования OpenAPI-спецификаций в одном адаптивном интерфейсе."
+    },
+    "course": {
+      "title": "Создано в The Rolling Scopes School",
+      "description": "RS School - это бесплатная образовательная онлайн-программа, созданная сообществом. React-курс сочетает современную frontend-теорию с командной практикой и завершается совместной разработкой Swagger/OpenAPI UI.",
+      "highlights": {
+        "community": {
+          "title": "Сила сообщества",
+          "description": "Студенты учатся вместе с коллегами, менторами и участниками международного сообщества Rolling Scopes."
+        },
+        "practice": {
+          "title": "Обучение на практике",
+          "description": "Программа охватывает TypeScript, тестирование, управление состоянием, формы, производительность и Next.js через практические задания."
+        },
+        "open": {
+          "title": "Открытые знания",
+          "description": "Материалы курса, документация и ресурсы сообщества доступны онлайн для самостоятельного обучения."
+        }
+      }
+    },
+    "project": {
+      "title": "Единое пространство для OpenAPI",
+      "description": "Swagger Editor App объединяет редактор схем, документацию endpoint-ов, выполнение запросов и историю запросов авторизованных пользователей в одном full-stack React-приложении.",
+      "technologies": "Технологии"
+    },
+    "team": {
+      "eyebrow": "Команда разработки",
+      "title": "Создано вместе",
+      "description": "Три frontend-разработчика совместно работают над архитектурой, дизайном интерфейса, тестированием и выпуском проекта.",
+      "github": "Профиль GitHub",
+      "githubProfile": "Открыть GitHub-профиль {name}",
+      "members": {
+        "alya": {
+          "role": "Тимлид / Frontend-разработчик"
+        },
+        "yulia": {
+          "role": "Frontend-разработчик"
+        },
+        "ivan": {
+          "role": "Frontend-разработчик"
+        }
+      }
+    },
+    "resources": {
+      "title": "Ресурсы проекта",
+      "description": "Перейдите к официальному курсу, документации школы или исходному коду проекта.",
+      "school": "The Rolling Scopes School",
+      "course": "React-курс",
+      "docs": "Документация RS School",
+      "repository": "Репозиторий проекта"
+    }
+  }
 }

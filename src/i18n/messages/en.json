@@ -77,5 +77,64 @@
     "aboutLink": "About",
     "githubLink": "GitHub"
   },
-  "check": "check english"
+  "AboutPage": {
+    "metadata": {
+      "title": "About | Swagger Editor App",
+      "description": "Learn about the RS School React course, Swagger Editor App, and its development team."
+    },
+    "hero": {
+      "eyebrow": "RS School React Course 2026",
+      "title": "Swagger Editor App",
+      "description": "A team-built workspace for editing, exploring, and testing OpenAPI specifications from one responsive interface."
+    },
+    "course": {
+      "title": "Built at The Rolling Scopes School",
+      "description": "RS School is a free, community-based online education program. Its React course combines modern frontend theory with practical teamwork and culminates in the collaborative Swagger/OpenAPI UI project.",
+      "highlights": {
+        "community": {
+          "title": "Community driven",
+          "description": "Students learn with peers, mentors, and contributors from the international Rolling Scopes community."
+        },
+        "practice": {
+          "title": "Built through practice",
+          "description": "The curriculum covers TypeScript, testing, state management, forms, performance, and Next.js through hands-on assignments."
+        },
+        "open": {
+          "title": "Open learning",
+          "description": "Course materials, documentation, and community resources are available online for independent study."
+        }
+      }
+    },
+    "project": {
+      "title": "One workspace for OpenAPI",
+      "description": "Swagger Editor App brings schema editing, endpoint documentation, request execution, and authenticated request history into one full-stack React application.",
+      "technologies": "Technologies"
+    },
+    "team": {
+      "eyebrow": "Development team",
+      "title": "Created together",
+      "description": "Three frontend developers collaborate across architecture, interface design, testing, and delivery.",
+      "github": "GitHub profile",
+      "githubProfile": "Open {name}'s GitHub profile",
+      "members": {
+        "alya": {
+          "role": "Team Lead / Frontend Developer"
+        },
+        "yulia": {
+          "role": "Frontend Developer"
+        },
+        "ivan": {
+          "role": "Frontend Developer"
+        }
+      }
+    },
+    "resources": {
+      "title": "Project resources",
+      "description": "Continue with the official course, school documentation, or the project source code.",
+      "school": "The Rolling Scopes School",
+      "course": "React course",
+      "docs": "RS School documentation",
+      "repository": "Project repository"
+    }
+  }
 }

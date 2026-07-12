@@ -8,4 +8,7 @@ export const ROUTES = {
 
 export const EXTERNAL_LINKS = {
   githubRepo: 'https://github.com/AlyaEngineer/swagger-editor-app',
+  reactCourse: 'https://rs.school/courses/reactjs',
+  rsDocs: 'https://rs.school/docs',
+  rsSchool: 'https://rs.school/',
 } as const;

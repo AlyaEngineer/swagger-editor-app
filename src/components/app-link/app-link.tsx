@@ -27,16 +27,34 @@ type AppLinkAsLinkProps = Omit<
   'component' | 'href' | 'ref' | 'to'
 > & {
   href: I18nLinkProps['href'];
+  isExternal?: boolean;
 };
 
 type AppLinkProps = AppLinkAsButtonProps | AppLinkAsLinkProps;
 
 export const AppLinkButton = (props: AppLinkProps) => {
   if (props.href !== undefined) {
-    const { children, color = 'primary', href, variant, ...linkProps } = props;
+    const {
+      children,
+      color = 'primary',
+      href,
+      isExternal = false,
+      rel,
+      target,
+      variant,
+      ...linkProps
+    } = props;
 
     return (
-      <Button color={color} component={LinkBehavior} to={href} variant={variant} {...linkProps}>
+      <Button
+        color={color}
+        component={LinkBehavior}
+        rel={isExternal ? (rel ?? 'noreferrer') : rel}
+        target={isExternal ? (target ?? '_blank') : target}
+        to={href}
+        variant={variant}
+        {...linkProps}
+      >
         {children}
       </Button>
     );
