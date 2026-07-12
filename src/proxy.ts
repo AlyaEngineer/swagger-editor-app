@@ -11,7 +11,7 @@ const AUTH_ROUTES = [ROUTES.signIn, ROUTES.signUp];
 const handleIntl = createIntlMiddleware(routing);
 
 export async function proxy(request: NextRequest) {
-  const intlResponse = handleIntl(request);
+  let response = handleIntl(request);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,14 +22,17 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet, headers) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+
+          response = NextResponse.next({ request });
+
           cookiesToSet.forEach(({ name, options, value }) => {
-            request.cookies.set(name, value);
-            intlResponse.cookies.set(name, value, options);
+            response.cookies.set(name, value, options);
           });
 
           if (headers) {
             Object.entries(headers).forEach(([key, value]) => {
-              intlResponse.headers.set(key, value);
+              response.headers.set(key, value);
             });
           }
         },
@@ -59,18 +62,14 @@ export async function proxy(request: NextRequest) {
 
     const redirectResponse = NextResponse.redirect(mainUrl);
 
-    intlResponse.cookies.getAll().forEach((cookie) => {
+    response.cookies.getAll().forEach((cookie) => {
       redirectResponse.cookies.set(cookie);
-    });
-
-    intlResponse.headers.forEach((value, key) => {
-      redirectResponse.headers.set(key, value);
     });
 
     return redirectResponse;
   }
 
-  return intlResponse;
+  return response;
 }
 
 function getCurrentLocale(pathname: string): string {
