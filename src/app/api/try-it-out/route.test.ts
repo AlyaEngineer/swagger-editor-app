@@ -4,7 +4,7 @@ import { lookup } from 'node:dns/promises';
 import { EventEmitter } from 'node:events';
 import { request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 
 import { POST } from './route';
 
@@ -51,9 +51,27 @@ vi.mock('@/lib/server', () => ({
   createClient: mocks.createClient,
 }));
 
-const httpRequestMock = vi.mocked(httpRequest);
-const httpsRequestMock = vi.mocked(httpsRequest);
-const lookupMock = vi.mocked(lookup);
+type MockedLookup = Mock<
+  (
+    hostname: string,
+    options: { all: true; verbatim: true },
+  ) => Promise<Array<{ address: string; family: number }>>
+>;
+
+type MockedNodeRequest = Mock<
+  (
+    options: RequestOptions,
+    callback?: (response: EventEmitter) => void,
+  ) => EventEmitter & {
+    destroy: ReturnType<typeof vi.fn>;
+    end: ReturnType<typeof vi.fn>;
+    write: ReturnType<typeof vi.fn>;
+  }
+>;
+
+const httpRequestMock = vi.mocked(httpRequest) as unknown as MockedNodeRequest;
+const httpsRequestMock = vi.mocked(httpsRequest) as unknown as MockedNodeRequest;
+const lookupMock = vi.mocked(lookup) as unknown as MockedLookup;
 
 describe('try-it-out route', () => {
   beforeEach(() => {
