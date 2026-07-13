@@ -21,6 +21,7 @@ const FORBIDDEN_HEADERS = new Set([
   'upgrade',
 ]);
 const MAX_REDIRECTS = 5;
+const MAX_RESPONSE_BYTES = 5 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
 
 export const runtime = 'nodejs';
@@ -313,9 +314,17 @@ async function requestWithPinnedIp(
   return new Promise((resolve, reject) => {
     const requestMessage = request(options, (response) => {
       const chunks: Buffer[] = [];
+      let totalBytes = 0;
 
       response.on('error', reject);
       response.on('data', (chunk: Buffer) => {
+        totalBytes += chunk.length;
+
+        if (totalBytes > MAX_RESPONSE_BYTES) {
+          requestMessage.destroy(new Error('Response body exceeded the allowed size'));
+          return;
+        }
+
         chunks.push(chunk);
       });
       response.on('end', () => {

@@ -270,6 +270,45 @@ describe('try-it-out route', () => {
     await expect(response.json()).resolves.toEqual({ errorCode: 'requestFailed' });
   });
 
+  it('aborts overly large proxied responses before buffering them fully', async () => {
+    httpsRequestMock.mockImplementation((options, callback) => {
+      const request = createRequestMessage();
+
+      mocks.requests.push({ options, request });
+      request.end.mockImplementation(() => {
+        const response = createResponseMessage({ status: 200 });
+
+        callback?.(response);
+        response.emit('data', Buffer.alloc(5 * 1024 * 1024 + 1));
+
+        return request;
+      });
+
+      return request;
+    });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'https://api.example.com/users',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(502);
+    expect(mocks.requests[0].request.destroy.mock.calls[0]?.[0]).toBeInstanceOf(Error);
+    expect(mocks.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error_details: 'requestFailed',
+        response_size: 0,
+        status_code: 502,
+      }),
+    );
+    await expect(response.json()).resolves.toEqual({ errorCode: 'requestFailed' });
+  });
+
   it('follows only validated redirects', async () => {
     queueResponse({
       headers: { location: 'https://api.example.com/redirected' },
