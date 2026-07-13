@@ -9,15 +9,11 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-// Используется, если ControlledTextField импортирует иконки так:
-// import { Visibility, VisibilityOff } from '@mui/icons-material';
 vi.mock('@mui/icons-material', () => ({
   Visibility: () => <span data-testid="visibility-icon" />,
   VisibilityOff: () => <span data-testid="visibility-off-icon" />,
 }));
 
-// Используются, если иконки импортируются напрямую:
-// import Visibility from '@mui/icons-material/Visibility';
 vi.mock('@mui/icons-material/Visibility', () => ({
   default: () => <span data-testid="visibility-icon" />,
 }));

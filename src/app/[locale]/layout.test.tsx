@@ -98,12 +98,12 @@ describe('generateMetadata', () => {
   it('passes another locale to getTranslations', async () => {
     await generateMetadata({
       params: Promise.resolve({
-        locale: 'tr',
+        locale: 'ru',
       }),
     });
 
     expect(mocks.getTranslations).toHaveBeenCalledWith({
-      locale: 'tr',
+      locale: 'ru',
       namespace: 'Metadata',
     });
   });
@@ -118,14 +118,14 @@ describe('RootLayout', () => {
     const layout = await RootLayout({
       children: <div>Page content</div>,
       params: Promise.resolve({
-        locale: 'tr',
+        locale: 'ru',
       }),
     });
 
     expect(layout).toMatchObject({
       props: {
         className: 'app-font-variable swagger-editor-font-variable',
-        lang: 'tr',
+        lang: 'ru',
         suppressHydrationWarning: true,
       },
       type: 'html',

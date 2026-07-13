@@ -24,7 +24,7 @@ vi.mock('@/i18n/navigation', () => ({
 
 vi.mock('@/i18n/routing', () => ({
   routing: {
-    locales: ['en', 'tr'],
+    locales: ['en', 'ru'],
   },
 }));
 
@@ -72,7 +72,7 @@ describe('LanguageSwitcher', () => {
 
     expect(screen.getByRole('option', { name: 'EN' })).toBeInTheDocument();
 
-    expect(screen.getByRole('option', { name: 'TR' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: 'RU' })).toBeInTheDocument();
   });
 
   it('replaces the current route with the selected locale', async () => {
@@ -88,17 +88,17 @@ describe('LanguageSwitcher', () => {
 
     await user.click(
       screen.getByRole('option', {
-        name: 'TR',
+        name: 'RU',
       }),
     );
 
     expect(mocks.replace).toHaveBeenCalledExactlyOnceWith('/about', {
-      locale: 'tr',
+      locale: 'ru',
     });
   });
 
   it('shows another locale when it is currently active', () => {
-    mocks.useLocale.mockReturnValue('tr');
+    mocks.useLocale.mockReturnValue('ru');
 
     render(<LanguageSwitcher />);
 
@@ -106,6 +106,6 @@ describe('LanguageSwitcher', () => {
       screen.getByRole('combobox', {
         name: 'Language',
       }),
-    ).toHaveTextContent('TR');
+    ).toHaveTextContent('RU');
   });
 });
