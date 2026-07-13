@@ -4,7 +4,7 @@ import { Paper, Table, TableBody, TableContainer, TablePagination } from '@mui/m
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import type { RequestHistoryEntry } from '@/utils/history/get-request-history';
+import type { RequestHistoryEntry } from '@/utils/history/history-types';
 
 import { HistoryTableHeader } from './history-table-header';
 import { HistoryTableRow } from './history-table-row';

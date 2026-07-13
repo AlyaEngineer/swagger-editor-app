@@ -1,21 +1,5 @@
 import { createClient } from '@/lib/server';
-
-export type RequestHistoryEntry = {
-  createdAt: string;
-  durationMs: number;
-  endpoint: string;
-  errorDetails: null | string;
-  id: string;
-  method: string;
-  requestSize: number;
-  responseSize: number;
-  statusCode: number;
-};
-
-export type RequestHistoryResult = {
-  entries: RequestHistoryEntry[];
-  hasError: boolean;
-};
+import { RequestHistoryResult } from '@/utils/history/history-types';
 
 export async function getRequestHistory(): Promise<RequestHistoryResult> {
   const supabase = await createClient();

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 
-import type { RequestHistoryEntry } from '@/utils/history/get-request-history';
+import type { RequestHistoryEntry } from '@/utils/history/history-types';
 
 import { HistoryList } from './history-list';
 

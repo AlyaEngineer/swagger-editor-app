@@ -1,6 +1,6 @@
 import { Chip, TableCell, TableRow, Tooltip, Typography } from '@mui/material';
 
-import type { RequestHistoryEntry } from '@/utils/history/get-request-history';
+import type { RequestHistoryEntry } from '@/utils/history/history-types';
 
 const ERROR_PREVIEW_LENGTH = 40;
 
