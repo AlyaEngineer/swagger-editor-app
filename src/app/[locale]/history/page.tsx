@@ -13,17 +13,28 @@ export default async function HistoryPage() {
   const t = await getTranslations('HistoryPage');
   const tToast = await getTranslations('toaster');
 
+  if (hasError) {
+    return (
+      <div>
+        <h1>{t('title')}</h1>
+        <Alert severity="error">{tToast('historyLoadError')}</Alert>
+      </div>
+    );
+  }
+
+  if (entries.length === 0) {
+    return (
+      <div>
+        <h1>{t('title')}</h1>
+        <HistoryEmptyState />
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>{t('title')}</h1>
-
-      {hasError ? (
-        <Alert severity="error">{tToast('historyLoadError')}</Alert>
-      ) : entries.length === 0 ? (
-        <HistoryEmptyState />
-      ) : (
-        <HistoryList entries={entries} />
-      )}
+      <HistoryList entries={entries} />
     </div>
   );
 }
