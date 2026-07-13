@@ -158,6 +158,50 @@ describe('try-it-out route', () => {
     });
   });
 
+  it('requires authentication before proxying a valid request', async () => {
+    mocks.getUser.mockResolvedValueOnce({ data: { user: null } });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'https://api.example.com/users',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(401);
+    expect(httpsRequestMock).not.toHaveBeenCalled();
+    expect(mocks.insert).not.toHaveBeenCalled();
+    await expect(response.json()).resolves.toEqual({ errorCode: 'unauthorized' });
+  });
+
+  it('redacts credentials and sensitive query values before storing history', async () => {
+    queueResponse({
+      body: 'ok',
+      status: 200,
+    });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'https://user:pass@api.example.com/users?access_token=secret&search=ada',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.requests[0].options.path).toBe('/users?access_token=secret&search=ada');
+    expect(mocks.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        endpoint: 'https://api.example.com/users?access_token=%5Bredacted%5D&search=ada',
+      }),
+    );
+  });
+
   it('blocks private destinations before creating a request', async () => {
     const response = await POST(
       new Request('http://localhost/api/try-it-out', {
@@ -270,6 +314,39 @@ describe('try-it-out route', () => {
     await expect(response.json()).resolves.toEqual({ errorCode: 'requestFailed' });
   });
 
+  it('rejects incomplete upstream closes before the end event', async () => {
+    httpsRequestMock.mockImplementation((options, callback) => {
+      const request = createRequestMessage();
+
+      mocks.requests.push({ options, request });
+      request.end.mockImplementation(() => {
+        const response = createResponseMessage({ status: 200 });
+
+        callback?.(response);
+        response.emit('data', Buffer.from('partial'));
+        response.emit('close');
+        request.emit('close');
+
+        return request;
+      });
+
+      return request;
+    });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'https://api.example.com/users',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toEqual({ errorCode: 'requestFailed' });
+  });
+
   it('aborts overly large proxied responses before buffering them fully', async () => {
     httpsRequestMock.mockImplementation((options, callback) => {
       const request = createRequestMessage();
@@ -337,6 +414,32 @@ describe('try-it-out route', () => {
     expect(payload.body).toBe('redirected');
   });
 
+  it('blocks cross-origin redirects without replaying the request body or credentials', async () => {
+    queueResponse({
+      headers: { location: 'https://evil.example.com/capture' },
+      status: 302,
+    });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          body: '{"secret":"value"}',
+          headers: {
+            Authorization: 'Bearer secret',
+          },
+          method: 'POST',
+          url: 'https://api.example.com/users',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(httpsRequestMock).toHaveBeenCalledTimes(1);
+    expect(mocks.requests[0].request.write).toHaveBeenCalledWith('{"secret":"value"}');
+    await expect(response.json()).resolves.toEqual({ errorCode: 'blockedUrl' });
+  });
+
   it('blocks redirects to private destinations', async () => {
     queueResponse({
       headers: { location: 'http://127.0.0.1/admin' },
@@ -357,6 +460,51 @@ describe('try-it-out route', () => {
     expect(httpsRequestMock).toHaveBeenCalledTimes(1);
     expect(httpRequestMock).not.toHaveBeenCalled();
     await expect(response.json()).resolves.toEqual({ errorCode: 'blockedUrl' });
+  });
+
+  it('applies the timeout to DNS resolution', async () => {
+    vi.useFakeTimers();
+    lookupMock.mockImplementation(() => new Promise(() => {}));
+
+    const responsePromise = POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'https://api.example.com/users',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    await vi.advanceTimersByTimeAsync(15_000);
+
+    const response = await responsePromise;
+
+    expect(response.status).toBe(504);
+    expect(httpsRequestMock).not.toHaveBeenCalled();
+    await expect(response.json()).resolves.toEqual({ errorCode: 'timeout' });
+  });
+
+  it('keeps request execution successful when history insert returns an error result', async () => {
+    mocks.insert.mockResolvedValueOnce({ error: { message: 'rls' } });
+    queueResponse({
+      body: 'ok',
+      status: 200,
+    });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'https://api.example.com/users',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.insert).toHaveBeenCalled();
+    await expect(response.json()).resolves.toMatchObject({ body: 'ok' });
   });
 
   it('returns a timeout error when the proxied request hangs', async () => {

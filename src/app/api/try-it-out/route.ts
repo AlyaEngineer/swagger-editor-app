@@ -20,9 +20,28 @@ const FORBIDDEN_HEADERS = new Set([
   'transfer-encoding',
   'upgrade',
 ]);
+const HISTORY_TIMEOUT_MS = 1_000;
 const MAX_REDIRECTS = 5;
 const MAX_RESPONSE_BYTES = 5 * 1024 * 1024;
 const REQUEST_TIMEOUT_MS = 15_000;
+const SENSITIVE_QUERY_KEYS = [
+  'access_token',
+  'api_key',
+  'apikey',
+  'auth',
+  'authorization',
+  'client_secret',
+  'code',
+  'cookie',
+  'jwt',
+  'key',
+  'password',
+  'refresh_token',
+  'secret',
+  'session',
+  'signature',
+  'token',
+];
 
 export const runtime = 'nodejs';
 
@@ -47,6 +66,8 @@ type ResolvedAddress = {
   address: string;
   family: 4 | 6;
 };
+
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
 type TryItOutPayload = {
   body?: unknown;
@@ -74,7 +95,14 @@ export async function POST(request: Request) {
   }
 
   const requestBody = method === 'GET' || method === 'HEAD' ? undefined : getBody(payload.body);
+  const historyEndpoint = getHistoryEndpoint(url);
   const startedAt = performance.now();
+  const supabase = await createClient();
+  const userId = await getUserId(supabase);
+
+  if (!userId) {
+    return getErrorResponse('unauthorized', 401);
+  }
 
   try {
     const response = await fetchValidatedUrl(url, {
@@ -84,15 +112,19 @@ export async function POST(request: Request) {
     });
     const durationMs = Math.round(performance.now() - startedAt);
 
-    await saveRequestHistorySafely({
-      durationMs,
-      endpoint: url.toString(),
-      errorDetails: null,
-      method,
-      requestSize: getTextSize(requestBody),
-      responseSize: getTextSize(response.body),
-      statusCode: response.status,
-    });
+    await saveRequestHistorySafely(
+      {
+        durationMs,
+        endpoint: historyEndpoint,
+        errorDetails: null,
+        method,
+        requestSize: getTextSize(requestBody),
+        responseSize: getTextSize(response.body),
+        statusCode: response.status,
+      },
+      supabase,
+      userId,
+    );
 
     return Response.json({
       body: response.body,
@@ -103,14 +135,41 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     if (error instanceof BlockedUrlError) {
-      return getTrackedErrorResponse('blockedUrl', 400, startedAt, url, method, requestBody);
+      return getTrackedErrorResponse(
+        'blockedUrl',
+        400,
+        startedAt,
+        historyEndpoint,
+        method,
+        requestBody,
+        supabase,
+        userId,
+      );
     }
 
     if (error instanceof RequestTimeoutError) {
-      return getTrackedErrorResponse('timeout', 504, startedAt, url, method, requestBody);
+      return getTrackedErrorResponse(
+        'timeout',
+        504,
+        startedAt,
+        historyEndpoint,
+        method,
+        requestBody,
+        supabase,
+        userId,
+      );
     }
 
-    return getTrackedErrorResponse('requestFailed', 502, startedAt, url, method, requestBody);
+    return getTrackedErrorResponse(
+      'requestFailed',
+      502,
+      startedAt,
+      historyEndpoint,
+      method,
+      requestBody,
+      supabase,
+      userId,
+    );
   }
 }
 
@@ -126,7 +185,13 @@ async function fetchValidatedUrl(url: URL, init: RequestInit) {
       return response;
     }
 
-    currentUrl = new URL(location, currentUrl);
+    const redirectUrl = new URL(location, currentUrl);
+
+    if (redirectUrl.origin !== currentUrl.origin) {
+      throw new BlockedUrlError();
+    }
+
+    currentUrl = redirectUrl;
   }
 
   throw new BlockedUrlError();
@@ -170,6 +235,21 @@ function getHeaderValue(value: string | string[] | undefined) {
   return value ?? '';
 }
 
+function getHistoryEndpoint(url: URL) {
+  const sanitizedUrl = new URL(url);
+
+  sanitizedUrl.username = '';
+  sanitizedUrl.password = '';
+
+  for (const key of [...sanitizedUrl.searchParams.keys()]) {
+    if (isSensitiveQueryKey(key)) {
+      sanitizedUrl.searchParams.set(key, '[redacted]');
+    }
+  }
+
+  return sanitizedUrl.toString();
+}
+
 function getHostname(url: URL) {
   return url.hostname.replace(/^\[/, '').replace(/\]$/, '');
 }
@@ -204,19 +284,25 @@ async function getTrackedErrorResponse(
   errorCode: string,
   status: number,
   startedAt: number,
-  url: URL,
+  endpoint: string,
   method: string,
   requestBody: string | undefined,
+  supabase: SupabaseServerClient,
+  userId: string,
 ) {
-  await saveRequestHistorySafely({
-    durationMs: Math.round(performance.now() - startedAt),
-    endpoint: url.toString(),
-    errorDetails: errorCode,
-    method,
-    requestSize: getTextSize(requestBody),
-    responseSize: 0,
-    statusCode: status,
-  });
+  await saveRequestHistorySafely(
+    {
+      durationMs: Math.round(performance.now() - startedAt),
+      endpoint,
+      errorDetails: errorCode,
+      method,
+      requestSize: getTextSize(requestBody),
+      responseSize: 0,
+      statusCode: status,
+    },
+    supabase,
+    userId,
+  );
 
   return getErrorResponse(errorCode, status);
 }
@@ -230,6 +316,18 @@ function getUrl(value: unknown) {
     const url = new URL(value);
 
     return url.protocol === 'http:' || url.protocol === 'https:' ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+async function getUserId(supabase: SupabaseServerClient) {
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    return user?.id ?? null;
   } catch {
     return null;
   }
@@ -283,6 +381,16 @@ function isRedirect(status: number) {
   return status >= 300 && status < 400;
 }
 
+function isSensitiveQueryKey(key: string) {
+  const normalizedKey = key.toLowerCase();
+
+  return SENSITIVE_QUERY_KEYS.some((sensitiveKey) => normalizedKey.includes(sensitiveKey));
+}
+
+async function lookupWithTimeout(hostname: string) {
+  return withTimeout(lookup(hostname, { all: true, verbatim: true }), REQUEST_TIMEOUT_MS);
+}
+
 function normalizeHeaders(headers: IncomingHttpHeaders) {
   return Object.fromEntries(
     Object.entries(headers)
@@ -312,15 +420,39 @@ async function requestWithPinnedIp(
   };
 
   return new Promise((resolve, reject) => {
+    let isSettled = false;
+
+    const rejectOnce = (error: Error) => {
+      if (isSettled) {
+        return;
+      }
+
+      isSettled = true;
+      reject(error);
+    };
+
+    const resolveOnce = (response: ProxiedResponse) => {
+      if (isSettled) {
+        return;
+      }
+
+      isSettled = true;
+      resolve(response);
+    };
+
     const requestMessage = request(options, (response) => {
       const chunks: Buffer[] = [];
       let totalBytes = 0;
 
-      response.on('error', reject);
+      response.on('close', () => {
+        rejectOnce(new Error('Response closed before completion'));
+      });
+      response.on('error', rejectOnce);
       response.on('data', (chunk: Buffer) => {
         totalBytes += chunk.length;
 
         if (totalBytes > MAX_RESPONSE_BYTES) {
+          rejectOnce(new Error('Response body exceeded the allowed size'));
           requestMessage.destroy(new Error('Response body exceeded the allowed size'));
           return;
         }
@@ -328,7 +460,7 @@ async function requestWithPinnedIp(
         chunks.push(chunk);
       });
       response.on('end', () => {
-        resolve({
+        resolveOnce({
           body: Buffer.concat(chunks).toString('utf8'),
           headers: normalizeHeaders(response.headers),
           status: response.statusCode ?? 0,
@@ -341,7 +473,7 @@ async function requestWithPinnedIp(
       requestMessage.destroy(new RequestTimeoutError());
     }, REQUEST_TIMEOUT_MS);
 
-    requestMessage.on('error', reject);
+    requestMessage.on('error', rejectOnce);
     requestMessage.on('close', () => {
       clearTimeout(timeout);
     });
@@ -363,7 +495,7 @@ async function resolvePublicAddress(url: URL): Promise<ResolvedAddress> {
   const ipVersion = isIP(hostname);
   const addresses =
     ipVersion === 0
-      ? await lookup(hostname, { all: true, verbatim: true })
+      ? await lookupWithTimeout(hostname)
       : [{ address: hostname, family: ipVersion }];
 
   if (addresses.length === 0 || addresses.some(({ address }) => !isPublicIp(address))) {
@@ -373,29 +505,49 @@ async function resolvePublicAddress(url: URL): Promise<ResolvedAddress> {
   return addresses[0] as ResolvedAddress;
 }
 
-async function saveRequestHistorySafely(data: RequestHistoryData) {
+async function saveRequestHistorySafely(
+  data: RequestHistoryData,
+  supabase: SupabaseServerClient,
+  userId: string,
+) {
   try {
-    const supabase = await createClient();
+    const { error } = await withTimeout(
+      supabase.from('request_history').insert({
+        duration_ms: data.durationMs,
+        endpoint: data.endpoint,
+        error_details: data.errorDetails,
+        method: data.method,
+        request_size: data.requestSize,
+        response_size: data.responseSize,
+        status_code: data.statusCode,
+        user_id: userId,
+      }),
+      HISTORY_TIMEOUT_MS,
+    );
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
+    if (error) {
       return;
     }
-
-    await supabase.from('request_history').insert({
-      duration_ms: data.durationMs,
-      endpoint: data.endpoint,
-      error_details: data.errorDetails,
-      method: data.method,
-      request_size: data.requestSize,
-      response_size: data.responseSize,
-      status_code: data.statusCode,
-      user_id: user.id,
-    });
   } catch {
     // Request execution should not fail if optional history persistence is unavailable.
+  }
+}
+
+async function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((_resolve, reject) => {
+        timeout = setTimeout(() => {
+          reject(new RequestTimeoutError());
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
   }
 }
