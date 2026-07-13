@@ -6,36 +6,28 @@ const headerCellSx = {
   whiteSpace: 'pre-line',
 };
 
+const columnTitles = [
+  'methodColumn',
+  'endpointColumn',
+  'statusColumn',
+  'durationColumn',
+  'requestSizeColumn',
+  'responseSizeColumn',
+  'timestampColumn',
+  'errorColumn',
+] as const;
+
 export function HistoryTableHeader() {
   const t = useTranslations('HistoryPage');
 
   return (
     <TableHead>
       <TableRow>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('methodColumn')}
-        </TableCell>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('endpointColumn')}
-        </TableCell>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('statusColumn')}
-        </TableCell>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('durationColumn')}
-        </TableCell>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('requestSizeColumn')}
-        </TableCell>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('responseSizeColumn')}
-        </TableCell>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('timestampColumn')}
-        </TableCell>
-        <TableCell align="center" sx={headerCellSx}>
-          {t('errorColumn')}
-        </TableCell>
+        {columnTitles.map((title) => (
+          <TableCell align="center" key={title} sx={headerCellSx}>
+            {t(title)}
+          </TableCell>
+        ))}
       </TableRow>
     </TableHead>
   );
