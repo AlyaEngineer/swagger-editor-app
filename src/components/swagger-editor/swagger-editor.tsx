@@ -58,6 +58,13 @@ export const SwaggerEditor = () => {
     useSwagger();
 
   const endpoints = getSwaggerEndpoints(schema);
+  const apiInfo = schema
+    ? {
+        description: typeof schema.info.description === 'string' ? schema.info.description : '',
+        title: typeof schema.info.title === 'string' ? schema.info.title : '',
+        version: typeof schema.info.version === 'string' ? schema.info.version : '',
+      }
+    : null;
 
   const t = useTranslations('swaggerEditor');
 
@@ -91,7 +98,7 @@ export const SwaggerEditor = () => {
           </Paper>
 
           <Paper sx={viewerPanelSx}>
-            <SwaggerViewer endpoints={endpoints} isValid={isValid} />
+            <SwaggerViewer apiInfo={apiInfo} endpoints={endpoints} isValid={isValid} />
           </Paper>
         </Box>
       </Stack>
