@@ -9,8 +9,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { POST } from './route';
 
 const mocks = vi.hoisted(() => ({
+  createClient: vi.fn(),
+  from: vi.fn(),
+  getUser: vi.fn(),
   httpRequest: vi.fn(),
   httpsRequest: vi.fn(),
+  insert: vi.fn(),
   lookup: vi.fn(),
   requests: [] as Array<{
     options: RequestOptions;
@@ -43,6 +47,10 @@ vi.mock('node:https', () => ({
   request: mocks.httpsRequest,
 }));
 
+vi.mock('@/lib/server', () => ({
+  createClient: mocks.createClient,
+}));
+
 const httpRequestMock = vi.mocked(httpRequest);
 const httpsRequestMock = vi.mocked(httpsRequest);
 const lookupMock = vi.mocked(lookup);
@@ -52,6 +60,13 @@ describe('try-it-out route', () => {
     vi.clearAllMocks();
     mocks.requests = [];
     queuedResponses.length = 0;
+    mocks.getUser.mockResolvedValue({ data: { user: { id: 'user-id' } } });
+    mocks.insert.mockResolvedValue({ error: null });
+    mocks.from.mockReturnValue({ insert: mocks.insert });
+    mocks.createClient.mockResolvedValue({
+      auth: { getUser: mocks.getUser },
+      from: mocks.from,
+    });
     lookupMock.mockResolvedValue([{ address: '93.184.216.34', family: 4 }]);
     httpsRequestMock.mockImplementation(createRequestImplementation());
     httpRequestMock.mockImplementation(createRequestImplementation());
@@ -111,6 +126,18 @@ describe('try-it-out route', () => {
       statusText: 'Created',
     });
     expect(typeof payload.durationMs).toBe('number');
+    expect(mocks.from).toHaveBeenCalledWith('request_history');
+    expect(mocks.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        endpoint: 'https://api.example.com/users',
+        error_details: null,
+        method: 'POST',
+        request_size: Buffer.byteLength('{"name":"Ada"}', 'utf8'),
+        response_size: Buffer.byteLength('{"ok":true}', 'utf8'),
+        status_code: 201,
+        user_id: 'user-id',
+      }),
+    );
   });
 
   it('rejects invalid payloads', async () => {
@@ -125,6 +152,7 @@ describe('try-it-out route', () => {
     );
 
     expect(response.status).toBe(400);
+    expect(mocks.insert).not.toHaveBeenCalled();
     await expect(response.json()).resolves.toEqual({
       errorCode: 'invalidUrl',
     });
@@ -144,6 +172,15 @@ describe('try-it-out route', () => {
     expect(response.status).toBe(400);
     expect(httpRequestMock).not.toHaveBeenCalled();
     expect(httpsRequestMock).not.toHaveBeenCalled();
+    expect(mocks.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        endpoint: 'http://127.0.0.1/admin',
+        error_details: 'blockedUrl',
+        method: 'GET',
+        status_code: 400,
+        user_id: 'user-id',
+      }),
+    );
     await expect(response.json()).resolves.toEqual({
       errorCode: 'blockedUrl',
     });
@@ -189,6 +226,15 @@ describe('try-it-out route', () => {
     );
 
     expect(response.status).toBe(502);
+    expect(mocks.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        endpoint: 'https://api.example.com/users',
+        error_details: 'requestFailed',
+        method: 'GET',
+        status_code: 502,
+        user_id: 'user-id',
+      }),
+    );
     await expect(response.json()).resolves.toEqual({ errorCode: 'requestFailed' });
   });
 

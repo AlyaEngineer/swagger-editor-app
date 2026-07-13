@@ -5,6 +5,8 @@ import { request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
 import { isIP } from 'node:net';
 
+import { createClient } from '@/lib/server';
+
 const ALLOWED_METHODS = new Set(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
 const FORBIDDEN_HEADERS = new Set([
   'connection',
@@ -28,6 +30,16 @@ type ProxiedResponse = {
   headers: Record<string, string>;
   status: number;
   statusText: string;
+};
+
+type RequestHistoryData = {
+  durationMs: number;
+  endpoint: string;
+  errorDetails: null | string;
+  method: string;
+  requestSize: number;
+  responseSize: number;
+  statusCode: number;
 };
 
 type ResolvedAddress = {
@@ -60,31 +72,44 @@ export async function POST(request: Request) {
     return getErrorResponse('invalidUrl', 400);
   }
 
+  const requestBody = method === 'GET' || method === 'HEAD' ? undefined : getBody(payload.body);
+  const startedAt = performance.now();
+
   try {
-    const startedAt = performance.now();
     const response = await fetchValidatedUrl(url, {
-      body: method === 'GET' || method === 'HEAD' ? undefined : getBody(payload.body),
+      body: requestBody,
       headers: getHeaders(payload.headers),
       method,
+    });
+    const durationMs = Math.round(performance.now() - startedAt);
+
+    await saveRequestHistorySafely({
+      durationMs,
+      endpoint: url.toString(),
+      errorDetails: null,
+      method,
+      requestSize: getTextSize(requestBody),
+      responseSize: getTextSize(response.body),
+      statusCode: response.status,
     });
 
     return Response.json({
       body: response.body,
-      durationMs: Math.round(performance.now() - startedAt),
+      durationMs,
       headers: response.headers,
       status: response.status,
       statusText: response.statusText,
     });
   } catch (error) {
     if (error instanceof BlockedUrlError) {
-      return getErrorResponse('blockedUrl', 400);
+      return getTrackedErrorResponse('blockedUrl', 400, startedAt, url, method, requestBody);
     }
 
     if (error instanceof RequestTimeoutError) {
-      return getErrorResponse('timeout', 504);
+      return getTrackedErrorResponse('timeout', 504, startedAt, url, method, requestBody);
     }
 
-    return getErrorResponse('requestFailed', 502);
+    return getTrackedErrorResponse('requestFailed', 502, startedAt, url, method, requestBody);
   }
 }
 
@@ -168,6 +193,31 @@ async function getPayload(request: Request): Promise<null | TryItOutPayload> {
   } catch {
     return null;
   }
+}
+
+function getTextSize(value: string | undefined) {
+  return value ? Buffer.byteLength(value, 'utf8') : 0;
+}
+
+async function getTrackedErrorResponse(
+  errorCode: string,
+  status: number,
+  startedAt: number,
+  url: URL,
+  method: string,
+  requestBody: string | undefined,
+) {
+  await saveRequestHistorySafely({
+    durationMs: Math.round(performance.now() - startedAt),
+    endpoint: url.toString(),
+    errorDetails: errorCode,
+    method,
+    requestSize: getTextSize(requestBody),
+    responseSize: 0,
+    statusCode: status,
+  });
+
+  return getErrorResponse(errorCode, status);
 }
 
 function getUrl(value: unknown) {
@@ -312,4 +362,31 @@ async function resolvePublicAddress(url: URL): Promise<ResolvedAddress> {
   }
 
   return addresses[0] as ResolvedAddress;
+}
+
+async function saveRequestHistorySafely(data: RequestHistoryData) {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return;
+    }
+
+    await supabase.from('request_history').insert({
+      duration_ms: data.durationMs,
+      endpoint: data.endpoint,
+      error_details: data.errorDetails,
+      method: data.method,
+      request_size: data.requestSize,
+      response_size: data.responseSize,
+      status_code: data.statusCode,
+      user_id: user.id,
+    });
+  } catch {
+    // Request execution should not fail if optional history persistence is unavailable.
+  }
 }
