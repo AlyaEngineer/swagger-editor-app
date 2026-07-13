@@ -1,10 +1,17 @@
 import { isSavedSchema } from '@/services/schema-persistence';
 import { saveSchemaForCurrentUser } from '@/services/schema-server-service';
+import { validateSwaggerSchema } from '@/utils/swagger-editor/swagger-validation';
 
 export async function POST(request: Request) {
   const payload: unknown = await request.json().catch(() => null);
 
   if (!isSavedSchema(payload)) {
+    return Response.json({ error: 'Invalid schema payload' }, { status: 400 });
+  }
+
+  const validationResult = await validateSwaggerSchema(payload.content);
+
+  if (!validationResult.isValid) {
     return Response.json({ error: 'Invalid schema payload' }, { status: 400 });
   }
 

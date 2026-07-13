@@ -53,6 +53,13 @@ describe('schema server service', () => {
     expect(mockFrom).not.toHaveBeenCalled();
   });
 
+  it('returns null when Supabase restore returns an error', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
+    mockMaybeSingle.mockResolvedValue({ data: null, error: new Error('RLS denied') });
+
+    await expect(restoreSchemaForCurrentUser()).resolves.toBeNull();
+  });
+
   it('sends raw text and format to Supabase when saving', async () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
     mockUpsert.mockResolvedValue({ error: null });
@@ -83,5 +90,22 @@ describe('schema server service', () => {
     ).resolves.toBe('unauthorized');
 
     expect(mockUpsert).not.toHaveBeenCalled();
+  });
+
+  it('returns error when Supabase save fails', async () => {
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } }, error: null });
+    mockUpsert.mockResolvedValue({ error: new Error('RLS denied') });
+
+    await expect(
+      saveSchemaForCurrentUser({ content: 'openapi: 3.0.0', format: 'yaml' }),
+    ).resolves.toBe('error');
+  });
+
+  it('returns error when auth lookup throws during save', async () => {
+    mockGetUser.mockRejectedValue(new Error('Network failure'));
+
+    await expect(
+      saveSchemaForCurrentUser({ content: 'openapi: 3.0.0', format: 'yaml' }),
+    ).resolves.toBe('error');
   });
 });

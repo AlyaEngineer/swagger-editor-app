@@ -3,54 +3,79 @@ import { createClient } from '@/lib/server';
 import { isSavedSchema, SAVED_SCHEMAS_TABLE, type SavedSchema } from './schema-persistence';
 
 type SaveSchemaResult = 'error' | 'saved' | 'unauthorized';
+type SchemaContext =
+  | {
+      status: 'authenticated';
+      supabase: Awaited<ReturnType<typeof createClient>>;
+      userId: string;
+    }
+  | {
+      status: 'error' | 'unauthorized';
+    };
 
 export async function restoreSchemaForCurrentUser(): Promise<null | SavedSchema> {
-  const { supabase, userId } = await getCurrentUserId();
+  try {
+    const context = await getCurrentUserContext();
 
-  if (!userId) {
+    if (context.status !== 'authenticated') {
+      return null;
+    }
+
+    const { data, error } = await context.supabase
+      .from(SAVED_SCHEMAS_TABLE)
+      .select('content, format')
+      .eq('user_id', context.userId)
+      .maybeSingle();
+
+    if (error || !isSavedSchema(data)) {
+      return null;
+    }
+
+    return data;
+  } catch {
     return null;
   }
-
-  const { data, error } = await supabase
-    .from(SAVED_SCHEMAS_TABLE)
-    .select('content, format')
-    .eq('user_id', userId)
-    .maybeSingle();
-
-  if (error || !isSavedSchema(data)) {
-    return null;
-  }
-
-  return data;
 }
 
 export async function saveSchemaForCurrentUser(schema: SavedSchema): Promise<SaveSchemaResult> {
-  const { supabase, userId } = await getCurrentUserId();
+  try {
+    const context = await getCurrentUserContext();
 
-  if (!userId) {
-    return 'unauthorized';
+    if (context.status !== 'authenticated') {
+      return context.status;
+    }
+
+    const { error } = await context.supabase.from(SAVED_SCHEMAS_TABLE).upsert(
+      {
+        content: schema.content,
+        format: schema.format,
+        updated_at: new Date().toISOString(),
+        user_id: context.userId,
+      },
+      { onConflict: 'user_id' },
+    );
+
+    return error ? 'error' : 'saved';
+  } catch {
+    return 'error';
   }
-
-  const { error } = await supabase.from(SAVED_SCHEMAS_TABLE).upsert(
-    {
-      content: schema.content,
-      format: schema.format,
-      updated_at: new Date().toISOString(),
-      user_id: userId,
-    },
-    { onConflict: 'user_id' },
-  );
-
-  return error ? 'error' : 'saved';
 }
 
-async function getCurrentUserId() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
+async function getCurrentUserContext(): Promise<SchemaContext> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.getUser();
 
-  if (error || !data.user) {
-    return { supabase, userId: null };
+    if (error) {
+      return { status: 'error' };
+    }
+
+    if (!data.user) {
+      return { status: 'unauthorized' };
+    }
+
+    return { status: 'authenticated', supabase, userId: data.user.id };
+  } catch {
+    return { status: 'error' };
   }
-
-  return { supabase, userId: data.user.id };
 }
