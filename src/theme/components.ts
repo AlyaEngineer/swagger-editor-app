@@ -5,6 +5,34 @@ import { alpha } from '@mui/material/styles';
 const controlHeight = 36;
 
 export const components: Components<Theme> = {
+  MuiAlert: {
+    styleOverrides: {
+      root: ({ ownerState, theme }) => {
+        if (ownerState.variant !== 'standard') {
+          return {};
+        }
+
+        const severityColors = {
+          error: theme.palette.error,
+          info: theme.palette.info,
+          success: theme.palette.success,
+          warning: theme.palette.warning,
+        } as const;
+
+        const severity = (ownerState.severity ?? 'info') as keyof typeof severityColors;
+        const color = severityColors[severity];
+
+        return {
+          backgroundColor: alpha(color.main, 0.16),
+          color: color.dark,
+          ...theme.applyStyles('dark', {
+            color: color.light,
+          }),
+        };
+      },
+    },
+  },
+
   MuiAppBar: {
     styleOverrides: {
       root: ({ theme }) => ({

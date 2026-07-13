@@ -39,6 +39,21 @@
     "title": "Swagger/OpenAPI UI",
     "description": "Редактируйте, просматривайте и тестируйте OpenAPI-спецификации в одном приложении."
   },
+  "HistoryPage": {
+    "title": "История запросов",
+    "emptyMessage": "Вы ещё не выполнили ни одного запроса",
+    "emptyLinksHint": "Начните с загрузки схемы и выполнения запроса к эндпоинту",
+    "goToEditor": "Перейти в редактор",
+    "errorLabel": "Ошибка",
+    "durationColumn": "Длительность",
+    "endpointColumn": "Эндпоинт",
+    "errorColumn": "Ошибка",
+    "methodColumn": "Метод",
+    "requestSizeColumn": "Размер\nзапроса",
+    "responseSizeColumn": "Размер\nответа",
+    "statusColumn": "Статус",
+    "timestampColumn": "Время"
+  },
   "swaggerEditor": {
     "conversionError": "Не удалось преобразовать формат схемы.",
     "restoreError": "Не удалось восстановить сохранённую схему.",

@@ -39,6 +39,21 @@
     "title": "Swagger/OpenAPI UI",
     "description": "Edit, view and test OpenAPI specifications in one app."
   },
+  "HistoryPage": {
+    "title": "Request History",
+    "emptyMessage": "You haven't executed any requests yet",
+    "emptyLinksHint": "Get started by loading a schema and trying out an endpoint",
+    "goToEditor": "Go to Editor",
+    "errorLabel": "Error",
+    "durationColumn": "Duration",
+    "endpointColumn": "Endpoint",
+    "errorColumn": "Error",
+    "methodColumn": "Method",
+    "requestSizeColumn": "Request\nSize",
+    "responseSizeColumn": "Response\nSize",
+    "statusColumn": "Status",
+    "timestampColumn": "Timestamp"
+  },
   "swaggerEditor": {
     "conversionError": "Failed to convert schema format.",
     "restoreError": "Failed to restore saved schema.",
