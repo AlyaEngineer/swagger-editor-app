@@ -74,6 +74,22 @@ export const components: Components<Theme> = {
     },
   },
 
+  MuiOutlinedInput: {
+    styleOverrides: {
+      root: {
+        borderRadius: 10,
+      },
+    },
+  },
+
+  MuiPaper: {
+    styleOverrides: {
+      root: {
+        borderRadius: 10,
+      },
+    },
+  },
+
   MuiSelect: {
     styleOverrides: {
       icon: ({ theme }) => ({

@@ -2,6 +2,8 @@ import { Chip, TableCell, TableRow, Tooltip, Typography } from '@mui/material';
 
 import type { RequestHistoryEntry } from '@/utils/history/history-types';
 
+import { getMethodColor } from '@/utils/swagger-editor/get-method-color';
+
 const ERROR_PREVIEW_LENGTH = 40;
 
 const chipSx = {
@@ -15,24 +17,6 @@ const chipSx = {
 type HistoryTableRowProps = {
   entry: RequestHistoryEntry;
 };
-
-import type { ChipProps } from '@mui/material/Chip';
-
-// TODO: убрать, когда feature/4-swagger-viewer смержится - использовать getMethodColor из @/utils/swagger-editor/get-method-color
-const METHOD_COLOR = {
-  DELETE: 'error',
-  GET: 'success',
-  HEAD: 'default',
-  OPTIONS: 'default',
-  PATCH: 'warning',
-  POST: 'primary',
-  PUT: 'info',
-  TRACE: 'default',
-} as const satisfies Record<string, ChipProps['color']>;
-
-export function getMethodColor(method: string): ChipProps['color'] {
-  return METHOD_COLOR[method as keyof typeof METHOD_COLOR] ?? 'default';
-}
 
 export function HistoryTableRow({ entry }: HistoryTableRowProps) {
   return (
