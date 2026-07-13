@@ -7,6 +7,7 @@ import { getSwaggerEndpoints } from './get-swagger-endpoints';
 describe('getSwaggerEndpoints', () => {
   it('extracts OpenAPI 3 endpoint details', () => {
     const schema = {
+      info: { title: 'Test API', version: '1.0.0' },
       openapi: '3.0.0',
       paths: {
         '/users/{id}': {
@@ -172,6 +173,7 @@ describe('getSwaggerEndpoints', () => {
     const schema = {
       basePath: '/v2',
       host: 'api.example.com',
+      info: { title: 'Test API', version: '1.0.0' },
       paths: {
         '/pets': {
           post: {
@@ -228,5 +230,141 @@ describe('getSwaggerEndpoints', () => {
         summary: 'No summary',
       },
     ]);
+  });
+
+  it('skips paths where the path item is not a record', () => {
+    const schema = {
+      paths: {
+        '/broken': null,
+        '/users': {
+          get: { responses: {} },
+        },
+      },
+    } as unknown as OpenApiDocument;
+
+    const endpoints = getSwaggerEndpoints(schema);
+
+    expect(endpoints).toHaveLength(1);
+    expect(endpoints[0].path).toBe('/users');
+  });
+
+  it('keeps a plain string example as-is', () => {
+    const schema = {
+      paths: {
+        '/users': {
+          get: {
+            responses: {
+              '200': {
+                content: {
+                  'text/plain': {
+                    example: 'plain text response',
+                  },
+                },
+                description: 'OK',
+              },
+            },
+          },
+        },
+      },
+    } as unknown as OpenApiDocument;
+
+    const endpoints = getSwaggerEndpoints(schema);
+
+    expect(endpoints[0].responses[0].examples).toEqual(['plain text response']);
+  });
+
+  it('extracts OpenAPI 3 named examples with a value wrapper', () => {
+    const schema = {
+      paths: {
+        '/users': {
+          post: {
+            requestBody: {
+              content: {
+                'application/json': {
+                  examples: {
+                    ada: { value: { name: 'Ada' } },
+                    bob: 'raw string example',
+                  },
+                },
+              },
+            },
+            responses: {},
+          },
+        },
+      },
+    } as unknown as OpenApiDocument;
+
+    const endpoints = getSwaggerEndpoints(schema);
+
+    expect(endpoints[0].requestBody?.examples).toEqual(['{"name":"Ada"}', 'raw string example']);
+  });
+
+  it('ignores non-record entries in a parameters array', () => {
+    const schema = {
+      paths: {
+        '/users': {
+          get: {
+            parameters: [null, 'not-an-object', { in: 'query', name: 'page' }],
+            responses: {},
+          },
+        },
+      },
+    } as unknown as OpenApiDocument;
+
+    const endpoints = getSwaggerEndpoints(schema);
+
+    expect(endpoints[0].parameters).toEqual([
+      {
+        description: '',
+        in: 'query',
+        name: 'page',
+        required: false,
+        schema: '',
+      },
+    ]);
+  });
+
+  it('stringifies array, enum, oneOf, anyOf, and allOf schemas', () => {
+    const schema = {
+      paths: {
+        '/items': {
+          get: {
+            parameters: [
+              { in: 'query', name: 'tags', schema: { items: { type: 'string' }, type: 'array' } },
+              { in: 'query', name: 'status', schema: { enum: ['active', 'inactive'] } },
+              {
+                in: 'query',
+                name: 'variant',
+                schema: { oneOf: [{ type: 'string' }, { type: 'number' }] },
+              },
+              { in: 'query', name: 'mixed', schema: { anyOf: [{ type: 'string' }] } },
+              {
+                in: 'query',
+                name: 'combined',
+                schema: { allOf: [{ type: 'string' }, { type: 'number' }] },
+              },
+              { in: 'query', name: 'formatted', schema: { format: 'date-time', type: 'string' } },
+              { in: 'query', name: 'unknown', schema: { unsupportedKeyword: true } },
+            ],
+            responses: {},
+          },
+        },
+      },
+    } as unknown as OpenApiDocument;
+
+    const endpoints = getSwaggerEndpoints(schema);
+    const schemas = Object.fromEntries(
+      endpoints[0].parameters.map((parameter) => [parameter.name, parameter.schema]),
+    );
+
+    expect(schemas).toEqual({
+      combined: 'allOf (2)',
+      formatted: 'string (date-time)',
+      mixed: 'anyOf (1)',
+      status: 'enum: active, inactive',
+      tags: 'array<string>',
+      unknown: '',
+      variant: 'oneOf (2)',
+    });
   });
 });

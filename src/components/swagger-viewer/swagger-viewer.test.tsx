@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -191,12 +191,12 @@ describe('SwaggerViewer', () => {
       />,
     );
 
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
 
-    await user.type(screen.getByLabelText(/path: id/), '42');
-    await user.type(screen.getByLabelText(/query: includePosts/), 'true');
-    await user.type(screen.getByLabelText(/header: X-Trace/), 'abc');
-    await user.type(screen.getByLabelText(/cookie: session/), 'token');
+    fireEvent.change(screen.getByLabelText(/path: id/), { target: { value: '42' } });
+    fireEvent.change(screen.getByLabelText(/query: includePosts/), { target: { value: 'true' } });
+    fireEvent.change(screen.getByLabelText(/header: X-Trace/), { target: { value: 'abc' } });
+    fireEvent.change(screen.getByLabelText(/cookie: session/), { target: { value: 'token' } });
     await user.click(screen.getByRole('button', { name: 'executeButton' }));
 
     expect(fetchMock).toHaveBeenCalledWith(
