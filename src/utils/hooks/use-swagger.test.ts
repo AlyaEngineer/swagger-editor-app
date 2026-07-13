@@ -7,17 +7,9 @@ vi.mock('next-intl', () => ({
   useTranslations: () => (key: string) => key,
 }));
 
-function mockFetchOnce(response: { json: unknown; ok: boolean }) {
-  global.fetch = vi.fn().mockResolvedValue({
-    json: () => Promise.resolve(response.json),
-    ok: response.ok,
-  }) as unknown as typeof fetch;
-}
-
 describe('useSwagger', () => {
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    mockFetchOnce({ json: {}, ok: true });
   });
 
   afterEach(() => {
@@ -46,30 +38,16 @@ describe('useSwagger', () => {
     });
   });
 
-  it('restores the schema from the server when content is present', async () => {
-    mockFetchOnce({
-      json: { schema: { content: 'openapi: 3.0.0\ninfo:\n  title: Restored', format: 'yaml' } },
-      ok: true,
-    });
+  it('initializes with a restored server schema when one is provided', async () => {
+    const { result } = renderHook(() =>
+      useSwagger({
+        content: 'openapi: 3.0.0\ninfo:\n  title: Restored',
+        format: 'yaml',
+      }),
+    );
 
-    const { result } = renderHook(() => useSwagger());
-
-    await waitFor(() => {
-      expect(result.current.editorValue).toContain('Restored');
-    });
-  });
-
-  it('keeps the default schema when the restore response has no content or fails', async () => {
-    mockFetchOnce({ json: {}, ok: false });
-
-    const { result } = renderHook(() => useSwagger());
-    const initialValue = result.current.editorValue;
-
-    await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('/api/schema', expect.anything());
-    });
-
-    expect(result.current.editorValue).toBe(initialValue);
+    expect(result.current.editorValue).toContain('Restored');
+    expect(result.current.format).toBe('yaml');
   });
 
   it('toggles format without losing data, and sets an error on invalid schema', async () => {

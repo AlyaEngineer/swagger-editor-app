@@ -43,7 +43,7 @@ vi.mock('@/providers/auth-provider/AuthProvider', () => ({
 const mockUseSwagger = vi.fn();
 
 vi.mock('@/utils/hooks/use-swagger', () => ({
-  useSwagger: () => mockUseSwagger(),
+  useSwagger: (initialSchema: unknown) => mockUseSwagger(initialSchema),
 }));
 
 function renderWithProviders(ui: React.ReactElement) {
@@ -65,6 +65,27 @@ describe('SwaggerEditor', () => {
     renderWithProviders(<SwaggerEditor />);
 
     expect(screen.getByText('Something is wrong')).toBeInTheDocument();
+  });
+
+  it('passes the restored schema to the swagger hook', () => {
+    const initialSchema = {
+      content: 'openapi: 3.0.0\ninfo:\n  title: Restored',
+      format: 'yaml' as const,
+    };
+
+    mockUseSwagger.mockReturnValue({
+      editorValue: initialSchema.content,
+      error: null,
+      format: initialSchema.format,
+      handleEditorChange: vi.fn(),
+      handleFormatToggle: vi.fn(),
+      isValid: false,
+      schema: null,
+    });
+
+    renderWithProviders(<SwaggerEditor initialSchema={initialSchema} />);
+
+    expect(mockUseSwagger).toHaveBeenCalledWith(initialSchema);
   });
 
   it('shows a success alert with the endpoint count when the schema is valid', () => {

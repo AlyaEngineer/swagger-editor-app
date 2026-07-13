@@ -1,5 +1,9 @@
 import { SwaggerEditor } from '@components';
 
-export default function Home() {
-  return <SwaggerEditor />;
+import { restoreSchemaForCurrentUser } from '@/services/schema-server-service';
+
+export default async function Home() {
+  const initialSchema = await restoreSchemaForCurrentUser();
+
+  return <SwaggerEditor initialSchema={initialSchema} />;
 }

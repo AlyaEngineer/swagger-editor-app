@@ -1,6 +1,6 @@
 import type { ReactElement, ReactNode } from 'react';
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -59,6 +59,16 @@ describe('SwaggerControl', () => {
     expect(screen.getByRole('button', { name: 'saveButton' })).toBeDisabled();
   });
 
+  it('does not save when the schema is invalid', async () => {
+    global.fetch = vi.fn() as unknown as typeof fetch;
+
+    renderWithToast(<SwaggerControl {...baseProps} isValid={false} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'saveButton' }));
+
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it('calls handleFormatToggle when the switch is clicked', async () => {
     renderWithToast(<SwaggerControl {...baseProps} isValid />);
 
@@ -83,7 +93,13 @@ describe('SwaggerControl', () => {
     expect(await screen.findByRole('button', { name: 'saving' })).toBeInTheDocument();
     resolveFetch({ ok: true });
     expect(await screen.findByRole('button', { name: 'saveButton' })).toBeInTheDocument();
-    expect(fetch).toHaveBeenCalledWith('/api/schema', expect.objectContaining({ method: 'POST' }));
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/schema',
+      expect.objectContaining({
+        body: JSON.stringify({ content: baseProps.editorValue, format: baseProps.format }),
+        method: 'POST',
+      }),
+    );
   });
 
   it('shows a toast when the save request fails', async () => {
