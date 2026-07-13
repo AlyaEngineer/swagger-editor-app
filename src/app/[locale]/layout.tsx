@@ -45,7 +45,7 @@ export default async function RootLayout({ children, params }: Props) {
       suppressHydrationWarning
     >
       <body>
-        <InitColorSchemeScript defaultMode="system" />
+        <InitColorSchemeScript attribute="class" defaultMode="system" />
         <NextIntlClientProvider>
           <MuiProvider>
             <AuthProvider>

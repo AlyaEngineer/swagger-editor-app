@@ -9,7 +9,9 @@
     "signOut": "Выйти",
     "history": "История",
     "about": "О проекте",
-    "language": "Язык"
+    "language": "Язык",
+    "switchToLightTheme": "Включить светлую тему",
+    "switchToDarkTheme": "Включить тёмную тему"
   },
   "authForm": {
     "invalidEmail": "Введите корректный email-адрес",

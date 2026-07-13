@@ -14,7 +14,7 @@ type MuiProviderProps = {
 export function MuiProvider({ children }: MuiProviderProps) {
   return (
     <AppRouterCacheProvider>
-      <ThemeProvider defaultMode="system" theme={theme}>
+      <ThemeProvider defaultMode="system" disableTransitionOnChange theme={theme}>
         <CssBaseline />
         <ToastProvider>{children}</ToastProvider>
       </ThemeProvider>
