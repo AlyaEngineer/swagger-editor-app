@@ -3,7 +3,7 @@
 import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
-import { AppLinkButton, AuthNavigation, LanguageSwitcher } from '@/components';
+import { AppLinkButton, AuthNavigation, LanguageSwitcher, ThemeSwitcher } from '@/components';
 import { flex } from '@/constants';
 import { BRAND_NAME } from '@/constants/brand';
 import { ROUTES } from '@/constants/routes';
@@ -61,7 +61,7 @@ export function Header() {
           <AppLinkButton href={ROUTES.about}>{t('about')}</AppLinkButton>
 
           <AuthNavigation />
-
+          <ThemeSwitcher />
           <LanguageSwitcher />
         </Box>
       </Toolbar>

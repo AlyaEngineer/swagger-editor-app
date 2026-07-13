@@ -11,7 +11,9 @@ export const theme = createTheme({
   },
   components,
 
-  cssVariables: true,
+  cssVariables: {
+    colorSchemeSelector: 'class',
+  },
 
   shape: {
     borderRadius: 50,
