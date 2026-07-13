@@ -221,6 +221,92 @@ describe('SwaggerViewer', () => {
     expect(screen.getByText('content-type: application/json')).toBeInTheDocument();
   });
 
+  it('generates a cURL command from the current request state and copies it', async () => {
+    const writeTextMock = vi.fn().mockResolvedValue(undefined);
+
+    renderViewer(
+      <SwaggerViewer
+        endpoints={[
+          {
+            description: '',
+            method: 'POST',
+            operationId: '',
+            parameters: [
+              {
+                description: '',
+                in: 'path',
+                name: 'id',
+                required: true,
+                schema: 'string',
+              },
+              {
+                description: '',
+                in: 'query',
+                name: 'includePosts',
+                required: false,
+                schema: 'boolean',
+              },
+              {
+                description: '',
+                in: 'header',
+                name: 'X-Trace',
+                required: false,
+                schema: 'string',
+              },
+              {
+                description: '',
+                in: 'cookie',
+                name: 'session',
+                required: false,
+                schema: 'string',
+              },
+            ],
+            path: '/users/{id}',
+            requestBody: {
+              contentTypes: ['application/json'],
+              description: '',
+              examples: ['{"name":"Ada"}'],
+              required: true,
+              schema: 'object { name }',
+            },
+            responses: [],
+            serverUrl: 'https://api.example.com/v1',
+            summary: 'Create user',
+          },
+        ]}
+        isValid
+      />,
+    );
+
+    const user = userEvent.setup();
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: writeTextMock,
+      },
+    });
+    const expectedCommand =
+      "curl -X POST 'https://api.example.com/v1/users/42?includePosts=true' -H 'X-Trace: abc' -H 'Cookie: session=token' -H 'Content-Type: application/json' --data-raw '{\"name\":\"Ada\"}'";
+
+    await user.type(screen.getByLabelText(/path: id/), '42');
+    await user.type(screen.getByLabelText(/query: includePosts/), 'true');
+    await user.type(screen.getByLabelText(/header: X-Trace/), 'abc');
+    await user.type(screen.getByLabelText(/cookie: session/), 'token');
+    await user.click(screen.getByRole('button', { name: 'generateCurlButton' }));
+
+    expect(screen.getByText('curlCommandLabel')).toBeInTheDocument();
+    expect(screen.getByText(expectedCommand)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'copyCurlButton' }));
+
+    expect(writeTextMock).toHaveBeenCalledWith(expectedCommand);
+    expect(await screen.findByText('curlCopySuccess')).toBeInTheDocument();
+
+    await user.type(screen.getByLabelText(/query: includePosts/), 'false');
+
+    expect(screen.queryByText(expectedCommand)).not.toBeInTheDocument();
+  });
+
   it('maps server error codes to translated viewer messages', async () => {
     vi.stubGlobal(
       'fetch',
