@@ -29,7 +29,10 @@ export function HistoryList({ entries }: HistoryListProps) {
     setPage(0);
   }
 
-  const visibleEntries = entries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const pageStartIndex = page * rowsPerPage;
+  const pageEndIndex = pageStartIndex + rowsPerPage;
+
+  const visibleEntries = entries.slice(pageStartIndex, pageEndIndex);
 
   return (
     <Paper sx={{ borderRadius: '8px', overflow: 'hidden', width: '100%' }} variant="outlined">
