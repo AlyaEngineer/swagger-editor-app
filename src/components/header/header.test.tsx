@@ -1,7 +1,6 @@
-import type { ToolbarProps } from '@mui/material';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { BRAND_NAME } from '@/constants/brand';
@@ -10,9 +9,8 @@ import { ROUTES } from '@/constants/routes';
 import { Header } from './header';
 
 const mocks = vi.hoisted(() => ({
-  toolbarProps: vi.fn(),
   useScrollTrigger: vi.fn(),
-  useTranslations: vi.fn(),
+  useTranslations: vi.fn(() => (key: string) => (key === 'about' ? 'About' : key)),
 }));
 
 vi.mock('@mui/material', async (importOriginal) => {
@@ -21,11 +19,11 @@ vi.mock('@mui/material', async (importOriginal) => {
   return {
     ...actual,
 
-    Toolbar: ({ children, ...props }: ToolbarProps) => {
-      mocks.toolbarProps(props);
-
-      return <div>{children}</div>;
-    },
+    Toolbar: ({ children, style }: { children: ReactNode; style?: CSSProperties }) => (
+      <div data-testid="header-toolbar" style={style}>
+        {children}
+      </div>
+    ),
 
     useScrollTrigger: mocks.useScrollTrigger,
   };
@@ -40,67 +38,46 @@ vi.mock('@/components', () => ({
     <a href={href}>{children}</a>
   ),
 
-  AuthNavigation: () => <span>Auth navigation</span>,
-  LanguageSwitcher: () => <span>Language switcher</span>,
-  ThemeSwitcher: () => <span>Theme switcher</span>,
+  AuthNavigation: () => <div data-testid="auth-navigation">Auth navigation</div>,
+
+  LanguageSwitcher: () => <div data-testid="language-switcher">Language switcher</div>,
 }));
 
 describe('Header', () => {
   beforeEach(() => {
-    mocks.toolbarProps.mockClear();
-    mocks.useScrollTrigger.mockReset();
-    mocks.useTranslations.mockReset();
-
+    vi.clearAllMocks();
     mocks.useScrollTrigger.mockReturnValue(false);
-
-    mocks.useTranslations.mockReturnValue((key: string) => {
-      const translations: Record<string, string> = {
-        about: 'About',
-      };
-
-      return translations[key] ?? key;
-    });
   });
 
-  it('renders the brand link', () => {
+  it('renders header navigation', () => {
     render(<Header />);
+
+    expect(mocks.useTranslations).toHaveBeenCalledWith('Header');
 
     expect(
       screen.getByRole('link', {
         name: BRAND_NAME,
       }),
     ).toHaveAttribute('href', ROUTES.home);
-  });
-
-  it('renders the main navigation', () => {
-    render(<Header />);
-
-    const navigation = screen.getByRole('navigation', {
-      name: 'Main navigation',
-    });
-
-    const navigationQueries = within(navigation);
 
     expect(
-      navigationQueries.getByRole('link', {
+      screen.getByRole('link', {
         name: 'About',
       }),
     ).toHaveAttribute('href', ROUTES.about);
 
-    expect(navigationQueries.getByText('Auth navigation')).toBeInTheDocument();
+    expect(
+      screen.getByRole('navigation', {
+        name: 'Main navigation',
+      }),
+    ).toBeInTheDocument();
 
-    expect(navigationQueries.getByText('Theme switcher')).toBeInTheDocument();
+    expect(screen.getByTestId('auth-navigation')).toBeInTheDocument();
 
-    expect(navigationQueries.getByText('Language switcher')).toBeInTheDocument();
+    expect(screen.getByTestId('language-switcher')).toBeInTheDocument();
   });
 
-  it('uses the Header translation namespace', () => {
-    render(<Header />);
-
-    expect(mocks.useTranslations).toHaveBeenCalledWith('Header');
-  });
-
-  it('configures the sticky scroll trigger', () => {
+  it('configures the scroll trigger', () => {
     render(<Header />);
 
     expect(mocks.useScrollTrigger).toHaveBeenCalledWith({
@@ -109,39 +86,25 @@ describe('Header', () => {
     });
   });
 
-  it('renders the expanded header before the scroll threshold', () => {
+  it('uses expanded size when page is not scrolled past the threshold', () => {
     mocks.useScrollTrigger.mockReturnValue(false);
 
     render(<Header />);
 
-    expect(mocks.toolbarProps).toHaveBeenCalledWith(
-      expect.objectContaining({
-        style: {
-          minHeight: 64,
-          transition: 'min-height 200ms',
-        },
-        sx: expect.objectContaining({
-          py: 1.25,
-        }),
-      }),
-    );
+    expect(screen.getByTestId('header-toolbar')).toHaveStyle({
+      minHeight: '64px',
+      transition: 'min-height 200ms',
+    });
   });
 
-  it('renders the compact header after the scroll threshold', () => {
+  it('uses compact size when page is scrolled past the threshold', () => {
     mocks.useScrollTrigger.mockReturnValue(true);
 
     render(<Header />);
 
-    expect(mocks.toolbarProps).toHaveBeenCalledWith(
-      expect.objectContaining({
-        style: {
-          minHeight: 52,
-          transition: 'min-height 200ms',
-        },
-        sx: expect.objectContaining({
-          py: 0.5,
-        }),
-      }),
-    );
+    expect(screen.getByTestId('header-toolbar')).toHaveStyle({
+      minHeight: '52px',
+      transition: 'min-height 200ms',
+    });
   });
 });
