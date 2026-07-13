@@ -17,9 +17,9 @@ export default async function HistoryPage() {
     <div>
       <h1>{t('title')}</h1>
 
-      {hasError && <Alert severity="error">{tToast('historyLoadError')}</Alert>}
-
-      {!hasError && entries.length === 0 ? (
+      {hasError ? (
+        <Alert severity="error">{tToast('historyLoadError')}</Alert>
+      ) : entries.length === 0 ? (
         <HistoryEmptyState />
       ) : (
         <HistoryList entries={entries} />
