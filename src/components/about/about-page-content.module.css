@@ -1,0 +1,191 @@
+.root {
+  --about-background: var(--mui-palette-background-default);
+  --about-hero-background: var(--mui-palette-action-hover);
+  --about-hero-border: var(--mui-palette-divider);
+  --about-panel-background: var(--mui-palette-background-paper);
+  --about-panel-border: var(--mui-palette-divider);
+
+  min-height: 100vh;
+  color: var(--mui-palette-text-primary);
+  background: var(--about-background);
+}
+
+.hero {
+  padding: 64px 0;
+  border-bottom: 1px solid var(--about-hero-border);
+  background: var(--about-hero-background);
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 820px;
+  align-items: flex-start;
+}
+
+.heroEyebrowRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.heroEyebrow,
+.teamEyebrow {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.heroTitle {
+  font-size: clamp(2.35rem, 4vw, 3.75rem);
+  font-weight: 750;
+  line-height: 1.05;
+}
+
+.heroDescription,
+.sectionDescription {
+  max-width: 720px;
+}
+
+.heroActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.heroActions > * {
+  width: 100%;
+}
+
+.heroActionButton {
+  justify-content: center;
+}
+
+.contentContainer {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+.contentStack {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.sectionTitle {
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.technologyTitle {
+  margin-top: 32px;
+  font-weight: 700;
+}
+
+.technologyList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.highlightsGrid,
+.teamGrid {
+  display: grid;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.highlightsGrid {
+  grid-template-columns: 1fr;
+}
+
+.teamGrid {
+  grid-template-columns: 1fr;
+}
+
+.panel {
+  padding: 24px;
+  border: 1px solid var(--about-panel-border);
+  border-radius: 8px;
+  background: var(--about-panel-background);
+}
+
+.panelTitle {
+  font-weight: 700;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+}
+
+.memberName {
+  font-weight: 700;
+}
+
+.memberRole {
+  margin-top: 4px;
+}
+
+.githubLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
+.resourceList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 24px;
+}
+
+@media (min-width: 600px) {
+  .hero {
+    padding: 80px 0;
+  }
+
+  .heroActions {
+    flex-direction: row;
+    align-items: flex-start;
+    width: auto;
+  }
+
+  .heroActions > * {
+    width: auto;
+  }
+
+  .highlightsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .teamGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .contentContainer {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .contentStack {
+    gap: 80px;
+  }
+
+  .teamGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
