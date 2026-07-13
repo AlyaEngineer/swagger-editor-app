@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -18,6 +18,13 @@ vi.mock('@mui/material', async (importOriginal) => {
 
   return {
     ...actual,
+
+    Toolbar: ({ children, style }: { children: ReactNode; style?: CSSProperties }) => (
+      <div data-testid="header-toolbar" style={style}>
+        {children}
+      </div>
+    ),
+
     useScrollTrigger: mocks.useScrollTrigger,
   };
 });
@@ -38,9 +45,8 @@ vi.mock('@/components', () => ({
 
 describe('Header', () => {
   beforeEach(() => {
-    mocks.useScrollTrigger.mockReset();
+    vi.clearAllMocks();
     mocks.useScrollTrigger.mockReturnValue(false);
-    mocks.useTranslations.mockClear();
   });
 
   it('renders header navigation', () => {
@@ -67,7 +73,17 @@ describe('Header', () => {
     ).toBeInTheDocument();
 
     expect(screen.getByTestId('auth-navigation')).toBeInTheDocument();
+
     expect(screen.getByTestId('language-switcher')).toBeInTheDocument();
+  });
+
+  it('configures the scroll trigger', () => {
+    render(<Header />);
+
+    expect(mocks.useScrollTrigger).toHaveBeenCalledWith({
+      disableHysteresis: true,
+      threshold: 32,
+    });
   });
 
   it('uses expanded size when page is not scrolled past the threshold', () => {
@@ -75,12 +91,7 @@ describe('Header', () => {
 
     render(<Header />);
 
-    expect(mocks.useScrollTrigger).toHaveBeenCalledWith({
-      disableHysteresis: true,
-      threshold: 32,
-    });
-
-    expect(screen.getByRole('toolbar')).toHaveStyle({
+    expect(screen.getByTestId('header-toolbar')).toHaveStyle({
       minHeight: '64px',
       transition: 'min-height 200ms',
     });
@@ -91,12 +102,7 @@ describe('Header', () => {
 
     render(<Header />);
 
-    expect(mocks.useScrollTrigger).toHaveBeenCalledWith({
-      disableHysteresis: true,
-      threshold: 32,
-    });
-
-    expect(screen.getByRole('toolbar')).toHaveStyle({
+    expect(screen.getByTestId('header-toolbar')).toHaveStyle({
       minHeight: '52px',
       transition: 'min-height 200ms',
     });

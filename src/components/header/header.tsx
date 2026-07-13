@@ -36,7 +36,6 @@ export function Header() {
       }}
     >
       <Toolbar
-        role="toolbar"
         style={{
           minHeight,
           transition: 'min-height 200ms',
