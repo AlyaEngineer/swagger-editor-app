@@ -100,10 +100,6 @@ export async function POST(request: Request) {
   const supabase = await createClient();
   const userId = await getUserId(supabase);
 
-  if (!userId) {
-    return getErrorResponse('unauthorized', 401);
-  }
-
   try {
     const response = await fetchValidatedUrl(url, {
       body: requestBody,
@@ -112,19 +108,21 @@ export async function POST(request: Request) {
     });
     const durationMs = Math.round(performance.now() - startedAt);
 
-    await saveRequestHistorySafely(
-      {
-        durationMs,
-        endpoint: historyEndpoint,
-        errorDetails: null,
-        method,
-        requestSize: getTextSize(requestBody),
-        responseSize: getTextSize(response.body),
-        statusCode: response.status,
-      },
-      supabase,
-      userId,
-    );
+    if (userId) {
+      await saveRequestHistorySafely(
+        {
+          durationMs,
+          endpoint: historyEndpoint,
+          errorDetails: null,
+          method,
+          requestSize: getTextSize(requestBody),
+          responseSize: getTextSize(response.body),
+          statusCode: response.status,
+        },
+        supabase,
+        userId,
+      );
+    }
 
     return Response.json({
       body: response.body,
@@ -288,21 +286,23 @@ async function getTrackedErrorResponse(
   method: string,
   requestBody: string | undefined,
   supabase: SupabaseServerClient,
-  userId: string,
+  userId: null | string,
 ) {
-  await saveRequestHistorySafely(
-    {
-      durationMs: Math.round(performance.now() - startedAt),
-      endpoint,
-      errorDetails: errorCode,
-      method,
-      requestSize: getTextSize(requestBody),
-      responseSize: 0,
-      statusCode: status,
-    },
-    supabase,
-    userId,
-  );
+  if (userId) {
+    await saveRequestHistorySafely(
+      {
+        durationMs: Math.round(performance.now() - startedAt),
+        endpoint,
+        errorDetails: errorCode,
+        method,
+        requestSize: getTextSize(requestBody),
+        responseSize: 0,
+        statusCode: status,
+      },
+      supabase,
+      userId,
+    );
+  }
 
   return getErrorResponse(errorCode, status);
 }
