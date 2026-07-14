@@ -193,6 +193,8 @@ describe('SwaggerViewer', () => {
 
     const user = userEvent.setup({ delay: null });
 
+    await user.click(screen.getByRole('button', { name: /Create user/i }));
+
     fireEvent.change(screen.getByLabelText(/path: id/), { target: { value: '42' } });
     fireEvent.change(screen.getByLabelText(/query: includePosts/), { target: { value: 'true' } });
     fireEvent.change(screen.getByLabelText(/header: X-Trace/), { target: { value: 'abc' } });
@@ -251,6 +253,7 @@ describe('SwaggerViewer', () => {
 
     const user = userEvent.setup();
 
+    await user.click(screen.getByRole('button', { name: /Internal endpoint/i }));
     await user.click(screen.getByRole('button', { name: 'executeButton' }));
 
     expect(await screen.findByText('tryItOutBlockedUrl')).toBeInTheDocument();
