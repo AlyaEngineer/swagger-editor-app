@@ -36,7 +36,7 @@ export function TryItOutResponseDetails({ response }: { response: TryItOutRespon
           component="pre"
           sx={{
             bgcolor: 'action.hover',
-            borderRadius: 1,
+            borderRadius: '8px',
             fontSize: '0.75rem',
             m: 0,
             overflow: 'auto',
@@ -56,7 +56,7 @@ export function TryItOutResponseDetails({ response }: { response: TryItOutRespon
           component="pre"
           sx={{
             bgcolor: 'action.hover',
-            borderRadius: 1,
+            borderRadius: '8px',
             fontSize: '0.75rem',
             m: 0,
             overflow: 'auto',
