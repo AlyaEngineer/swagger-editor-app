@@ -23,7 +23,7 @@ const FORBIDDEN_HEADERS = new Set([
 const HISTORY_TIMEOUT_MS = 1_000;
 const MAX_REDIRECTS = 5;
 const MAX_RESPONSE_BYTES = 5 * 1024 * 1024;
-const REQUEST_TIMEOUT_MS = 15_000;
+const REQUEST_TIMEOUT_MS = 8_000;
 const SENSITIVE_QUERY_KEYS = [
   'access_token',
   'api_key',
@@ -410,8 +410,29 @@ async function requestWithPinnedIp(
   const options: RequestOptions = {
     headers,
     hostname: getHostname(url),
-    lookup: (_hostname, _options, callback) => {
-      callback(null, resolvedAddress.address, resolvedAddress.family);
+    lookup: (_hostname, lookupOptions, callback) => {
+      const wantsAll =
+        typeof lookupOptions === 'object' && lookupOptions !== null && lookupOptions.all === true;
+
+      if (wantsAll) {
+        const respondWithAllAddresses = callback as (
+          error: null,
+          addresses: Array<{ address: string; family: number }>,
+        ) => void;
+
+        respondWithAllAddresses(null, [
+          { address: resolvedAddress.address, family: resolvedAddress.family },
+        ]);
+        return;
+      }
+
+      const respondWithSingleAddress = callback as (
+        error: null,
+        address: string,
+        family: number,
+      ) => void;
+
+      respondWithSingleAddress(null, resolvedAddress.address, resolvedAddress.family);
     },
     method: init.method,
     path: `${url.pathname}${url.search}`,
