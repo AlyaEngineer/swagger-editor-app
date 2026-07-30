@@ -17,14 +17,14 @@ import type {
 
 import { useToast } from '@/providers/toast-provider/ToastProvider';
 
-import { CurlCommandPreview } from './curl-command-preview';
-import { DetailSection } from './endpoint-details';
+import { DetailSection } from '../endpoint-details/endpoint-details';
 import {
   buildCurlCommand,
   buildTryItOutRequest,
   getParameterKey,
   getTryItOutErrorKey,
-} from './swagger-viewer.helpers';
+} from '../swagger-viewer.helpers';
+import { CurlCommandPreview } from './curl-command-preview';
 import { type TryItOutResponse, TryItOutResponseDetails } from './try-it-out-response-details';
 
 export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {

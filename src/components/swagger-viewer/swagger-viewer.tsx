@@ -23,8 +23,8 @@ import {
   ParameterDetails,
   RequestBodyDetails,
   ResponseDetails,
-} from './endpoint-details';
-import { TryItOutPanel } from './try-it-out-panel';
+} from './endpoint-details/endpoint-details';
+import { TryItOutPanel } from './try-it-out/try-it-out-panel';
 
 export type SwaggerViewerApiInfo = {
   description: string;
