@@ -88,7 +88,7 @@ export function getSwaggerEndpoints(schema: null | OpenApiDocument): SwaggerEndp
           requestBody,
           responses: getResponses(operationObject.responses),
           serverUrl,
-          summary: getString(operationObject.summary) || operationId || 'No summary',
+          summary: getString(operationObject.summary) || operationId,
         };
       });
   });

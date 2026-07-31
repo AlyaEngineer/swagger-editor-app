@@ -79,6 +79,14 @@ describe('getSwaggerEndpoints', () => {
               },
             },
           },
+          put: {
+            operationId: 'updateUser',
+            responses: {
+              '204': {
+                description: 'Updated.',
+              },
+            },
+          },
         },
       },
       servers: [{ url: 'https://api.example.com/v1' }],
@@ -164,7 +172,34 @@ describe('getSwaggerEndpoints', () => {
           },
         ],
         serverUrl: 'https://api.example.com/v1',
-        summary: 'No summary',
+        summary: '',
+      },
+      {
+        description: '',
+        method: 'PUT',
+        operationId: 'updateUser',
+        parameters: [
+          {
+            description: 'User identifier.',
+            in: 'path',
+            name: 'id',
+            required: true,
+            schema: 'string',
+          },
+        ],
+        path: '/users/{id}',
+        requestBody: null,
+        responses: [
+          {
+            contentTypes: [],
+            description: 'Updated.',
+            examples: [],
+            schema: '',
+            statusCode: '204',
+          },
+        ],
+        serverUrl: 'https://api.example.com/v1',
+        summary: 'updateUser',
       },
     ]);
   });
@@ -227,7 +262,7 @@ describe('getSwaggerEndpoints', () => {
           },
         ],
         serverUrl: 'http://api.example.com/v2',
-        summary: 'No summary',
+        summary: '',
       },
     ]);
   });
