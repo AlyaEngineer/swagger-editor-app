@@ -17,7 +17,7 @@ import type {
 
 import { useToast } from '@/providers/toast-provider/ToastProvider';
 
-import { DetailSection } from '../endpoint-details/endpoint-details';
+import { DetailSection } from '../endpoint-details';
 import {
   buildCurlCommand,
   buildTryItOutRequest,
