@@ -1,10 +1,11 @@
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
 
 import type { SwaggerEndpointRequestBody } from '@/utils/swagger-editor/get-swagger-endpoints';
+
+import { MarkdownText } from '@/components/markdown-text/markdown-text';
 
 import { ContentTypes } from './content-types';
 import { Examples } from './examples';
@@ -26,11 +27,7 @@ export function RequestBodyDetails({ requestBody }: { requestBody: SwaggerEndpoi
           <ContentTypes contentTypes={requestBody.contentTypes} />
         </Stack>
 
-        {requestBody.description && (
-          <Typography color="text.secondary" variant="body2">
-            {requestBody.description}
-          </Typography>
-        )}
+        {requestBody.description && <MarkdownText>{requestBody.description}</MarkdownText>}
 
         <SchemaText schema={requestBody.schema} />
         <Examples examples={requestBody.examples} />

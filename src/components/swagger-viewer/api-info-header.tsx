@@ -5,6 +5,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
 
+import { MarkdownText } from '@/components/markdown-text/markdown-text';
+
 import type { SwaggerViewerApiInfo } from './types';
 
 export function ApiInfoHeader({ apiInfo }: { apiInfo?: null | SwaggerViewerApiInfo }) {
@@ -20,11 +22,7 @@ export function ApiInfoHeader({ apiInfo }: { apiInfo?: null | SwaggerViewerApiIn
         {apiInfo?.version && <Chip label={apiInfo.version} size="small" variant="outlined" />}
       </Stack>
 
-      {apiInfo?.description && (
-        <Typography color="text.secondary" variant="body2">
-          {apiInfo.description}
-        </Typography>
-      )}
+      {apiInfo?.description && <MarkdownText>{apiInfo.description}</MarkdownText>}
     </Stack>
   );
 }

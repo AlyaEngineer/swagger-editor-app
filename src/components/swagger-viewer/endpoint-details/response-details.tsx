@@ -1,9 +1,10 @@
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
 import type { SwaggerEndpointResponse } from '@/utils/swagger-editor/get-swagger-endpoints';
+
+import { MarkdownText } from '@/components/markdown-text/markdown-text';
 
 import { ContentTypes } from './content-types';
 import { Examples } from './examples';
@@ -18,11 +19,7 @@ export function ResponseDetails({ response }: { response: SwaggerEndpointRespons
           <ContentTypes contentTypes={response.contentTypes} />
         </Stack>
 
-        {response.description && (
-          <Typography color="text.secondary" variant="body2">
-            {response.description}
-          </Typography>
-        )}
+        {response.description && <MarkdownText>{response.description}</MarkdownText>}
 
         <SchemaText schema={response.schema} />
         <Examples examples={response.examples} />

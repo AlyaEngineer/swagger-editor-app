@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 
 import type { SwaggerEndpointParameter } from '@/utils/swagger-editor/get-swagger-endpoints';
 
+import { MarkdownText } from '@/components/markdown-text/markdown-text';
+
 import { SchemaText } from './schema-text';
 
 export function ParameterDetails({ parameter }: { parameter: SwaggerEndpointParameter }) {
@@ -27,11 +29,7 @@ export function ParameterDetails({ parameter }: { parameter: SwaggerEndpointPara
           />
         </Stack>
 
-        {parameter.description && (
-          <Typography color="text.secondary" variant="body2">
-            {parameter.description}
-          </Typography>
-        )}
+        {parameter.description && <MarkdownText>{parameter.description}</MarkdownText>}
         <SchemaText schema={parameter.schema} />
       </Stack>
     </Paper>

@@ -6,6 +6,8 @@ import { useTranslations } from 'next-intl';
 
 import type { SwaggerEndpoint } from '@/utils/swagger-editor/get-swagger-endpoints';
 
+import { MarkdownText } from '@/components/markdown-text/markdown-text';
+
 import {
   DetailSection,
   EmptyDetails,
@@ -25,11 +27,7 @@ export function EndpointBody({ endpoint }: { endpoint: SwaggerEndpoint }) {
           {t('operationIdLabel')}: {endpoint.operationId}
         </Typography>
       )}
-      {endpoint.description && (
-        <Typography color="text.secondary" variant="body2">
-          {endpoint.description}
-        </Typography>
-      )}
+      {endpoint.description && <MarkdownText>{endpoint.description}</MarkdownText>}
 
       <DetailSection title={t('parametersTitle')}>
         {endpoint.parameters.length > 0 ? (
