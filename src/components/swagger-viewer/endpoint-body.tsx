@@ -13,7 +13,7 @@ import {
   RequestBodyDetails,
   ResponseDetails,
 } from './endpoint-details';
-import { TryItOutPanel } from './try-it-out/try-it-out-panel';
+import { TryItOutPanel } from './try-it-out';
 
 export function EndpointBody({ endpoint }: { endpoint: SwaggerEndpoint }) {
   const t = useTranslations('swaggerViewer');

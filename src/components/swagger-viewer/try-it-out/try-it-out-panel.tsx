@@ -18,14 +18,14 @@ import type {
 import { useToast } from '@/providers/toast-provider/ToastProvider';
 
 import { DetailSection } from '../endpoint-details';
+import { CurlCommandPreview } from './curl-command-preview';
+import { type TryItOutResponse, TryItOutResponseDetails } from './try-it-out-response-details';
 import {
   buildCurlCommand,
   buildTryItOutRequest,
   getParameterKey,
   getTryItOutErrorKey,
-} from '../swagger-viewer.helpers';
-import { CurlCommandPreview } from './curl-command-preview';
-import { type TryItOutResponse, TryItOutResponseDetails } from './try-it-out-response-details';
+} from './try-it-out.helpers';
 
 export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
   const t = useTranslations('swaggerViewer');
