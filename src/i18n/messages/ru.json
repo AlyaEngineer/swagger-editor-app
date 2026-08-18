@@ -74,8 +74,8 @@
     "noRequestBody": "Тело запроса не требуется",
     "noResponses": "Ответы не описаны",
     "noEndpoints": "Схема валидна, но эндпоинтов в paths не найдено",
-    "noSummary": "Без описания",
-    "operationIdLabel": "Operation ID",
+    "noSummary": "Без названия",
+    "operationIdLabel": "ID операции",
     "optionalLabel": "Необязательный",
     "parametersTitle": "Параметры",
     "requestBodyTitle": "Тело запроса",
@@ -93,7 +93,7 @@
     "tryItOutInvalidUrl": "Введите абсолютный HTTP URL сервера",
     "tryItOutMissingRequiredFields": "Заполните все обязательные поля перед генерацией cURL",
     "tryItOutTimeout": "Превышено время ожидания ответа",
-    "tryItOutTitle": "Опробовать",
+    "tryItOutTitle": "Отправка запроса",
     "mediaTypeLabel": "Тип контента"
   },
   "swaggerControl": {

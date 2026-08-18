@@ -4,7 +4,11 @@ import Typography from '@mui/material/Typography';
 
 export function EmptyDetails({ children }: { children: ReactNode }) {
   return (
-    <Typography color="text.secondary" variant="body2">
+    <Typography
+      color="text.disabled"
+      sx={{ fontSize: '0.875rem', fontStyle: 'italic' }}
+      variant="body2"
+    >
       {children}
     </Typography>
   );

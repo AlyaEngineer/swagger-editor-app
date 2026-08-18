@@ -1,4 +1,5 @@
 import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { useTranslations } from 'next-intl';
@@ -30,11 +31,12 @@ export function RequestBodyDetails({
   return (
     <Paper sx={{ p: 1.5 }} variant="outlined">
       <Stack spacing={1}>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
+        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1, mb: 0.5 }}>
           <Chip
-            color={requestBody.required ? 'error' : 'default'}
+            color={requestBody.required ? 'warning' : 'default'}
             label={requestBody.required ? t('requiredLabel') : t('optionalLabel')}
             size="small"
+            sx={{ fontWeight: 600 }}
             variant="outlined"
           />
           <MediaTypeSelect
@@ -44,7 +46,12 @@ export function RequestBodyDetails({
           />
         </Stack>
 
-        {requestBody.description && <MarkdownText>{requestBody.description}</MarkdownText>}
+        {requestBody.description && (
+          <>
+            <MarkdownText>{requestBody.description}</MarkdownText>
+            <Divider />
+          </>
+        )}
 
         <SchemaText schema={selectedMediaType?.schema ?? ''} />
         <Examples examples={selectedMediaType?.examples ?? []} />

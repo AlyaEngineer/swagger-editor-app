@@ -6,3 +6,4 @@ export { ParameterDetails } from './parameter-details';
 export { RequestBodyDetails } from './request-body-details';
 export { ResponseDetails } from './response-details';
 export { SchemaText } from './schema-text';
+export { SectionLabel } from './section-label';

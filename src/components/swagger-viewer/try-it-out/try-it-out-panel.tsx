@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -16,9 +17,9 @@ import type {
   SwaggerMediaType,
 } from '@/utils/swagger-editor/get-swagger-endpoints';
 
+import { SectionLabel } from '@/components/swagger-viewer/endpoint-details';
 import { useToast } from '@/providers/toast-provider/ToastProvider';
 
-import { DetailSection } from '../endpoint-details';
 import { CurlCommandPreview } from './curl-command-preview';
 import { type TryItOutResponse, TryItOutResponseDetails } from './try-it-out-response-details';
 import {
@@ -148,7 +149,16 @@ export function TryItOutPanel({
 
   return (
     <Box aria-label={t('tryItOutTitle')} component="form" onSubmit={handleSubmit}>
-      <DetailSection title={t('tryItOutTitle')}>
+      <Typography
+        color="text.secondary"
+        component="div"
+        sx={{ fontWeight: 600, letterSpacing: 0.5, mb: 2, textTransform: 'uppercase' }}
+        variant="caption"
+      >
+        <SectionLabel>{t('tryItOutTitle')}</SectionLabel>
+      </Typography>
+
+      <Stack spacing={2}>
         <TextField
           fullWidth
           label={t('serverUrlLabel')}
@@ -174,6 +184,7 @@ export function TryItOutPanel({
             fullWidth
             helperText={contentType ? `${t('mediaTypeLabel')}: ${contentType}` : undefined}
             label={t('requestBodyInputLabel')}
+            maxRows={12}
             minRows={4}
             multiline
             onChange={(event) => handleBodyChange(event.target.value)}
@@ -195,7 +206,7 @@ export function TryItOutPanel({
 
         {error && <Alert severity="error">{error}</Alert>}
         {response && <TryItOutResponseDetails response={response} />}
-      </DetailSection>
+      </Stack>
     </Box>
   );
 }

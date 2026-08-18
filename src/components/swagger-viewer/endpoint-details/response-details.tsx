@@ -1,6 +1,7 @@
 'use client';
 
 import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { useState } from 'react';
@@ -8,6 +9,7 @@ import { useState } from 'react';
 import type { SwaggerEndpointResponse } from '@/utils/swagger-editor/get-swagger-endpoints';
 
 import { MarkdownText } from '@/components/markdown-text/markdown-text';
+import { getStatusColor } from '@/utils/swagger-editor/get-status-color';
 
 import { Examples } from './examples';
 import { MediaTypeSelect } from './media-type-select';
@@ -21,9 +23,14 @@ export function ResponseDetails({ response }: { response: SwaggerEndpointRespons
 
   return (
     <Paper sx={{ p: 1.5 }} variant="outlined">
-      <Stack spacing={1}>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-          <Chip color="primary" label={response.statusCode} size="small" variant="outlined" />
+      <Stack spacing={1.5}>
+        <Stack direction="row" sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+          <Chip
+            color={getStatusColor(response.statusCode)}
+            label={response.statusCode}
+            size="small"
+            variant="outlined"
+          />
           <MediaTypeSelect
             mediaTypes={response.mediaTypes}
             onChange={setContentType}
@@ -31,7 +38,12 @@ export function ResponseDetails({ response }: { response: SwaggerEndpointRespons
           />
         </Stack>
 
-        {response.description && <MarkdownText>{response.description}</MarkdownText>}
+        {response.description && (
+          <>
+            <MarkdownText>{response.description}</MarkdownText>
+            <Divider />
+          </>
+        )}
 
         <SchemaText schema={selectedMediaType?.schema ?? ''} />
         <Examples examples={selectedMediaType?.examples ?? []} />

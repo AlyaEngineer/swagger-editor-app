@@ -27,15 +27,17 @@ export function EndpointBody({ endpoint }: { endpoint: SwaggerEndpoint }) {
   const t = useTranslations('swaggerViewer');
   const mediaTypes = endpoint.requestBody?.mediaTypes ?? [];
   const [contentType, setContentType] = useState(getInitialContentType(mediaTypes));
+  const hasOwnDescription =
+    Boolean(endpoint.description) && endpoint.description.trim() !== endpoint.summary.trim();
 
   return (
     <Stack spacing={1.5}>
       {endpoint.operationId && (
-        <Typography color="text.secondary" variant="caption">
+        <Typography color="text.disabled" sx={{ fontFamily: 'monospace' }} variant="caption">
           {t('operationIdLabel')}: {endpoint.operationId}
         </Typography>
       )}
-      {endpoint.description && <MarkdownText>{endpoint.description}</MarkdownText>}
+      {hasOwnDescription && <MarkdownText>{endpoint.description}</MarkdownText>}
 
       <DetailSection title={t('parametersTitle')}>
         {endpoint.parameters.length > 0 ? (

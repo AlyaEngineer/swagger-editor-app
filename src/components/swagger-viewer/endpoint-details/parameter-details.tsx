@@ -1,4 +1,5 @@
 import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -15,21 +16,28 @@ export function ParameterDetails({ parameter }: { parameter: SwaggerEndpointPara
 
   return (
     <Paper sx={{ p: 1.5 }} variant="outlined">
-      <Stack spacing={1}>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-          <Chip label={parameter.in} size="small" />
+      <Stack spacing={1.5}>
+        <Stack direction="row" sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
           <Typography sx={{ fontFamily: 'monospace', fontWeight: 700 }} variant="body2">
             {parameter.name}
           </Typography>
+          <Chip label={parameter.in} size="small" variant="outlined" />
           <Chip
-            color={parameter.required ? 'error' : 'default'}
+            color={parameter.required ? 'warning' : 'default'}
             label={parameter.required ? t('requiredLabel') : t('optionalLabel')}
             size="small"
+            sx={{ fontWeight: 600 }}
             variant="outlined"
           />
         </Stack>
 
-        {parameter.description && <MarkdownText>{parameter.description}</MarkdownText>}
+        {parameter.description && (
+          <>
+            <MarkdownText>{parameter.description}</MarkdownText>
+            <Divider />
+          </>
+        )}
+
         <SchemaText schema={parameter.schema} />
       </Stack>
     </Paper>
