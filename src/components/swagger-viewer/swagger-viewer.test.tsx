@@ -231,7 +231,9 @@ describe('SwaggerViewer', () => {
       url: 'https://api.example.com/v1/users/42?includePosts=true',
     });
     expect(await screen.findByText('200 OK')).toBeInTheDocument();
-    expect(screen.getByText('{"ok":true}')).toBeInTheDocument();
+    expect(
+      screen.getByText(JSON.stringify({ ok: true }, null, 2), { normalizer: (text) => text }),
+    ).toBeInTheDocument();
     expect(screen.getByText('content-type: application/json')).toBeInTheDocument();
   });
 
