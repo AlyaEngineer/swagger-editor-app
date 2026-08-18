@@ -3,8 +3,12 @@
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import type { SwaggerEndpoint } from '@/utils/swagger-editor/get-swagger-endpoints';
+import type {
+  SwaggerEndpoint,
+  SwaggerMediaType,
+} from '@/utils/swagger-editor/get-swagger-endpoints';
 
 import { MarkdownText } from '@/components/markdown-text/markdown-text';
 
@@ -17,8 +21,12 @@ import {
 } from './endpoint-details';
 import { TryItOutPanel } from './try-it-out';
 
+const DEFAULT_CONTENT_TYPE = 'application/json';
+
 export function EndpointBody({ endpoint }: { endpoint: SwaggerEndpoint }) {
   const t = useTranslations('swaggerViewer');
+  const mediaTypes = endpoint.requestBody?.mediaTypes ?? [];
+  const [contentType, setContentType] = useState(getInitialContentType(mediaTypes));
 
   return (
     <Stack spacing={1.5}>
@@ -41,7 +49,11 @@ export function EndpointBody({ endpoint }: { endpoint: SwaggerEndpoint }) {
 
       <DetailSection title={t('requestBodyTitle')}>
         {endpoint.requestBody ? (
-          <RequestBodyDetails requestBody={endpoint.requestBody} />
+          <RequestBodyDetails
+            contentType={contentType}
+            onContentTypeChange={setContentType}
+            requestBody={endpoint.requestBody}
+          />
         ) : (
           <EmptyDetails>{t('noRequestBody')}</EmptyDetails>
         )}
@@ -57,7 +69,13 @@ export function EndpointBody({ endpoint }: { endpoint: SwaggerEndpoint }) {
         )}
       </DetailSection>
 
-      <TryItOutPanel endpoint={endpoint} />
+      <TryItOutPanel contentType={contentType} endpoint={endpoint} />
     </Stack>
   );
+}
+
+function getInitialContentType(mediaTypes: SwaggerMediaType[]) {
+  const hasJson = mediaTypes.some((mediaType) => mediaType.contentType === DEFAULT_CONTENT_TYPE);
+
+  return hasJson ? DEFAULT_CONTENT_TYPE : (mediaTypes[0]?.contentType ?? '');
 }

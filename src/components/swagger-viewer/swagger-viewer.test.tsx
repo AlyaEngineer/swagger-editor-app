@@ -68,10 +68,14 @@ describe('SwaggerViewer', () => {
             requestBody: null,
             responses: [
               {
-                contentTypes: ['application/json'],
                 description: 'Users response.',
-                examples: ['{"users":[]}'],
-                schema: 'object { users }',
+                mediaTypes: [
+                  {
+                    contentType: 'application/json',
+                    examples: ['{"users":[]}'],
+                    schema: 'object { users }',
+                  },
+                ],
                 statusCode: '200',
               },
             ],
@@ -85,11 +89,15 @@ describe('SwaggerViewer', () => {
             parameters: [],
             path: '/users',
             requestBody: {
-              contentTypes: ['application/json'],
               description: 'User payload.',
-              examples: ['{"name":"Ada"}'],
+              mediaTypes: [
+                {
+                  contentType: 'application/json',
+                  examples: ['{"name":"Ada"}'],
+                  schema: 'object { name }',
+                },
+              ],
               required: true,
-              schema: 'object { name }',
             },
             responses: [],
             serverUrl: 'https://api.example.com',
@@ -176,11 +184,15 @@ describe('SwaggerViewer', () => {
             ],
             path: '/users/{id}',
             requestBody: {
-              contentTypes: ['application/json'],
               description: '',
-              examples: ['{"name":"Ada"}'],
+              mediaTypes: [
+                {
+                  contentType: 'application/json',
+                  examples: ['{"name":"Ada"}'],
+                  schema: 'object { name }',
+                },
+              ],
               required: true,
-              schema: 'object { name }',
             },
             responses: [],
             serverUrl: 'https://api.example.com/v1',

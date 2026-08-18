@@ -93,7 +93,8 @@
     "tryItOutInvalidUrl": "Введите абсолютный HTTP URL сервера",
     "tryItOutMissingRequiredFields": "Заполните все обязательные поля перед генерацией cURL",
     "tryItOutTimeout": "Превышено время ожидания ответа",
-    "tryItOutTitle": "Опробовать"
+    "tryItOutTitle": "Опробовать",
+    "mediaTypeLabel": "Тип контента"
   },
   "swaggerControl": {
     "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",

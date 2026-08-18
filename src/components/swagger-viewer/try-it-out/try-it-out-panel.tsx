@@ -8,11 +8,12 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import type {
   SwaggerEndpoint,
   SwaggerEndpointParameter,
+  SwaggerMediaType,
 } from '@/utils/swagger-editor/get-swagger-endpoints';
 
 import { useToast } from '@/providers/toast-provider/ToastProvider';
@@ -27,17 +28,31 @@ import {
   getTryItOutErrorKey,
 } from './try-it-out.helpers';
 
-export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
+export function TryItOutPanel({
+  contentType,
+  endpoint,
+}: {
+  contentType: string;
+  endpoint: SwaggerEndpoint;
+}) {
   const t = useTranslations('swaggerViewer');
   const tToast = useTranslations('toaster');
   const showToast = useToast();
-  const [body, setBody] = useState(endpoint.requestBody?.examples[0] ?? '');
+  const mediaTypes = useMemo(() => endpoint.requestBody?.mediaTypes ?? [], [endpoint.requestBody]);
+  const [body, setBody] = useState(getExample(mediaTypes, contentType));
   const [curlCommand, setCurlCommand] = useState('');
   const [error, setError] = useState('');
   const [isExecuting, setIsExecuting] = useState(false);
   const [parameterValues, setParameterValues] = useState<Record<string, string>>({});
+  const [previousContentType, setPreviousContentType] = useState(contentType);
   const [response, setResponse] = useState<null | TryItOutResponse>(null);
   const [serverUrl, setServerUrl] = useState(endpoint.serverUrl);
+
+  if (previousContentType !== contentType) {
+    setPreviousContentType(contentType);
+    setBody(getExample(mediaTypes, contentType));
+    setCurlCommand('');
+  }
 
   const resetGeneratedCurl = () => {
     setCurlCommand('');
@@ -79,7 +94,7 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
       return;
     }
 
-    const request = buildTryItOutRequest(endpoint, serverUrl, parameterValues, body);
+    const request = buildTryItOutRequest(endpoint, serverUrl, parameterValues, body, contentType);
 
     if (!request) {
       setCurlCommand('');
@@ -100,7 +115,7 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
     setError('');
     setResponse(null);
 
-    const request = buildTryItOutRequest(endpoint, serverUrl, parameterValues, body);
+    const request = buildTryItOutRequest(endpoint, serverUrl, parameterValues, body, contentType);
 
     if (!request) {
       setError(t('tryItOutInvalidUrl'));
@@ -157,6 +172,7 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
         {endpoint.requestBody && (
           <TextField
             fullWidth
+            helperText={contentType ? `${t('mediaTypeLabel')}: ${contentType}` : undefined}
             label={t('requestBodyInputLabel')}
             minRows={4}
             multiline
@@ -182,6 +198,10 @@ export function TryItOutPanel({ endpoint }: { endpoint: SwaggerEndpoint }) {
       </DetailSection>
     </Box>
   );
+}
+
+function getExample(mediaTypes: SwaggerMediaType[], contentType: string) {
+  return mediaTypes.find((mediaType) => mediaType.contentType === contentType)?.examples[0] ?? '';
 }
 
 function hasMissingRequiredFields(

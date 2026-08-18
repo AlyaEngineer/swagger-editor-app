@@ -124,17 +124,19 @@ describe('getSwaggerEndpoints', () => {
         requestBody: null,
         responses: [
           {
-            contentTypes: ['application/json'],
             description: 'User response.',
-            examples: ['{"id":"42","name":"Ada"}'],
-            schema: 'object { id, name }',
+            mediaTypes: [
+              {
+                contentType: 'application/json',
+                examples: [JSON.stringify({ id: '42', name: 'Ada' }, null, 2)],
+                schema: 'object { id, name }',
+              },
+            ],
             statusCode: '200',
           },
           {
-            contentTypes: [],
             description: 'User not found.',
-            examples: [],
-            schema: '',
+            mediaTypes: [],
             statusCode: '404',
           },
         ],
@@ -156,18 +158,20 @@ describe('getSwaggerEndpoints', () => {
         ],
         path: '/users/{id}',
         requestBody: {
-          contentTypes: ['application/json'],
           description: 'User payload.',
-          examples: ['{"name":"Ada"}'],
+          mediaTypes: [
+            {
+              contentType: 'application/json',
+              examples: [JSON.stringify({ name: 'Ada' }, null, 2)],
+              schema: 'object { name }',
+            },
+          ],
           required: true,
-          schema: 'object { name }',
         },
         responses: [
           {
-            contentTypes: [],
             description: 'Created.',
-            examples: [],
-            schema: '',
+            mediaTypes: [],
             statusCode: '201',
           },
         ],
@@ -191,10 +195,8 @@ describe('getSwaggerEndpoints', () => {
         requestBody: null,
         responses: [
           {
-            contentTypes: [],
             description: 'Updated.',
-            examples: [],
-            schema: '',
+            mediaTypes: [],
             statusCode: '204',
           },
         ],
@@ -246,18 +248,26 @@ describe('getSwaggerEndpoints', () => {
         parameters: [],
         path: '/pets',
         requestBody: {
-          contentTypes: ['application/json'],
           description: 'Pet payload.',
-          examples: [],
+          mediaTypes: [
+            {
+              contentType: 'application/json',
+              examples: [],
+              schema: '#/definitions/Pet',
+            },
+          ],
           required: true,
-          schema: '#/definitions/Pet',
         },
         responses: [
           {
-            contentTypes: [],
             description: 'Unexpected error.',
-            examples: ['{"message":"Error"}'],
-            schema: '#/definitions/Error',
+            mediaTypes: [
+              {
+                contentType: 'application/json',
+                examples: [JSON.stringify({ message: 'Error' }, null, 2)],
+                schema: '#/definitions/Error',
+              },
+            ],
             statusCode: 'default',
           },
         ],
@@ -305,7 +315,7 @@ describe('getSwaggerEndpoints', () => {
 
     const endpoints = getSwaggerEndpoints(schema);
 
-    expect(endpoints[0].responses[0].examples).toEqual(['plain text response']);
+    expect(endpoints[0].responses[0].mediaTypes[0].examples).toEqual(['plain text response']);
   });
 
   it('extracts OpenAPI 3 named examples with a value wrapper', () => {
@@ -331,7 +341,10 @@ describe('getSwaggerEndpoints', () => {
 
     const endpoints = getSwaggerEndpoints(schema);
 
-    expect(endpoints[0].requestBody?.examples).toEqual(['{"name":"Ada"}', 'raw string example']);
+    expect(endpoints[0].requestBody?.mediaTypes[0].examples).toEqual([
+      JSON.stringify({ name: 'Ada' }, null, 2),
+      'raw string example',
+    ]);
   });
 
   it('ignores non-record entries in a parameters array', () => {

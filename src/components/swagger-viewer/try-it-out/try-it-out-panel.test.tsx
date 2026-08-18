@@ -27,11 +27,15 @@ const endpoint: SwaggerEndpoint = {
   ],
   path: '/users/{id}',
   requestBody: {
-    contentTypes: ['application/json'],
     description: '',
-    examples: ['{"name":"Ada"}'],
+    mediaTypes: [
+      {
+        contentType: 'application/json',
+        examples: ['{"name":"Ada"}'],
+        schema: 'object { name }',
+      },
+    ],
     required: true,
-    schema: 'object { name }',
   },
   responses: [],
   serverUrl: 'https://api.example.com',
@@ -41,7 +45,7 @@ const endpoint: SwaggerEndpoint = {
 function renderPanel() {
   return render(
     <ToastProvider>
-      <TryItOutPanel endpoint={endpoint} />
+      <TryItOutPanel contentType="application/json" endpoint={endpoint} />
     </ToastProvider>,
   );
 }

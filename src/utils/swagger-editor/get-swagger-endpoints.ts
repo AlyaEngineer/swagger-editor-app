@@ -28,19 +28,21 @@ export type SwaggerEndpointParameter = {
 export type SwaggerEndpointParameterLocation = 'cookie' | 'header' | 'path' | 'query';
 
 export type SwaggerEndpointRequestBody = {
-  contentTypes: string[];
   description: string;
-  examples: string[];
+  mediaTypes: SwaggerMediaType[];
   required: boolean;
-  schema: string;
 };
 
 export type SwaggerEndpointResponse = {
-  contentTypes: string[];
   description: string;
+  mediaTypes: SwaggerMediaType[];
+  statusCode: string;
+};
+
+export type SwaggerMediaType = {
+  contentType: string;
   examples: string[];
   schema: string;
-  statusCode: string;
 };
 
 type OperationObject = {
@@ -103,31 +105,7 @@ function formatExample(value: unknown) {
     return '';
   }
 
-  return JSON.stringify(value);
-}
-
-function getContentDetails(content: unknown) {
-  if (!isRecord(content)) {
-    return {
-      contentTypes: [],
-      examples: [],
-      schema: '',
-    };
-  }
-
-  const contentTypes = Object.keys(content);
-  const schemas = Object.values(content)
-    .map((mediaType) => (isRecord(mediaType) ? stringifySchema(mediaType.schema) : ''))
-    .filter(Boolean);
-  const examples = Object.values(content).flatMap((mediaType) =>
-    isRecord(mediaType) ? getMediaTypeExamples(mediaType) : [],
-  );
-
-  return {
-    contentTypes,
-    examples,
-    schema: schemas[0] ?? '',
-  };
+  return JSON.stringify(value, null, 2);
 }
 
 function getDefaultServerUrl(schema: OpenApiDocument) {
@@ -175,6 +153,18 @@ function getMediaTypeExamples(mediaType: Record<string, unknown>) {
   return examples.filter(Boolean);
 }
 
+function getMediaTypes(content: unknown): SwaggerMediaType[] {
+  if (!isRecord(content)) {
+    return [];
+  }
+
+  return Object.entries(content).map(([contentType, mediaType]) => ({
+    contentType,
+    examples: isRecord(mediaType) ? getMediaTypeExamples(mediaType) : [],
+    schema: isRecord(mediaType) ? stringifySchema(mediaType.schema) : '',
+  }));
+}
+
 function getParameters(value: unknown): SwaggerEndpointParameter[] {
   if (!Array.isArray(value)) {
     return [];
@@ -209,15 +199,31 @@ function getRequestBody(value: unknown): null | SwaggerEndpointRequestBody {
     return null;
   }
 
-  const contentDetails = getContentDetails(value.content);
-
   return {
-    contentTypes: contentDetails.contentTypes,
     description: getString(value.description),
-    examples: contentDetails.examples,
+    mediaTypes: getMediaTypes(value.content),
     required: value.required === true,
-    schema: contentDetails.schema || stringifySchema(value),
   };
+}
+
+function getResponseMediaTypes(response: Record<string, unknown>): SwaggerMediaType[] {
+  const mediaTypes = getMediaTypes(response.content);
+
+  if (mediaTypes.length > 0) {
+    return mediaTypes;
+  }
+
+  const schema = stringifySchema(response.schema);
+
+  if (!isRecord(response.examples)) {
+    return schema ? [{ contentType: '', examples: [], schema }] : [];
+  }
+
+  return Object.entries(response.examples).map(([contentType, example]) => ({
+    contentType,
+    examples: [formatExample(example)].filter(Boolean),
+    schema,
+  }));
 }
 
 function getResponses(value: unknown): SwaggerEndpointResponse[] {
@@ -228,24 +234,15 @@ function getResponses(value: unknown): SwaggerEndpointResponse[] {
   return Object.entries(value).map(([statusCode, response]) => {
     if (!isRecord(response)) {
       return {
-        contentTypes: [],
         description: '',
-        examples: [],
-        schema: '',
+        mediaTypes: [],
         statusCode,
       };
     }
 
-    const contentDetails = getContentDetails(response.content);
-    const swagger2Examples = isRecord(response.examples)
-      ? Object.values(response.examples).map(formatExample).filter(Boolean)
-      : [];
-
     return {
-      contentTypes: contentDetails.contentTypes,
       description: getString(response.description),
-      examples: [...contentDetails.examples, ...swagger2Examples],
-      schema: contentDetails.schema || stringifySchema(response.schema),
+      mediaTypes: getResponseMediaTypes(response),
       statusCode,
     };
   });
@@ -271,14 +268,18 @@ function getSwagger2RequestBody(
     return null;
   }
 
+  const schema = stringifySchema(bodyParameter.schema);
+  const contentTypes = Array.isArray(consumes)
+    ? consumes.filter((item): item is string => typeof item === 'string')
+    : [];
+
   return {
-    contentTypes: Array.isArray(consumes)
-      ? consumes.filter((item): item is string => typeof item === 'string')
-      : [],
     description: getString(bodyParameter.description),
-    examples: [],
+    mediaTypes:
+      contentTypes.length > 0
+        ? contentTypes.map((contentType) => ({ contentType, examples: [], schema }))
+        : [{ contentType: '', examples: [], schema }],
     required: bodyParameter.required === true,
-    schema: stringifySchema(bodyParameter.schema),
   };
 }
 

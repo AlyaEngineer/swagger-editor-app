@@ -7,12 +7,25 @@ import type { SwaggerEndpointRequestBody } from '@/utils/swagger-editor/get-swag
 
 import { MarkdownText } from '@/components/markdown-text/markdown-text';
 
-import { ContentTypes } from './content-types';
 import { Examples } from './examples';
+import { MediaTypeSelect } from './media-type-select';
 import { SchemaText } from './schema-text';
 
-export function RequestBodyDetails({ requestBody }: { requestBody: SwaggerEndpointRequestBody }) {
+type RequestBodyDetailsProps = {
+  contentType: string;
+  onContentTypeChange: (contentType: string) => void;
+  requestBody: SwaggerEndpointRequestBody;
+};
+
+export function RequestBodyDetails({
+  contentType,
+  onContentTypeChange,
+  requestBody,
+}: RequestBodyDetailsProps) {
   const t = useTranslations('swaggerViewer');
+  const selectedMediaType =
+    requestBody.mediaTypes.find((mediaType) => mediaType.contentType === contentType) ??
+    requestBody.mediaTypes[0];
 
   return (
     <Paper sx={{ p: 1.5 }} variant="outlined">
@@ -24,13 +37,17 @@ export function RequestBodyDetails({ requestBody }: { requestBody: SwaggerEndpoi
             size="small"
             variant="outlined"
           />
-          <ContentTypes contentTypes={requestBody.contentTypes} />
+          <MediaTypeSelect
+            mediaTypes={requestBody.mediaTypes}
+            onChange={onContentTypeChange}
+            value={contentType}
+          />
         </Stack>
 
         {requestBody.description && <MarkdownText>{requestBody.description}</MarkdownText>}
 
-        <SchemaText schema={requestBody.schema} />
-        <Examples examples={requestBody.examples} />
+        <SchemaText schema={selectedMediaType?.schema ?? ''} />
+        <Examples examples={selectedMediaType?.examples ?? []} />
       </Stack>
     </Paper>
   );

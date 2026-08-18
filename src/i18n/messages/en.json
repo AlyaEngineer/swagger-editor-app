@@ -93,7 +93,8 @@
     "tryItOutInvalidUrl": "Enter a valid absolute HTTP server URL",
     "tryItOutMissingRequiredFields": "Fill in all required fields before generating cURL",
     "tryItOutTimeout": "Request timed out",
-    "tryItOutTitle": "Try it out"
+    "tryItOutTitle": "Try it out",
+    "mediaTypeLabel": "Media type"
   },
   "swaggerControl": {
     "disabledHint": "Correct the errors in the schema to switch the format",
