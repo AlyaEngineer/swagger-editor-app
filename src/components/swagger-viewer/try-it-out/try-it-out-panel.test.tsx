@@ -32,6 +32,7 @@ const endpoint: SwaggerEndpoint = {
       {
         contentType: 'application/json',
         examples: ['{"name":"Ada"}'],
+        generatedExample: '',
         schema: 'object { name }',
       },
     ],

@@ -73,6 +73,7 @@ describe('SwaggerViewer', () => {
                   {
                     contentType: 'application/json',
                     examples: ['{"users":[]}'],
+                    generatedExample: '',
                     schema: 'object { users }',
                   },
                 ],
@@ -94,6 +95,7 @@ describe('SwaggerViewer', () => {
                 {
                   contentType: 'application/json',
                   examples: ['{"name":"Ada"}'],
+                  generatedExample: '',
                   schema: 'object { name }',
                 },
               ],
@@ -189,6 +191,7 @@ describe('SwaggerViewer', () => {
                 {
                   contentType: 'application/json',
                   examples: ['{"name":"Ada"}'],
+                  generatedExample: '',
                   schema: 'object { name }',
                 },
               ],
