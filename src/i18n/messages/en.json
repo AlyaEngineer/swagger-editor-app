@@ -66,6 +66,7 @@
     "executeButton": "Execute",
     "executingLabel": "Executing...",
     "examplesLabel": "Examples",
+    "generatedExampleLabel": "Generated example",
     "copyCurlButton": "Copy",
     "curlCommandLabel": "cURL command",
     "generateCurlButton": "Generate cURL",

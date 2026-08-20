@@ -1,5 +1,6 @@
 import type { OpenApiDocument } from '@/types';
 
+import { generateSchemaExample } from './generate-schema-example';
 import { isRecord } from './is-record';
 
 const HTTP_METHODS = new Set(['delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace']);
@@ -42,6 +43,7 @@ export type SwaggerEndpointResponse = {
 export type SwaggerMediaType = {
   contentType: string;
   examples: string[];
+  generatedExample: string;
   schema: string;
 };
 
@@ -161,6 +163,10 @@ function getMediaTypes(content: unknown): SwaggerMediaType[] {
   return Object.entries(content).map(([contentType, mediaType]) => ({
     contentType,
     examples: isRecord(mediaType) ? getMediaTypeExamples(mediaType) : [],
+    generatedExample:
+      isRecord(mediaType) && contentType.includes('json')
+        ? generateSchemaExample(mediaType.schema)
+        : '',
     schema: isRecord(mediaType) ? stringifySchema(mediaType.schema) : '',
   }));
 }
@@ -216,12 +222,22 @@ function getResponseMediaTypes(response: Record<string, unknown>): SwaggerMediaT
   const schema = stringifySchema(response.schema);
 
   if (!isRecord(response.examples)) {
-    return schema ? [{ contentType: '', examples: [], schema }] : [];
+    return schema
+      ? [
+          {
+            contentType: '',
+            examples: [],
+            generatedExample: generateSchemaExample(response.schema),
+            schema,
+          },
+        ]
+      : [];
   }
 
   return Object.entries(response.examples).map(([contentType, example]) => ({
     contentType,
     examples: [formatExample(example)].filter(Boolean),
+    generatedExample: generateSchemaExample(response.schema),
     schema,
   }));
 }
@@ -269,6 +285,7 @@ function getSwagger2RequestBody(
   }
 
   const schema = stringifySchema(bodyParameter.schema);
+  const generatedExample = generateSchemaExample(bodyParameter.schema);
   const contentTypes = Array.isArray(consumes)
     ? consumes.filter((item): item is string => typeof item === 'string')
     : [];
@@ -277,8 +294,13 @@ function getSwagger2RequestBody(
     description: getString(bodyParameter.description),
     mediaTypes:
       contentTypes.length > 0
-        ? contentTypes.map((contentType) => ({ contentType, examples: [], schema }))
-        : [{ contentType: '', examples: [], schema }],
+        ? contentTypes.map((contentType) => ({
+            contentType,
+            examples: [],
+            generatedExample,
+            schema,
+          }))
+        : [{ contentType: '', examples: [], generatedExample, schema }],
     required: bodyParameter.required === true,
   };
 }

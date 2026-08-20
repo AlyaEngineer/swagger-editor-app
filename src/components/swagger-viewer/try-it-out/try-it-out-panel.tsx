@@ -212,7 +212,13 @@ export function TryItOutPanel({
 }
 
 function getExample(mediaTypes: SwaggerMediaType[], contentType: string) {
-  return mediaTypes.find((mediaType) => mediaType.contentType === contentType)?.examples[0] ?? '';
+  const mediaType = mediaTypes.find((item) => item.contentType === contentType);
+
+  if (!mediaType) {
+    return '';
+  }
+
+  return mediaType.examples[0] ?? mediaType.generatedExample;
 }
 
 function hasMissingRequiredFields(

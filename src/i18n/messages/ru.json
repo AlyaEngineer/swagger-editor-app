@@ -66,6 +66,7 @@
     "executeButton": "Выполнить",
     "executingLabel": "Выполнение...",
     "examplesLabel": "Примеры",
+    "generatedExampleLabel": "Сгенерированный пример",
     "copyCurlButton": "Копировать",
     "curlCommandLabel": "Команда cURL",
     "generateCurlButton": "Сгенерировать cURL",

@@ -4,17 +4,26 @@ import { useTranslations } from 'next-intl';
 
 import { SectionLabel } from './section-label';
 
-export function Examples({ examples }: { examples: string[] }) {
-  const t = useTranslations('swaggerViewer');
+type ExamplesProps = {
+  examples: string[];
+  generatedExample?: string;
+};
 
-  if (examples.length === 0) {
+export function Examples({ examples, generatedExample = '' }: ExamplesProps) {
+  const t = useTranslations('swaggerViewer');
+  const hasOwnExamples = examples.length > 0;
+  const items = hasOwnExamples ? examples : generatedExample ? [generatedExample] : [];
+
+  if (items.length === 0) {
     return null;
   }
 
   return (
     <Stack spacing={0.75}>
-      <SectionLabel>{t('examplesLabel')}</SectionLabel>
-      {examples.map((example, index) => (
+      <SectionLabel>
+        {hasOwnExamples ? t('examplesLabel') : t('generatedExampleLabel')}
+      </SectionLabel>
+      {items.map((example, index) => (
         <Box
           component="pre"
           key={`${example}-${index}`}

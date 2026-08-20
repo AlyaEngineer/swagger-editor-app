@@ -46,7 +46,10 @@ export function ResponseDetails({ response }: { response: SwaggerEndpointRespons
         )}
 
         <SchemaText schema={selectedMediaType?.schema ?? ''} />
-        <Examples examples={selectedMediaType?.examples ?? []} />
+        <Examples
+          examples={selectedMediaType?.examples ?? []}
+          generatedExample={selectedMediaType?.generatedExample ?? ''}
+        />
       </Stack>
     </Paper>
   );

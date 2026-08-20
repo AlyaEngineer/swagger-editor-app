@@ -129,6 +129,7 @@ describe('getSwaggerEndpoints', () => {
               {
                 contentType: 'application/json',
                 examples: [JSON.stringify({ id: '42', name: 'Ada' }, null, 2)],
+                generatedExample: JSON.stringify({ id: 'string', name: 'string' }, null, 2),
                 schema: 'object { id, name }',
               },
             ],
@@ -163,6 +164,7 @@ describe('getSwaggerEndpoints', () => {
             {
               contentType: 'application/json',
               examples: [JSON.stringify({ name: 'Ada' }, null, 2)],
+              generatedExample: JSON.stringify({ name: 'string' }, null, 2),
               schema: 'object { name }',
             },
           ],
@@ -253,6 +255,7 @@ describe('getSwaggerEndpoints', () => {
             {
               contentType: 'application/json',
               examples: [],
+              generatedExample: '',
               schema: '#/definitions/Pet',
             },
           ],
@@ -265,6 +268,7 @@ describe('getSwaggerEndpoints', () => {
               {
                 contentType: 'application/json',
                 examples: [JSON.stringify({ message: 'Error' }, null, 2)],
+                generatedExample: '',
                 schema: '#/definitions/Error',
               },
             ],
