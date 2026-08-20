@@ -67,6 +67,7 @@
     "executingLabel": "Executing...",
     "examplesLabel": "Examples",
     "generatedExampleLabel": "Generated example",
+    "copyExampleButton": "Copy example",
     "copyCurlButton": "Copy",
     "curlCommandLabel": "cURL command",
     "generateCurlButton": "Generate cURL",
@@ -121,7 +122,9 @@
     "signUpError": "Failed to sign up. Please try again later",
     "signUpSuccess": "Successfully signed up",
     "signOutError": "Failed to sign out",
-    "historyLoadError": "Failed to load request history"
+    "historyLoadError": "Failed to load request history",
+    "exampleCopyError": "Failed to copy example",
+    "exampleCopySuccess": "Example copied to clipboard"
   },
   "footer": {
     "aboutLink": "About",

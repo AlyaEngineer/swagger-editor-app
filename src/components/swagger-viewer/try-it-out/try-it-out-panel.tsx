@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -17,9 +16,10 @@ import type {
   SwaggerMediaType,
 } from '@/utils/swagger-editor/get-swagger-endpoints';
 
-import { SectionLabel } from '@/components/swagger-viewer/endpoint-details';
+import { useCopyToClipboard } from '@/hooks/use-copy-to-clipboard';
 import { useToast } from '@/providers/toast-provider/ToastProvider';
 
+import { SectionLabel } from '../endpoint-details';
 import { CurlCommandPreview } from './curl-command-preview';
 import { type TryItOutResponse, TryItOutResponseDetails } from './try-it-out-response-details';
 import {
@@ -48,6 +48,7 @@ export function TryItOutPanel({
   const [previousContentType, setPreviousContentType] = useState(contentType);
   const [response, setResponse] = useState<null | TryItOutResponse>(null);
   const [serverUrl, setServerUrl] = useState(endpoint.serverUrl);
+  const copyToClipboard = useCopyToClipboard();
 
   if (previousContentType !== contentType) {
     setPreviousContentType(contentType);
@@ -77,14 +78,7 @@ export function TryItOutPanel({
     setServerUrl(value);
   };
 
-  const handleCopyCurl = async () => {
-    try {
-      await navigator.clipboard.writeText(curlCommand);
-      showToast(tToast('curlCopySuccess'), 'success');
-    } catch {
-      showToast(tToast('curlCopyError'), 'error');
-    }
-  };
+  const handleCopyCurl = () => copyToClipboard(curlCommand, 'curlCopySuccess', 'curlCopyError');
 
   const handleGenerateCurl = () => {
     setError('');
@@ -149,14 +143,9 @@ export function TryItOutPanel({
 
   return (
     <Box aria-label={t('tryItOutTitle')} component="form" onSubmit={handleSubmit}>
-      <Typography
-        color="text.secondary"
-        component="div"
-        sx={{ fontWeight: 600, letterSpacing: 0.5, mb: 2, textTransform: 'uppercase' }}
-        variant="caption"
-      >
+      <Box sx={{ mb: 2 }}>
         <SectionLabel>{t('tryItOutTitle')}</SectionLabel>
-      </Typography>
+      </Box>
 
       <Stack spacing={2}>
         <TextField

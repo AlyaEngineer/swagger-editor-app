@@ -67,6 +67,7 @@
     "executingLabel": "Выполнение...",
     "examplesLabel": "Примеры",
     "generatedExampleLabel": "Сгенерированный пример",
+    "copyExampleButton": "Копировать пример",
     "copyCurlButton": "Копировать",
     "curlCommandLabel": "Команда cURL",
     "generateCurlButton": "Сгенерировать cURL",
@@ -121,7 +122,9 @@
     "signUpError": "Не удалось зарегистрироваться. Попробуйте позже",
     "signUpSuccess": "Регистрация прошла успешно",
     "signOutError": "Не удалось выйти из аккаунта",
-    "historyLoadError": "Не удалось загрузить историю запросов"
+    "historyLoadError": "Не удалось загрузить историю запросов",
+    "exampleCopyError": "Не удалось скопировать пример",
+    "exampleCopySuccess": "Пример скопирован в буфер обмена"
   },
   "footer": {
     "aboutLink": "О проекте",
