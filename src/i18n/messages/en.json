@@ -9,9 +9,12 @@
     "signOut": "Sign Out",
     "history": "History",
     "about": "About",
+    "main": "Main",
     "language": "Language",
     "switchToLightTheme": "Switch to light theme",
-    "switchToDarkTheme": "Switch to dark theme"
+    "switchToDarkTheme": "Switch to dark theme",
+    "openMenu": "Open menu",
+    "navigationLabel": "Site navigation"
   },
   "authForm": {
     "invalidEmail": "Please enter a valid email address",

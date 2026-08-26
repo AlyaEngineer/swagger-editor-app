@@ -9,9 +9,12 @@
     "signOut": "Выйти",
     "history": "История",
     "about": "О проекте",
+    "main": "Главная",
     "language": "Язык",
     "switchToLightTheme": "Включить светлую тему",
-    "switchToDarkTheme": "Включить тёмную тему"
+    "switchToDarkTheme": "Включить тёмную тему",
+    "openMenu": "Открыть меню",
+    "navigationLabel": "Навигация по сайту"
   },
   "authForm": {
     "invalidEmail": "Введите корректный email-адрес",

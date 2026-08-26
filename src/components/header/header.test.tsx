@@ -76,7 +76,7 @@ describe('Header', () => {
     render(<Header />);
 
     const navigation = screen.getByRole('navigation', {
-      name: 'Main navigation',
+      name: 'navigationLabel',
     });
 
     const navigationQueries = within(navigation);
