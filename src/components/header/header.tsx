@@ -34,6 +34,7 @@ export function Header() {
         backgroundColor: 'background.paper',
         borderBottom: 1,
         borderColor: 'divider',
+        borderRadius: 0,
       }}
     >
       <Toolbar
