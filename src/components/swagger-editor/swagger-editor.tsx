@@ -6,8 +6,8 @@ import { SwaggerMonacoEditor, SwaggerViewer } from '@components';
 import { Alert, alpha, Box, Paper, Stack } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
+import { useSwagger } from '@/hooks/use-swagger';
 import { type SavedSchema } from '@/services/schema-persistence';
-import { useSwagger } from '@/utils/hooks/use-swagger';
 import { getSwaggerEndpoints } from '@/utils/swagger-editor/get-swagger-endpoints';
 
 import { MainText } from '../main-text/main-text';
