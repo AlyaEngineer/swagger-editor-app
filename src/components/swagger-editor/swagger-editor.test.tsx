@@ -1,0 +1,114 @@
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+
+import { ToastProvider } from '@/providers/toast-provider/ToastProvider';
+
+import { SwaggerEditor } from './swagger-editor';
+
+vi.mock('next-intl', () => ({
+  useTranslations: () => (key: string, values?: Record<string, unknown>) =>
+    values ? `${key}:${JSON.stringify(values)}` : key,
+}));
+
+vi.mock('@components', () => ({
+  FormatToggle: () => <div data-testid="format-toggle-stub" />,
+  SwaggerMonacoEditor: () => <div data-testid="monaco-stub" />,
+  SwaggerViewer: ({
+    apiInfo,
+    endpoints,
+  }: {
+    apiInfo: null | {
+      title: string;
+    };
+    endpoints: Array<{
+      method: string;
+      path: string;
+    }>;
+  }) => (
+    <div data-testid="swagger-viewer-stub">
+      {apiInfo?.title}
+      {endpoints.map((endpoint) => `${endpoint.method} ${endpoint.path}`).join(', ')}
+    </div>
+  ),
+}));
+
+vi.mock('@/providers/auth-provider/AuthProvider', () => ({
+  useAuth: () => ({
+    isAuthenticated: true,
+    isAuthLoading: false,
+    signOut: vi.fn(),
+  }),
+}));
+
+const mockUseSwagger = vi.fn();
+
+vi.mock('@/hooks/use-swagger', () => ({
+  useSwagger: (initialSchema: unknown) => mockUseSwagger(initialSchema),
+}));
+
+function renderWithProviders(ui: React.ReactElement) {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+}
+
+describe('SwaggerEditor', () => {
+  it('shows an error alert when the schema is invalid', () => {
+    mockUseSwagger.mockReturnValue({
+      editorValue: '',
+      error: 'Something is wrong',
+      format: 'yaml',
+      handleEditorChange: vi.fn(),
+      handleFormatToggle: vi.fn(),
+      isValid: false,
+      schema: null,
+    });
+
+    renderWithProviders(<SwaggerEditor />);
+
+    expect(screen.getByText('Something is wrong')).toBeInTheDocument();
+  });
+
+  it('passes the restored schema to the swagger hook', () => {
+    const initialSchema = {
+      content: 'openapi: 3.0.0\ninfo:\n  title: Restored',
+      format: 'yaml' as const,
+    };
+
+    mockUseSwagger.mockReturnValue({
+      editorValue: initialSchema.content,
+      error: null,
+      format: initialSchema.format,
+      handleEditorChange: vi.fn(),
+      handleFormatToggle: vi.fn(),
+      isValid: false,
+      schema: null,
+    });
+
+    renderWithProviders(<SwaggerEditor initialSchema={initialSchema} />);
+
+    expect(mockUseSwagger).toHaveBeenCalledWith(initialSchema);
+  });
+
+  it('shows a success alert with the endpoint count when the schema is valid', () => {
+    mockUseSwagger.mockReturnValue({
+      editorValue: '',
+      error: null,
+      format: 'yaml',
+      handleEditorChange: vi.fn(),
+      handleFormatToggle: vi.fn(),
+      isValid: true,
+      schema: {
+        info: {
+          title: 'Petstore',
+          version: '1.0.0',
+        },
+        paths: { '/users': { get: {} } },
+      },
+    });
+
+    renderWithProviders(<SwaggerEditor />);
+
+    expect(screen.getByText(/schemaValid/)).toBeInTheDocument();
+    expect(screen.getByTestId('swagger-viewer-stub')).toHaveTextContent('Petstore');
+    expect(screen.getByTestId('swagger-viewer-stub')).toHaveTextContent('GET /users');
+  });
+});

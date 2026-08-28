@@ -1,0 +1,199 @@
+{
+  "Metadata": {
+    "title": "Swagger Editor",
+    "description": "Paste JSON or YAML OpenAPI/Swagger schema. Valid schemas will automatically populate the viewer."
+  },
+  "Header": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "history": "History",
+    "about": "About",
+    "main": "Main",
+    "language": "Language",
+    "switchToLightTheme": "Switch to light theme",
+    "switchToDarkTheme": "Switch to dark theme",
+    "openMenu": "Open menu",
+    "navigationLabel": "Site navigation",
+    "closeMenu": "Close menu"
+  },
+  "authForm": {
+    "invalidEmail": "Please enter a valid email address",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "nameRequired": "Name is required",
+    "passwordTooShort": "Password must be at least 8 characters long",
+    "passwordMissingLetter": "Password must contain at least one letter",
+    "passwordMissingDigit": "Password must contain at least one digit",
+    "passwordMissingSpecialChar": "Password must contain at least one special character",
+    "signInTitle": "Sign In",
+    "signUpTitle": "Sign Up",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "signInButton": "Sign In",
+    "signUpButton": "Sign Up",
+    "noAccount": "Don't have an account?",
+    "signUpLink": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign In"
+  },
+  "HomePage": {
+    "title": "Swagger/OpenAPI UI",
+    "description": "Edit, view and test OpenAPI specifications in one app."
+  },
+  "HistoryPage": {
+    "title": "Request History",
+    "emptyMessage": "You haven't executed any requests yet",
+    "emptyLinksHint": "Get started by loading a schema and trying out an endpoint",
+    "goToEditor": "Go to Editor",
+    "errorLabel": "Error",
+    "durationColumn": "Duration",
+    "endpointColumn": "Endpoint",
+    "errorColumn": "Error",
+    "methodColumn": "Method",
+    "requestSizeColumn": "Request\nSize",
+    "responseSizeColumn": "Response\nSize",
+    "statusColumn": "Status",
+    "timestampColumn": "Timestamp",
+    "rowsPerPage": "Rows per page:",
+    "paginationLabel": "{from}-{to} of {count}"
+  },
+  "swaggerEditor": {
+    "conversionError": "Failed to convert schema format.",
+    "restoreError": "Failed to restore saved schema.",
+    "schemaValid": "Schema is valid. {count} endpoint(s) found."
+  },
+  "swaggerViewer": {
+    "emptyPrompt": "Paste a valid OpenAPI/Swagger schema to populate the viewer.",
+    "emptyResponseBody": "Empty response body",
+    "endpointListLabel": "OpenAPI endpoint list",
+    "executeButton": "Execute",
+    "executingLabel": "Executing...",
+    "examplesLabel": "Examples",
+    "generatedExampleLabel": "Generated example",
+    "copyExampleButton": "Copy example",
+    "copyCurlButton": "Copy",
+    "curlCommandLabel": "cURL command",
+    "generateCurlButton": "Generate cURL",
+    "noResponseHeaders": "No response headers",
+    "noParameters": "No parameters",
+    "noRequestBody": "No request body",
+    "noResponses": "No responses",
+    "noEndpoints": "Schema is valid, but no endpoints were found in paths.",
+    "noSummary": "No summary",
+    "operationIdLabel": "Operation ID",
+    "optionalLabel": "Optional",
+    "parametersTitle": "Parameters",
+    "requestBodyTitle": "Request body",
+    "requiredLabel": "Required",
+    "requestBodyInputLabel": "Request body",
+    "responseBodyLabel": "Response body",
+    "responseHeadersLabel": "Response headers",
+    "responsesTitle": "Responses",
+    "schemaLabel": "Schema",
+    "schemaNotSpecified": "Not specified",
+    "serverUrlLabel": "Server URL",
+    "tryItOutBlockedUrl": "This destination is not allowed",
+    "tryItOutFailed": "Request execution failed",
+    "tryItOutInvalidPayload": "Invalid request payload",
+    "tryItOutInvalidUrl": "Enter a valid absolute HTTP server URL",
+    "tryItOutMissingRequiredFields": "Fill in all required fields before generating cURL",
+    "tryItOutTimeout": "Request timed out",
+    "tryItOutTitle": "Try it out",
+    "mediaTypeLabel": "Media type"
+  },
+  "swaggerControl": {
+    "disabledHint": "Correct the errors in the schema to switch the format",
+    "saveButton": "Save schema",
+    "saving": "Saving..."
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "description": "Try refreshing the page or come back later",
+    "retry": "Try again",
+    "redirecting": "Redirecting to the Main page..."
+  },
+  "toaster": {
+    "schemaSaveError": "Failed to save schema",
+    "schemaSaveSuccess": "Schema saved",
+    "schemaValidationError": "Schema validation error",
+    "schemaConversionError": "Failed to convert schema format",
+    "requestNetworkError": "Failed to send request. Check your connection",
+    "requestTimeoutError": "Request timed out",
+    "curlCopyError": "Failed to copy command",
+    "curlCopySuccess": "cURL command copied to clipboard",
+    "signInError": "Failed to sign in. Check your credentials",
+    "signUpError": "Failed to sign up. Please try again later",
+    "signUpSuccess": "Successfully signed up",
+    "signOutError": "Failed to sign out",
+    "historyLoadError": "Failed to load request history",
+    "exampleCopyError": "Failed to copy example",
+    "exampleCopySuccess": "Example copied to clipboard"
+  },
+  "footer": {
+    "aboutLink": "About",
+    "githubLink": "GitHub"
+  },
+  "AboutPage": {
+    "metadata": {
+      "title": "About | Swagger Editor App",
+      "description": "Learn about the RS School React course, Swagger Editor App, and its development team."
+    },
+    "hero": {
+      "eyebrow": "RS School React Course 2026",
+      "title": "Swagger Editor App",
+      "description": "A team-built workspace for editing, exploring, and testing OpenAPI specifications from one responsive interface."
+    },
+    "course": {
+      "title": "Built at The Rolling Scopes School",
+      "description": "RS School is a free, community-based online education program. Its React course combines modern frontend theory with practical teamwork and culminates in the collaborative Swagger/OpenAPI UI project.",
+      "highlights": {
+        "community": {
+          "title": "Community driven",
+          "description": "Students learn with peers, mentors, and contributors from the international Rolling Scopes community."
+        },
+        "practice": {
+          "title": "Built through practice",
+          "description": "The curriculum covers TypeScript, testing, state management, forms, performance, and Next.js through hands-on assignments."
+        },
+        "open": {
+          "title": "Open learning",
+          "description": "Course materials, documentation, and community resources are available online for independent study."
+        }
+      }
+    },
+    "project": {
+      "title": "One workspace for OpenAPI",
+      "description": "Swagger Editor App brings schema editing, endpoint documentation, request execution, and authenticated request history into one full-stack React application.",
+      "technologies": "Technologies"
+    },
+    "team": {
+      "eyebrow": "Development team",
+      "title": "Created together",
+      "description": "Three frontend developers collaborate across architecture, interface design, testing, and delivery.",
+      "github": "GitHub profile",
+      "githubProfile": "Open {name}'s GitHub profile",
+      "members": {
+        "alya": {
+          "role": "Team Lead / Frontend Developer"
+        },
+        "yulia": {
+          "role": "Frontend Developer"
+        },
+        "ivan": {
+          "role": "Frontend Developer"
+        }
+      }
+    },
+    "resources": {
+      "title": "Project resources",
+      "description": "Continue with the official course, school documentation, or the project source code.",
+      "school": "The Rolling Scopes School",
+      "course": "React course",
+      "docs": "RS School documentation",
+      "repository": "Project repository"
+    }
+  }
+}

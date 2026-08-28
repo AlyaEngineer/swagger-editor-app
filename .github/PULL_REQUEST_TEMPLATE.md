@@ -1,7 +1,9 @@
 ## Summary
+
 <!-- Why are the changes needed? Short context. -->
 
 ## Changes Made
+
 <!-- What was done and how -->
 
 ## Related issue
@@ -9,6 +11,7 @@
 Closes #
 
 ## Feature
+
 <!-- Which feature from the Functional Requirements this PR delivers, or which feature it partially contributes to (e.g. Feature 3: Swagger Editor):
 
 Feature 1: App Header
@@ -23,6 +26,7 @@ Feature 8: YouTube Video
 Also add the matching label from the Labels panel on the right. -->
 
 ## Acceptance criteria
+
 <!-- Tick only the criteria this PR delivers. For the final develop → main PR: fill in Total. -->
 
 <details>

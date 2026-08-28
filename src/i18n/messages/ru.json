@@ -1,0 +1,199 @@
+{
+  "Metadata": {
+    "title": "Swagger Editor",
+    "description": "Вставьте OpenAPI/Swagger-схему в формате JSON или YAML. Валидные схемы автоматически заполнят просмотрщик."
+  },
+  "Header": {
+    "signIn": "Войти",
+    "signUp": "Регистрация",
+    "signOut": "Выйти",
+    "history": "История",
+    "about": "О проекте",
+    "main": "Главная",
+    "language": "Язык",
+    "switchToLightTheme": "Включить светлую тему",
+    "switchToDarkTheme": "Включить тёмную тему",
+    "openMenu": "Открыть меню",
+    "navigationLabel": "Навигация по сайту",
+    "closeMenu": "Закрыть меню"
+  },
+  "authForm": {
+    "invalidEmail": "Введите корректный email-адрес",
+    "emailRequired": "Введите email",
+    "passwordRequired": "Введите пароль",
+    "nameRequired": "Введите имя",
+    "passwordTooShort": "Пароль должен содержать не менее 8 символов",
+    "passwordMissingLetter": "Пароль должен содержать хотя бы одну букву",
+    "passwordMissingDigit": "Пароль должен содержать хотя бы одну цифру",
+    "passwordMissingSpecialChar": "Пароль должен содержать хотя бы один специальный символ",
+    "signInTitle": "Вход",
+    "signUpTitle": "Регистрация",
+    "emailLabel": "Email",
+    "passwordLabel": "Пароль",
+    "nameLabel": "Имя",
+    "namePlaceholder": "Ваше имя",
+    "signInButton": "Войти",
+    "signUpButton": "Зарегистрироваться",
+    "noAccount": "Нет аккаунта?",
+    "signUpLink": "Зарегистрироваться",
+    "alreadyHaveAccount": "Уже есть аккаунт?",
+    "signInLink": "Войти"
+  },
+  "HomePage": {
+    "title": "Swagger/OpenAPI UI",
+    "description": "Редактируйте, просматривайте и тестируйте OpenAPI-спецификации в одном приложении."
+  },
+  "HistoryPage": {
+    "title": "История запросов",
+    "emptyMessage": "Вы ещё не выполнили ни одного запроса",
+    "emptyLinksHint": "Начните с загрузки схемы и выполнения запроса к эндпоинту",
+    "goToEditor": "Перейти в редактор",
+    "errorLabel": "Ошибка",
+    "durationColumn": "Длительность",
+    "endpointColumn": "Эндпоинт",
+    "errorColumn": "Ошибка",
+    "methodColumn": "Метод",
+    "requestSizeColumn": "Размер\nзапроса",
+    "responseSizeColumn": "Размер\nответа",
+    "statusColumn": "Статус",
+    "timestampColumn": "Время",
+    "rowsPerPage": "Строк на странице:",
+    "paginationLabel": "{from}-{to} из {count}"
+  },
+  "swaggerEditor": {
+    "conversionError": "Не удалось преобразовать формат схемы.",
+    "restoreError": "Не удалось восстановить сохранённую схему.",
+    "schemaValid": "Схема валидна. Найдено эндпоинтов: {count}"
+  },
+  "swaggerViewer": {
+    "emptyPrompt": "Вставьте валидную схему OpenAPI/Swagger, чтобы отобразить эндпоинты",
+    "emptyResponseBody": "Тело ответа пустое",
+    "endpointListLabel": "Список эндпоинтов OpenAPI",
+    "executeButton": "Выполнить",
+    "executingLabel": "Выполнение...",
+    "examplesLabel": "Примеры",
+    "generatedExampleLabel": "Сгенерированный пример",
+    "copyExampleButton": "Копировать пример",
+    "copyCurlButton": "Копировать",
+    "curlCommandLabel": "Команда cURL",
+    "generateCurlButton": "Сгенерировать cURL",
+    "noResponseHeaders": "Заголовков ответа нет",
+    "noParameters": "Параметров нет",
+    "noRequestBody": "Тело запроса не требуется",
+    "noResponses": "Ответы не описаны",
+    "noEndpoints": "Схема валидна, но эндпоинтов в paths не найдено",
+    "noSummary": "Без названия",
+    "operationIdLabel": "ID операции",
+    "optionalLabel": "Необязательный",
+    "parametersTitle": "Параметры",
+    "requestBodyTitle": "Тело запроса",
+    "requiredLabel": "Обязательный",
+    "requestBodyInputLabel": "Тело запроса",
+    "responseBodyLabel": "Тело ответа",
+    "responseHeadersLabel": "Заголовки ответа",
+    "responsesTitle": "Ответы",
+    "schemaLabel": "Схема",
+    "schemaNotSpecified": "Не указана",
+    "serverUrlLabel": "URL сервера",
+    "tryItOutBlockedUrl": "Этот адрес недоступен для запроса",
+    "tryItOutFailed": "Не удалось выполнить запрос",
+    "tryItOutInvalidPayload": "Некорректные данные запроса",
+    "tryItOutInvalidUrl": "Введите абсолютный HTTP URL сервера",
+    "tryItOutMissingRequiredFields": "Заполните все обязательные поля перед генерацией cURL",
+    "tryItOutTimeout": "Превышено время ожидания ответа",
+    "tryItOutTitle": "Отправка запроса",
+    "mediaTypeLabel": "Тип контента"
+  },
+  "swaggerControl": {
+    "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",
+    "saveButton": "Сохранить схему",
+    "saving": "Сохранение..."
+  },
+  "errorPage": {
+    "title": "Что-то пошло не так",
+    "description": "Попробуйте обновить страницу или вернуться позже",
+    "retry": "Попробовать снова",
+    "redirecting": "Перенаправление на главную страницу..."
+  },
+  "toaster": {
+    "schemaSaveError": "Не удалось сохранить схему",
+    "schemaSaveSuccess": "Схема сохранена",
+    "schemaValidationError": "Ошибка валидации схемы",
+    "schemaConversionError": "Не удалось преобразовать формат схемы",
+    "requestNetworkError": "Не удалось выполнить запрос. Проверьте соединение",
+    "requestTimeoutError": "Превышено время ожидания ответа",
+    "curlCopyError": "Не удалось скопировать команду",
+    "curlCopySuccess": "Команда cURL скопирована в буфер обмена",
+    "signInError": "Не удалось войти. Проверьте данные",
+    "signUpError": "Не удалось зарегистрироваться. Попробуйте позже",
+    "signUpSuccess": "Регистрация прошла успешно",
+    "signOutError": "Не удалось выйти из аккаунта",
+    "historyLoadError": "Не удалось загрузить историю запросов",
+    "exampleCopyError": "Не удалось скопировать пример",
+    "exampleCopySuccess": "Пример скопирован в буфер обмена"
+  },
+  "footer": {
+    "aboutLink": "О проекте",
+    "githubLink": "GitHub"
+  },
+  "AboutPage": {
+    "metadata": {
+      "title": "О проекте | Swagger Editor App",
+      "description": "Узнайте о React-курсе RS School, Swagger Editor App и команде разработки."
+    },
+    "hero": {
+      "eyebrow": "React-курс RS School 2026",
+      "title": "Swagger Editor App",
+      "description": "Командное приложение для редактирования, изучения и тестирования OpenAPI-спецификаций в одном адаптивном интерфейсе."
+    },
+    "course": {
+      "title": "Создано в The Rolling Scopes School",
+      "description": "RS School - это бесплатная образовательная онлайн-программа, созданная сообществом. React-курс сочетает современную frontend-теорию с командной практикой и завершается совместной разработкой Swagger/OpenAPI UI.",
+      "highlights": {
+        "community": {
+          "title": "Сила сообщества",
+          "description": "Студенты учатся вместе с коллегами, менторами и участниками международного сообщества Rolling Scopes."
+        },
+        "practice": {
+          "title": "Обучение на практике",
+          "description": "Программа охватывает TypeScript, тестирование, управление состоянием, формы, производительность и Next.js через практические задания."
+        },
+        "open": {
+          "title": "Открытые знания",
+          "description": "Материалы курса, документация и ресурсы сообщества доступны онлайн для самостоятельного обучения."
+        }
+      }
+    },
+    "project": {
+      "title": "Единое пространство для OpenAPI",
+      "description": "Swagger Editor App объединяет редактор схем, документацию endpoint-ов, выполнение запросов и историю запросов авторизованных пользователей в одном full-stack React-приложении.",
+      "technologies": "Технологии"
+    },
+    "team": {
+      "eyebrow": "Команда разработки",
+      "title": "Создано вместе",
+      "description": "Три frontend-разработчика совместно работают над архитектурой, дизайном интерфейса, тестированием и выпуском проекта.",
+      "github": "Профиль GitHub",
+      "githubProfile": "Открыть GitHub-профиль {name}",
+      "members": {
+        "alya": {
+          "role": "Тимлид / Frontend-разработчик"
+        },
+        "yulia": {
+          "role": "Frontend-разработчик"
+        },
+        "ivan": {
+          "role": "Frontend-разработчик"
+        }
+      }
+    },
+    "resources": {
+      "title": "Ресурсы проекта",
+      "description": "Перейдите к официальному курсу, документации школы или исходному коду проекта.",
+      "school": "The Rolling Scopes School",
+      "course": "React-курс",
+      "docs": "Документация RS School",
+      "repository": "Репозиторий проекта"
+    }
+  }
+}
