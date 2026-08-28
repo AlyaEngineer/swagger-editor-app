@@ -1,3 +1,5 @@
+'use client';
+
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';

@@ -1,5 +1,3 @@
-'use client';
-
 import Box from '@mui/material/Box';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
