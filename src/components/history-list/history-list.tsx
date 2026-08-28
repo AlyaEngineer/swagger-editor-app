@@ -51,6 +51,8 @@ export function HistoryList({ entries }: HistoryListProps) {
       <TablePagination
         component="div"
         count={entries.length}
+        labelDisplayedRows={({ count, from, to }) => t('paginationLabel', { count, from, to })}
+        labelRowsPerPage={t('rowsPerPage')}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         page={page}

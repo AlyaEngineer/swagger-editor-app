@@ -9,9 +9,13 @@
     "signOut": "Sign Out",
     "history": "History",
     "about": "About",
+    "main": "Main",
     "language": "Language",
     "switchToLightTheme": "Switch to light theme",
-    "switchToDarkTheme": "Switch to dark theme"
+    "switchToDarkTheme": "Switch to dark theme",
+    "openMenu": "Open menu",
+    "navigationLabel": "Site navigation",
+    "closeMenu": "Close menu"
   },
   "authForm": {
     "invalidEmail": "Please enter a valid email address",
@@ -52,7 +56,9 @@
     "requestSizeColumn": "Request\nSize",
     "responseSizeColumn": "Response\nSize",
     "statusColumn": "Status",
-    "timestampColumn": "Timestamp"
+    "timestampColumn": "Timestamp",
+    "rowsPerPage": "Rows per page:",
+    "paginationLabel": "{from}-{to} of {count}"
   },
   "swaggerEditor": {
     "conversionError": "Failed to convert schema format.",
@@ -66,6 +72,8 @@
     "executeButton": "Execute",
     "executingLabel": "Executing...",
     "examplesLabel": "Examples",
+    "generatedExampleLabel": "Generated example",
+    "copyExampleButton": "Copy example",
     "copyCurlButton": "Copy",
     "curlCommandLabel": "cURL command",
     "generateCurlButton": "Generate cURL",
@@ -93,7 +101,8 @@
     "tryItOutInvalidUrl": "Enter a valid absolute HTTP server URL",
     "tryItOutMissingRequiredFields": "Fill in all required fields before generating cURL",
     "tryItOutTimeout": "Request timed out",
-    "tryItOutTitle": "Try it out"
+    "tryItOutTitle": "Try it out",
+    "mediaTypeLabel": "Media type"
   },
   "swaggerControl": {
     "disabledHint": "Correct the errors in the schema to switch the format",
@@ -119,7 +128,9 @@
     "signUpError": "Failed to sign up. Please try again later",
     "signUpSuccess": "Successfully signed up",
     "signOutError": "Failed to sign out",
-    "historyLoadError": "Failed to load request history"
+    "historyLoadError": "Failed to load request history",
+    "exampleCopyError": "Failed to copy example",
+    "exampleCopySuccess": "Example copied to clipboard"
   },
   "footer": {
     "aboutLink": "About",

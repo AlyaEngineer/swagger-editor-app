@@ -4,6 +4,7 @@ import { AppBar, Box, Toolbar, useScrollTrigger } from '@mui/material';
 import { useTranslations } from 'next-intl';
 
 import { AppLinkButton, AuthNavigation, LanguageSwitcher, ThemeSwitcher } from '@/components';
+import { MobileNavigation } from '@/components/header/mobile-navigation';
 import { flex } from '@/constants';
 import { BRAND_NAME } from '@/constants/brand';
 import { ROUTES } from '@/constants/routes';
@@ -33,6 +34,7 @@ export function Header() {
         backgroundColor: 'background.paper',
         borderBottom: 1,
         borderColor: 'divider',
+        borderRadius: 0,
       }}
     >
       <Toolbar
@@ -51,10 +53,11 @@ export function Header() {
         <AppLinkButton href={ROUTES.home}>{BRAND_NAME}</AppLinkButton>
 
         <Box
-          aria-label="Main navigation"
+          aria-label={t('navigationLabel')}
           component="nav"
           sx={{
             ...flex(),
+            display: { md: 'flex', xs: 'none' },
             ml: 'auto',
           }}
         >
@@ -63,6 +66,10 @@ export function Header() {
           <AuthNavigation />
           <ThemeSwitcher />
           <LanguageSwitcher />
+        </Box>
+
+        <Box sx={{ display: { md: 'none', xs: 'flex' }, ml: 'auto' }}>
+          <MobileNavigation />
         </Box>
       </Toolbar>
     </AppBar>

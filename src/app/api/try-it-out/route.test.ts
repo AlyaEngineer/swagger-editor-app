@@ -176,8 +176,12 @@ describe('try-it-out route', () => {
     });
   });
 
-  it('requires authentication before proxying a valid request', async () => {
+  it('executes the request for an unauthenticated user without recording history', async () => {
     mocks.getUser.mockResolvedValueOnce({ data: { user: null } });
+    queueResponse({
+      body: 'ok',
+      status: 200,
+    });
 
     const response = await POST(
       new Request('http://localhost/api/try-it-out', {
@@ -189,10 +193,28 @@ describe('try-it-out route', () => {
       }),
     );
 
-    expect(response.status).toBe(401);
-    expect(httpsRequestMock).not.toHaveBeenCalled();
+    expect(response.status).toBe(200);
+    expect(httpsRequestMock).toHaveBeenCalledTimes(1);
     expect(mocks.insert).not.toHaveBeenCalled();
-    await expect(response.json()).resolves.toEqual({ errorCode: 'unauthorized' });
+    await expect(response.json()).resolves.toMatchObject({ body: 'ok' });
+  });
+
+  it('does not record history for an unauthenticated user even when the request is blocked', async () => {
+    mocks.getUser.mockResolvedValueOnce({ data: { user: null } });
+
+    const response = await POST(
+      new Request('http://localhost/api/try-it-out', {
+        body: JSON.stringify({
+          method: 'GET',
+          url: 'http://127.0.0.1/admin',
+        }),
+        method: 'POST',
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(mocks.insert).not.toHaveBeenCalled();
+    await expect(response.json()).resolves.toEqual({ errorCode: 'blockedUrl' });
   });
 
   it('redacts credentials and sensitive query values before storing history', async () => {

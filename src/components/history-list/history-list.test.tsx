@@ -98,7 +98,7 @@ describe('HistoryList', () => {
 
     render(<HistoryList entries={entries} />);
 
-    await userEvent.click(screen.getByRole('combobox', { name: /rows per page/i }));
+    await userEvent.click(screen.getByRole('combobox', { name: /rowsPerPage/i }));
     await userEvent.click(await screen.findByRole('option', { name: '25' }));
 
     expect(screen.getByText('https://api.example.com/item-10')).toBeInTheDocument();

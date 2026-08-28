@@ -9,9 +9,13 @@
     "signOut": "Выйти",
     "history": "История",
     "about": "О проекте",
+    "main": "Главная",
     "language": "Язык",
     "switchToLightTheme": "Включить светлую тему",
-    "switchToDarkTheme": "Включить тёмную тему"
+    "switchToDarkTheme": "Включить тёмную тему",
+    "openMenu": "Открыть меню",
+    "navigationLabel": "Навигация по сайту",
+    "closeMenu": "Закрыть меню"
   },
   "authForm": {
     "invalidEmail": "Введите корректный email-адрес",
@@ -52,7 +56,9 @@
     "requestSizeColumn": "Размер\nзапроса",
     "responseSizeColumn": "Размер\nответа",
     "statusColumn": "Статус",
-    "timestampColumn": "Время"
+    "timestampColumn": "Время",
+    "rowsPerPage": "Строк на странице:",
+    "paginationLabel": "{from}-{to} из {count}"
   },
   "swaggerEditor": {
     "conversionError": "Не удалось преобразовать формат схемы.",
@@ -66,6 +72,8 @@
     "executeButton": "Выполнить",
     "executingLabel": "Выполнение...",
     "examplesLabel": "Примеры",
+    "generatedExampleLabel": "Сгенерированный пример",
+    "copyExampleButton": "Копировать пример",
     "copyCurlButton": "Копировать",
     "curlCommandLabel": "Команда cURL",
     "generateCurlButton": "Сгенерировать cURL",
@@ -74,8 +82,8 @@
     "noRequestBody": "Тело запроса не требуется",
     "noResponses": "Ответы не описаны",
     "noEndpoints": "Схема валидна, но эндпоинтов в paths не найдено",
-    "noSummary": "Без описания",
-    "operationIdLabel": "Operation ID",
+    "noSummary": "Без названия",
+    "operationIdLabel": "ID операции",
     "optionalLabel": "Необязательный",
     "parametersTitle": "Параметры",
     "requestBodyTitle": "Тело запроса",
@@ -93,7 +101,8 @@
     "tryItOutInvalidUrl": "Введите абсолютный HTTP URL сервера",
     "tryItOutMissingRequiredFields": "Заполните все обязательные поля перед генерацией cURL",
     "tryItOutTimeout": "Превышено время ожидания ответа",
-    "tryItOutTitle": "Опробовать"
+    "tryItOutTitle": "Отправка запроса",
+    "mediaTypeLabel": "Тип контента"
   },
   "swaggerControl": {
     "disabledHint": "Исправьте ошибки в схеме, чтобы переключить формат",
@@ -119,7 +128,9 @@
     "signUpError": "Не удалось зарегистрироваться. Попробуйте позже",
     "signUpSuccess": "Регистрация прошла успешно",
     "signOutError": "Не удалось выйти из аккаунта",
-    "historyLoadError": "Не удалось загрузить историю запросов"
+    "historyLoadError": "Не удалось загрузить историю запросов",
+    "exampleCopyError": "Не удалось скопировать пример",
+    "exampleCopySuccess": "Пример скопирован в буфер обмена"
   },
   "footer": {
     "aboutLink": "О проекте",

@@ -29,6 +29,7 @@ export function buildTryItOutRequest(
   serverUrl: string,
   parameterValues: Record<string, string>,
   body: string,
+  contentType: string,
 ) {
   try {
     const url = new URL(
@@ -61,8 +62,8 @@ export function buildTryItOutRequest(
       headers.Cookie = cookieValues.join('; ');
     }
 
-    if (endpoint.requestBody?.contentTypes[0]) {
-      headers['Content-Type'] = endpoint.requestBody.contentTypes[0];
+    if (contentType) {
+      headers['Content-Type'] = contentType;
     }
 
     return {

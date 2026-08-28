@@ -42,7 +42,7 @@ vi.mock('@/providers/auth-provider/AuthProvider', () => ({
 
 const mockUseSwagger = vi.fn();
 
-vi.mock('@/utils/hooks/use-swagger', () => ({
+vi.mock('@/hooks/use-swagger', () => ({
   useSwagger: (initialSchema: unknown) => mockUseSwagger(initialSchema),
 }));
 

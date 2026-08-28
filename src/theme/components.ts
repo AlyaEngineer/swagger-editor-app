@@ -58,6 +58,14 @@ export const components: Components<Theme> = {
     },
   },
 
+  MuiDrawer: {
+    styleOverrides: {
+      paper: {
+        borderRadius: 0,
+      },
+    },
+  },
+
   MuiMenu: {
     styleOverrides: {
       paper: {

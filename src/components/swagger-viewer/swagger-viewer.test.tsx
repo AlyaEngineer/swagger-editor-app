@@ -68,10 +68,15 @@ describe('SwaggerViewer', () => {
             requestBody: null,
             responses: [
               {
-                contentTypes: ['application/json'],
                 description: 'Users response.',
-                examples: ['{"users":[]}'],
-                schema: 'object { users }',
+                mediaTypes: [
+                  {
+                    contentType: 'application/json',
+                    examples: ['{"users":[]}'],
+                    generatedExample: '',
+                    schema: 'object { users }',
+                  },
+                ],
                 statusCode: '200',
               },
             ],
@@ -85,11 +90,16 @@ describe('SwaggerViewer', () => {
             parameters: [],
             path: '/users',
             requestBody: {
-              contentTypes: ['application/json'],
               description: 'User payload.',
-              examples: ['{"name":"Ada"}'],
+              mediaTypes: [
+                {
+                  contentType: 'application/json',
+                  examples: ['{"name":"Ada"}'],
+                  generatedExample: '',
+                  schema: 'object { name }',
+                },
+              ],
               required: true,
-              schema: 'object { name }',
             },
             responses: [],
             serverUrl: 'https://api.example.com',
@@ -176,11 +186,16 @@ describe('SwaggerViewer', () => {
             ],
             path: '/users/{id}',
             requestBody: {
-              contentTypes: ['application/json'],
               description: '',
-              examples: ['{"name":"Ada"}'],
+              mediaTypes: [
+                {
+                  contentType: 'application/json',
+                  examples: ['{"name":"Ada"}'],
+                  generatedExample: '',
+                  schema: 'object { name }',
+                },
+              ],
               required: true,
-              schema: 'object { name }',
             },
             responses: [],
             serverUrl: 'https://api.example.com/v1',
@@ -192,6 +207,8 @@ describe('SwaggerViewer', () => {
     );
 
     const user = userEvent.setup({ delay: null });
+
+    await user.click(screen.getByRole('button', { name: /Create user/i }));
 
     fireEvent.change(screen.getByLabelText(/path: id/), { target: { value: '42' } });
     fireEvent.change(screen.getByLabelText(/query: includePosts/), { target: { value: 'true' } });
@@ -217,7 +234,9 @@ describe('SwaggerViewer', () => {
       url: 'https://api.example.com/v1/users/42?includePosts=true',
     });
     expect(await screen.findByText('200 OK')).toBeInTheDocument();
-    expect(screen.getByText('{"ok":true}')).toBeInTheDocument();
+    expect(
+      screen.getByText(JSON.stringify({ ok: true }, null, 2), { normalizer: (text) => text }),
+    ).toBeInTheDocument();
     expect(screen.getByText('content-type: application/json')).toBeInTheDocument();
   });
 
@@ -251,6 +270,7 @@ describe('SwaggerViewer', () => {
 
     const user = userEvent.setup();
 
+    await user.click(screen.getByRole('button', { name: /Internal endpoint/i }));
     await user.click(screen.getByRole('button', { name: 'executeButton' }));
 
     expect(await screen.findByText('tryItOutBlockedUrl')).toBeInTheDocument();

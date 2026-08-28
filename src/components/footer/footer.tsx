@@ -18,6 +18,7 @@ export async function Footer() {
       sx={{
         backgroundColor: 'background.paper',
         borderColor: 'divider',
+        borderRadius: 0,
         color: 'text.secondary',
         mt: 'auto',
         py: 2,

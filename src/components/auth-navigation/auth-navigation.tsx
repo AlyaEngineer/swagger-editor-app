@@ -1,5 +1,6 @@
 'use client';
 
+import Divider from '@mui/material/Divider';
 import { useTranslations } from 'next-intl';
 
 import { ROUTES } from '@/constants/routes';
@@ -8,7 +9,11 @@ import { useToast } from '@/providers/toast-provider/ToastProvider';
 
 import { AppLinkButton } from '../app-link/app-link';
 
-export const AuthNavigation = () => {
+type AuthNavigationProps = {
+  isCompact?: boolean;
+};
+
+export const AuthNavigation = ({ isCompact = false }: AuthNavigationProps) => {
   const t = useTranslations('Header');
   const tToast = useTranslations('toaster');
   const showToast = useToast();
@@ -33,17 +38,21 @@ export const AuthNavigation = () => {
         <>
           <AppLinkButton href={ROUTES.history}>{t('history')}</AppLinkButton>
 
-          <AppLinkButton onClick={handleSignOut} variant="contained">
+          {isCompact && <Divider sx={{ my: 1 }} />}
+
+          <AppLinkButton onClick={handleSignOut} variant="text">
             {t('signOut')}
           </AppLinkButton>
         </>
       ) : (
         <>
-          <AppLinkButton href={ROUTES.signIn} variant="outlined">
+          {isCompact && <Divider sx={{ my: 1 }} />}
+
+          <AppLinkButton href={ROUTES.signIn} variant={isCompact ? 'text' : 'outlined'}>
             {t('signIn')}
           </AppLinkButton>
 
-          <AppLinkButton href={ROUTES.signUp} variant="contained">
+          <AppLinkButton href={ROUTES.signUp} variant={isCompact ? 'text' : 'contained'}>
             {t('signUp')}
           </AppLinkButton>
         </>
