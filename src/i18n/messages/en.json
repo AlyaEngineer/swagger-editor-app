@@ -14,7 +14,8 @@
     "switchToLightTheme": "Switch to light theme",
     "switchToDarkTheme": "Switch to dark theme",
     "openMenu": "Open menu",
-    "navigationLabel": "Site navigation"
+    "navigationLabel": "Site navigation",
+    "closeMenu": "Close menu"
   },
   "authForm": {
     "invalidEmail": "Please enter a valid email address",
@@ -55,7 +56,9 @@
     "requestSizeColumn": "Request\nSize",
     "responseSizeColumn": "Response\nSize",
     "statusColumn": "Status",
-    "timestampColumn": "Timestamp"
+    "timestampColumn": "Timestamp",
+    "rowsPerPage": "Rows per page:",
+    "paginationLabel": "{from}-{to} of {count}"
   },
   "swaggerEditor": {
     "conversionError": "Failed to convert schema format.",

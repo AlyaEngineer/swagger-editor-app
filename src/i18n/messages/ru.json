@@ -14,7 +14,8 @@
     "switchToLightTheme": "Включить светлую тему",
     "switchToDarkTheme": "Включить тёмную тему",
     "openMenu": "Открыть меню",
-    "navigationLabel": "Навигация по сайту"
+    "navigationLabel": "Навигация по сайту",
+    "closeMenu": "Закрыть меню"
   },
   "authForm": {
     "invalidEmail": "Введите корректный email-адрес",
@@ -55,7 +56,9 @@
     "requestSizeColumn": "Размер\nзапроса",
     "responseSizeColumn": "Размер\nответа",
     "statusColumn": "Статус",
-    "timestampColumn": "Время"
+    "timestampColumn": "Время",
+    "rowsPerPage": "Строк на странице:",
+    "paginationLabel": "{from}-{to} из {count}"
   },
   "swaggerEditor": {
     "conversionError": "Не удалось преобразовать формат схемы.",

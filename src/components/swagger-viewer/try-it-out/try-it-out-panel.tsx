@@ -182,7 +182,7 @@ export function TryItOutPanel({
           />
         )}
 
-        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
           <Button disabled={isExecuting} type="submit" variant="contained">
             {isExecuting ? t('executingLabel') : t('executeButton')}
           </Button>
